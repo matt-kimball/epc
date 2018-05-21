@@ -30,7 +30,11 @@
 </head>
 
 <body>
-    <h1>Eternal Power Calculator</h1>
+    <div id="heading">
+        <h1>Eternal Power Calculator</h1>
+
+        Paste a decklist below.
+    </div>
 
     <div id="deck-and-table">
         <div id="deck-text-div">
@@ -61,8 +65,16 @@
             <div id="deck-validation-result"></div>
         </div>
 
-        <!--  The table of draw odds is generated here  -->
-        <div id="power-table-div">
+        <div id="table-and-text">
+            <!--  The table of draw odds is generated here  -->
+            <div id="power-table-div">
+            </div>
+            <div id="power-table-text">
+                Select a row to graph influence requirements.
+            </div>
+        </div>
+
+        <div id="power-graph-div">
         </div>
     </div>
 
@@ -1053,8 +1065,8 @@
         Set3 #259;; 3TJ
         Set3 #260;; 4TP
         Set3 #261; 1TP;
-        Set3 #262;; 5TP
-        Set3 #263;; 7TTPP
+        Set3 #262;; 5JP
+        Set3 #263;; 7JJPP
         Set3 #264; 1JS;
         Set3 #265;; 4JJSS
         Set3 #266; 1FP;
@@ -1075,7 +1087,7 @@
         Set3 #301;; 3PS
         Set3 #302;; 6SS
         Set3 #303;; 2FT
-        Set3 #304;; 4TP
+        Set3 #304;; 4JP,8
 
         Set1001 #1;; 3F
         Set1001 #2;; 5FF
@@ -1149,21 +1161,30 @@
     <script type="text/javascript" src="epc-polyfill.js"></script>
     <script type="text/javascript" src="epc.js"></script>
     <script type="text/javascript">
-        var calculator, cardlist, decktext, table, validation;
+        var calculator, cardlist, decktext, table, graph, validation;
 
         cardlist = $("#card-list").html();
+        tableContainer = $("#table-and-text");
         table = $("#power-table-div");
+        graph = $("#power-graph-div");
         decktext = $("#deck-text");
         validation = $("#deck-validation-result");
 
-        calculator = makeEternalPowerCalculator(cardlist);
+        decktext.select();
+        calculator = makeEternalPowerCalculator({
+            tableContainer: tableContainer,
+            tableDiv: table,
+            validationDiv: validation,
+            graphDiv: graph,
+            cardlist: cardlist
+        });
 
         /*  Generate the initial table  */
-        calculator.generateTable(table, validation, decktext.val());
+        calculator.generateTable(decktext.val());
 
         /*  When the deck text changes, regenerate the table  */
         decktext.bind("input", function () {
-            calculator.generateTable(table, validation, decktext.val());
+            calculator.generateTable(decktext.val());
         });
     </script>
 </body>

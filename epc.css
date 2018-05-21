@@ -19,9 +19,15 @@
 
 */
 
+html {
+    height: 100%;
+}
+
 body {
+    height: 95%;
     font-family: sans-serif;
     font-size: 16px;
+    margin-left: 24px;
 }
 
 textarea {
@@ -30,22 +36,45 @@ textarea {
     resize: none;
 }
 
+#heading {
+    height: 15%;
+}
+
+#heading h1 {
+    text-align: center;
+}
+
+#deck-and-table {
+    height: 85%;
+    width: 100%;
+}
+
 #deck-text-div {
     float: left;
-    margin-right: 16px;
-    margin-bottom: 16px;
+    margin: 0px 16px 16px 0px;
+    height: 100%;
+    width: 400px;
+}
+
+#power-table-div {
+    padding-bottom: 16px;
+}
+
+#power-table-text {
+    text-align: center;
 }
 
 #deck-text {
     background-color: #f0f0e0;
-    height: 500px;
+    height: 95%;
 }
 
 #deck-text, #deck-validation-result {
-    width: 580px;
+    width: 100%;
 }
 
 #deck-validation-result {
+    height: 5%;
     font-size: 14px;
     text-align: right;
 }
@@ -60,6 +89,8 @@ textarea {
 
 .power-table {
     background-color: #000000;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .power-table tr {
@@ -75,8 +106,16 @@ textarea {
     background-color: #c0c0b0;
 }
 
-.power-table th {
+.power-table-head-draws {
+    width: 6em;
+}
+
+.power-table-head-draw-count {
     width: 3em;
+}
+
+.power-table-influence, .power-table-odds {
+    cursor: pointer;
 }
 
 .power-table-odds {
@@ -87,4 +126,12 @@ textarea {
 /*  Darken cells with fewer draws than the number of power required  */
 .power-table-odds-shaded {
     background-color: #909080;
+}
+
+.power-graph-canvas {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 900px;
+    height: 600px;
 }

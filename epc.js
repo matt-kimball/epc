@@ -690,28 +690,72 @@ function makeEternalDeck(
             return;
         }
 
-        deck.cardCount[card.id] = count;
         for (i = 0; i < count; i += 1) {
 
             deck.cards.push(card);
         }
+
+        if (deck.cardCount[card.id]) {
+            count += deck.cardCount[card.id];
+        }
+        deck.cardCount[card.id] = count;
     }
 
     /*
         Return a list of all distinct influence requirement values
-        for all cards in the deck.
+        for all cards in the deck.  The returned list is of pairs,
+        with each pair containing the influence object and a list of
+        the cards requiring that influence amount.
     */
     deck.listInfluenceRequirements = function () {
-        var influenceDict;
+        var influenceDict, influenceList, cards;
 
+        cards = deck.cards.slice();
+
+        /*
+            Sort cards by the number of power in their primary
+            influence requirement.
+        */
+        cards.sort(function (a, b) {
+            var infA, infB;
+
+            infA = a.influenceRequirements[0];
+            infB = b.influenceRequirements[0];
+
+            if (!infA && !infB) {
+                return 0;
+            }
+            if (!infA) {
+                return -1;
+            }
+            if (!infB) {
+                return 1;
+            }
+
+            return infA.power - infB.power;
+        });
+
+        influenceList = [];
         influenceDict = {};
-        $.each(deck.cards, function (index, card) {
+        $.each(cards, function (index, card) {
             $.each(card.influenceRequirements, function (index, influence) {
-                influenceDict[influence] = true;
+                var influenceStr, influencePair;
+
+                influenceStr = influence.toString();
+
+                influencePair = influenceDict[influenceStr];
+                if (influencePair) {
+                    influencePair[1].push(card);
+                    return;
+                }
+
+                influencePair = [influence, [card]];
+                influenceList.push(influencePair);
+                influenceDict[influenceStr] = influencePair;
             });
         });
 
-        return Object.getOwnPropertyNames(influenceDict);
+        return influenceList;
     };
 
     /*
@@ -884,6 +928,389 @@ function makeEternalDeck(
     return deck;
 }
 
+/*  Draw a graph of influence component odds on a canvas element  */
+function drawPowerGraph(
+    canvas,
+    mousePos,
+    deck,
+    totalInfluence
+) {
+    var ctx,
+        w,
+        h,
+        margin,
+        graphCoord,
+        fontSize,
+        componentInfluences,
+        minValue,
+        minDraws,
+        maxDraws,
+        labels;
+
+    minDraws = 7;
+    maxDraws = 20;
+    margin = 96;
+    fontSize = 20;
+    labels = [];
+
+    /*  Set the back buffer size to be the same as the CSS size  */
+    w = canvas.width();
+    h = canvas.height();
+    canvas.attr("width", w);
+    canvas.attr("height", h);
+
+    ctx = canvas.get(0).getContext("2d");
+    ctx.clearRect(0, 0, w, h);
+
+    /*
+        We'll need space around the edge for label text, so
+        the actual graph will be drawn within these coordinates.
+    */
+    graphCoord = {
+        left: margin,
+        top: fontSize / 2,
+        right: w - margin,
+        bottom: h - margin
+    };
+
+    /*
+        Break down influence requirements into a set of component
+        parts, and return a list of influences, one for each
+        component present in the original influence.
+    */
+    function listComponentInfluences(
+        influence
+    ) {
+        var part, components = [];
+
+        if (influence.power > 0) {
+            part = makeInfluence("");
+            part.power = influence.power;
+            components.push(part);
+        }
+
+        if (influence.fire > 0) {
+            part = makeInfluence("");
+            part.fire = influence.fire;
+            components.push(part);
+        }
+
+        if (influence.justice > 0) {
+            part = makeInfluence("");
+            part.justice = influence.justice;
+            components.push(part);
+        }
+
+        if (influence.primal > 0) {
+            part = makeInfluence("");
+            part.primal = influence.primal;
+            components.push(part);
+        }
+
+        if (influence.shadow > 0) {
+            part = makeInfluence("");
+            part.shadow = influence.shadow;
+            components.push(part);
+        }
+
+        if (influence.time > 0) {
+            part = makeInfluence("");
+            part.time = influence.time;
+            components.push(part);
+        }
+
+        return components;
+    }
+
+    /*  Returns true if a pair of one-dimensional spans overlap  */
+    function areSpansOverlapping(
+        a,
+        aLen,
+        b,
+        bLen
+    ) {
+        if (a + aLen < b) {
+            return false;
+        }
+
+        if (b + bLen < a) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /*  Returns true if the text for two labels overlap  */
+    function areLabelsOverlapping(
+        a,
+        b
+    ) {
+        var aMeasure, bMeasure;
+
+        aMeasure = ctx.measureText(a.label);
+        bMeasure = ctx.measureText(b.label);
+
+        if (!areSpansOverlapping(
+                a.x,
+                aMeasure.width,
+                b.x,
+                bMeasure.width
+            )) {
+
+            return false;
+        }
+
+        if (!areSpansOverlapping(
+                a.y,
+                fontSize,
+                b.y,
+                fontSize
+            )) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+        Add a label to be drawn if it doesn't overlap with any
+        existing labels.
+    */
+    function addLabel(
+        label,
+        x,
+        y
+    ) {
+        var overlap, newLabelPos;
+
+        newLabelPos = {
+            label: label,
+            x: x,
+            y: y
+        };
+
+        overlap = false;
+        $.each(labels, function (index, labelPos) {
+            if (areLabelsOverlapping(labelPos, newLabelPos)) {
+                overlap = true;
+            }
+        });
+
+        if (!overlap) {
+            labels.push(newLabelPos);
+        }
+    }
+
+    /*  Draw all labels previosly added to the label list  */
+    function drawLabels() {
+        $.each(labels, function (index, labelPos) {
+            ctx.fillText(labelPos.label, labelPos.x, labelPos.y);
+        });
+
+        labels = [];
+    }
+
+    /*  Draw a label along the left side of the graph  */
+    function drawLeftLabel(
+        label,
+        y
+    ) {
+        var drawX, drawY, textSize;
+
+        textSize = ctx.measureText(label);
+        drawX = graphCoord.left - textSize.width - fontSize;
+        drawY = y + fontSize / 2;
+        addLabel(label, drawX, drawY);
+    }
+
+    /*  Draw a label along the bottom of the graph  */
+    function drawBottomLabel(
+        label,
+        x
+    ) {
+        var drawX, drawY, textSize;
+
+        textSize = ctx.measureText(label);
+        drawX = x - textSize.width / 2;
+        drawY = graphCoord.bottom + 2 * fontSize;
+        addLabel(label, drawX, drawY);
+    }
+
+    /*  Draw the graph outline  */
+    function drawOutline() {
+        ctx.save();
+        ctx.fillStyle = "#f0f0e0";
+        ctx.beginPath();
+        ctx.moveTo(graphCoord.left, graphCoord.top);
+        ctx.lineTo(graphCoord.left, graphCoord.bottom);
+        ctx.lineTo(graphCoord.right, graphCoord.bottom);
+        ctx.lineTo(graphCoord.right, graphCoord.top);
+        ctx.lineTo(graphCoord.left, graphCoord.top);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    /*  Add the labels for the extents of the graph  */
+    function addGraphLabels() {
+        var minLabel, bottomLabel;
+
+        drawLeftLabel("100%", graphCoord.top);
+        minLabel = String(Math.floor(100 * minValue)) + "%";
+        drawLeftLabel(minLabel, graphCoord.bottom);
+
+        bottomLabel = String(minDraws) + " draws";
+        drawBottomLabel(bottomLabel, graphCoord.left);
+        bottomLabel = String(maxDraws) + " draws";
+        drawBottomLabel(bottomLabel, graphCoord.right);
+    }
+
+    /*  Graph the odds for one influence requirement  */
+    function drawInfluence(
+        influence,
+        labelPos
+    ) {
+        var odds, oddsY, mid, draws, x, y, fx, text, textSize;
+
+        /*  Draw the curve  */
+        ctx.beginPath();
+        for (draws = minDraws; draws <= maxDraws; draws += 1) {
+            odds = deck.drawOdds(draws, influence);
+            oddsY = (odds - minValue) / (1.0 - minValue);
+
+            fx = (draws - minDraws) / (maxDraws - minDraws);
+            x = graphCoord.left +
+                fx * (graphCoord.right - graphCoord.left);
+            y = graphCoord.bottom +
+                oddsY * (graphCoord.top - graphCoord.bottom);
+
+            if (draws === minDraws) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+        ctx.stroke();
+
+        /*  Compute the coordinates for the label  */
+        mid = Math.floor(minDraws + labelPos * (maxDraws - minDraws));
+        odds = deck.drawOdds(mid, influence);
+        oddsY = (odds - minValue) / (1.0 - minValue);
+        fx = (mid - minDraws) / (maxDraws - minDraws);
+        x = graphCoord.left + fx * (graphCoord.right - graphCoord.left);
+        y = graphCoord.bottom + oddsY * (graphCoord.top - graphCoord.bottom);
+
+        /*  Adjust for the text size  */
+        text = influence.toString();
+        textSize = ctx.measureText(text);
+        x = x - textSize.width / 2;
+        if (odds < 0.75) {
+            y -= fontSize;
+        } else {
+            y += fontSize;
+        }
+        ctx.fillText(text, x, y);
+    }
+
+    /*  Draw all of the influence components  */
+    function drawComponents() {
+        var influences = componentInfluences.slice();
+
+        influences.sort(function (a, b) {
+            return deck.drawOdds(minDraws, b) - deck.drawOdds(minDraws, a);
+        });
+
+        $.each(influences, function (index, influence) {
+            var pos;
+
+            if (influences.length > 1) {
+                pos = 0.25 + 0.5 * index / (influences.length - 1);
+            } else {
+                pos = 0.5;
+            }
+
+            drawInfluence(influence, pos);
+        });
+    }
+
+    /*
+        Find the minimum probability of any of the component influences,
+        and use that for the bottom value of the vertical axis
+    */
+    function findGraphMinimum() {
+        var odds;
+
+        minValue = 1;
+        $.each(componentInfluences, function (index, influence) {
+            odds = deck.drawOdds(minDraws, influence);
+            if (odds < minValue) {
+                minValue = odds;
+            }
+        });
+    }
+
+    /*
+        Draw the horizontal track which follows the mouse cursor,
+        and draw labels along the edge of the graph indicating
+        the draw count and percentages.
+    */
+    function drawTrack() {
+        var draw, fx, drawX, drawText;
+
+        if (!mousePos) {
+            return;
+        }
+
+        if (mousePos.x <= graphCoord.left || mousePos.x >= graphCoord.right) {
+            return;
+        }
+
+        fx = (mousePos.x - graphCoord.left) /
+            (graphCoord.right - graphCoord.left);
+        draw = Math.floor(minDraws + fx * (maxDraws - minDraws) + 0.5);
+        fx = (draw - minDraws) / (maxDraws - minDraws);
+        drawX = graphCoord.left + fx * (graphCoord.right - graphCoord.left);
+
+        ctx.save();
+        ctx.strokeStyle = "#808060";
+        ctx.beginPath();
+        ctx.moveTo(drawX, graphCoord.top);
+        ctx.lineTo(drawX, graphCoord.bottom);
+        ctx.stroke();
+        ctx.restore();
+
+        drawText = String(draw) + " draws";
+        drawBottomLabel(drawText, drawX);
+
+        $.each(componentInfluences, function (index, influence) {
+            var odds, fy, drawY;
+
+            odds = deck.drawOdds(draw, influence);
+            fy = (odds - minValue) / (1.0 - minValue);
+            drawY = graphCoord.bottom +
+                fy * (graphCoord.top - graphCoord.bottom);
+
+            drawText = String(Math.floor(100 * odds)) + "%";
+            drawLeftLabel(drawText, drawY);
+        });
+    }
+
+    ctx.fillStyle = "#000000";
+    ctx.strokeStyle = "#000000";
+    ctx.font = String(fontSize) + "px sans-serif";
+    ctx.lineWidth = 2;
+
+    componentInfluences = listComponentInfluences(totalInfluence);
+    findGraphMinimum();
+    drawOutline();
+    drawTrack();
+    addGraphLabels();
+    drawLabels();
+
+    drawComponents();
+}
+
 /*
     Construct an object which can generate HTML tables with odds of
     drawing cards from a deck.
@@ -891,13 +1318,76 @@ function makeEternalDeck(
     We need a text list of all possible cards to get started.
 */
 function makeEternalPowerCalculator(
-    cardlist  // all cards available
+    params
 ) {
     var calculator = {
+        tableContainer: params.tableContainer,
+        tableDiv: params.tableDiv,
+        validationDiv: params.validationDiv,
+        graphDiv: params.graphDiv,
+        cardlist: params.cardlist,  // all cards available
+
         minDraws: 7,
         maxDraws: 20,
-        cardlibrary: makeEternalCardLibrary(cardlist)
+        cardlibrary: makeEternalCardLibrary(params.cardlist)
     };
+
+    calculator.graphDiv.css("display", "none");
+
+    /*  Hide the power table and replace it with the power graph  */
+    function showGraph(
+        deck,
+        influence
+    ) {
+        var canvas;
+
+        calculator.graphDiv.empty();
+
+        canvas = $("<canvas>").addClass("power-graph-canvas")
+            .appendTo(calculator.graphDiv);
+        drawPowerGraph(canvas, undefined, deck, influence);
+
+        calculator.showingGraph = true;
+        calculator.graphInfluence = influence;
+
+        calculator.tableContainer.css("display", "none");
+        calculator.graphDiv.css("display", "inline");
+
+        canvas.bind("click", function () {
+            calculator.showingGraph = false;
+
+            calculator.tableContainer.css("display", "inline");
+            calculator.graphDiv.css("display", "none");
+        });
+
+        function redrawWithMouse(event) {
+            var clientRect, mousePos;
+
+            clientRect = canvas.get(0).getBoundingClientRect();
+            mousePos = {
+                x: event.clientX - clientRect.left,
+                y: event.clientY - clientRect.top
+            };
+            drawPowerGraph(canvas, mousePos, deck, influence);
+        }
+
+        canvas.bind("mouseenter", redrawWithMouse);
+        canvas.bind("mousemove", redrawWithMouse);
+    }
+
+    /*
+        Add event handlers to a table cell to switch to the graph
+        when clicked.
+    */
+    function addGraphHook(
+        tableElement,
+        deck,
+        influence
+    ) {
+        tableElement.bind("click", function () {
+            showGraph(deck, influence);
+        });
+    }
 
     /*
         Compute the odds for each draw count in the range, 
@@ -908,9 +1398,9 @@ function makeEternalPowerCalculator(
         table,
         deck
     ) {
-        var drawCount, row, influences;
+        var drawCount, row, influenceCards;
 
-        influences = deck.listInfluenceRequirements();
+        influenceCards = deck.listInfluenceRequirements();
 
         row = $("<tr>").addClass("power-table-row-head").appendTo(table);
         $("<th>").addClass("power-table-head-draws").
@@ -926,14 +1416,17 @@ function makeEternalPowerCalculator(
         }
 
         /*  Add the body cells  */
-        $.each(influences, function (index, influenceString) {
-            var odds, oddsText, influence, td;
+        $.each(influenceCards, function (index, influenceCard) {
+            var odds, oddsText, influence, cardList, cardPower, th, td;
 
-            influence = makeInfluence(influenceString);
+            influence = influenceCard[0];
+            cardList = influenceCard[1];
+            cardPower = cardList[0].influenceRequirements[0].power;
 
             row = $("<tr>").addClass("power-table-row-body").appendTo(table);
-            $("<th>").addClass("power-table-influence").
-                text(influenceString).appendTo(row);
+            th = $("<th>").addClass("power-table-influence").
+                text(influence.toString()).appendTo(row);
+            addGraphHook(th, deck, influence);
 
             for (drawCount = calculator.minDraws;
                     drawCount <= calculator.maxDraws;
@@ -944,8 +1437,13 @@ function makeEternalPowerCalculator(
                 oddsText = Math.floor(odds * 100) + "%";
                 td = $("<td>").addClass("power-table-odds").
                     text(oddsText).appendTo(row);
+                addGraphHook(td, deck, influence);
 
-                if (drawCount - calculator.minDraws + 1 < influence.power) {
+                /*
+                    Darken the cells where we typically won't have enough
+                    draws for the power requirements.
+                */
+                if (drawCount - calculator.minDraws + 1 < cardPower) {
                     td.addClass("power-table-odds-shaded");
                 }
             }
@@ -958,14 +1456,13 @@ function makeEternalPowerCalculator(
         'validationDiv' region.
     */
     calculator.generateTable = function (
-        tableDiv,
-        validationDiv,
         decklist
     ) {
         var deck, table, validText;
 
         if (calculator.cardlibrary.makeError) {
-            validationDiv.text(calculator.cardlibrary.makeError)
+            calculator.validationDiv
+                .text(calculator.cardlibrary.makeError)
                 .attr("class", "validation-error");
 
             return;
@@ -973,7 +1470,8 @@ function makeEternalPowerCalculator(
 
         deck = makeEternalDeck(calculator.cardlibrary, decklist);
         if (deck.makeError) {
-            validationDiv.text(deck.makeError)
+            calculator.validationDiv
+                .text(deck.makeError)
                 .attr("class", "validation-error");
 
             return;
@@ -982,11 +1480,17 @@ function makeEternalPowerCalculator(
         table = $("<table>").addClass("power-table");
         generateTableRows(table, deck);
 
-        tableDiv.empty();
-        tableDiv.append(table);
+        calculator.tableDiv.empty();
+        calculator.tableDiv.append(table);
 
         validText = deck.cards.length + " cards";
-        validationDiv.text(validText).attr("class", "validation-success");
+        calculator.validationDiv
+            .text(validText)
+            .attr("class", "validation-success");
+
+        if (calculator.showingGraph) {
+            showGraph(deck, calculator.graphInfluence);
+        }
     };
 
     return calculator;
@@ -1071,4 +1575,17 @@ function testEPC() {
         stop = window.performance.now();
         console.log('odds time: ' + (stop - start));
     }
+
+
+    /*  Test that multiple lines referencing the same card are additive  */
+    deckstr = "\
+        10 Creature (Set0 #1)\n\
+        10 Creature (Set0 #1)\n\
+        10 Creature (Set0 #1)\n\
+        10 Creature (Set0 #1)\n\
+    ";
+
+    deck = makeEternalDeck(library, deckstr);
+    console.assert(deck.cards.length === 40);
+    console.assert(deck.cardCount["Set0 #1"] === 40);
 }
