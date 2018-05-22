@@ -941,6 +941,7 @@ function drawPowerGraph(
         margin,
         graphCoord,
         fontSize,
+        imgSize,
         componentInfluences,
         minValue,
         minDraws,
@@ -951,6 +952,7 @@ function drawPowerGraph(
     maxDraws = 20;
     margin = 96;
     fontSize = 20;
+    imgSize = 40;
     labels = [];
 
     /*  Set the back buffer size to be the same as the CSS size  */
@@ -1166,12 +1168,74 @@ function drawPowerGraph(
         drawBottomLabel(bottomLabel, graphCoord.right);
     }
 
+    /*
+        Draw the text and icons representing the influence
+        requirements being graphed
+    */
+    function drawInfluenceText(
+        influence,
+        x,
+        y
+    ) {
+        var text, i, img;
+
+        if (influence.power > 0) {
+            text = String(influence.power);
+            ctx.fillText(text, x, y);
+            x += ctx.measureText(text).width;
+        }
+
+        img = $("<img>").attr("src", "icon-fire.png").get(0);
+        for (i = 0; i < influence.fire; i += 1) {
+            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
+            x += imgSize;
+        }
+
+        img = $("<img>").attr("src", "icon-time.png").get(0);
+        for (i = 0; i < influence.time; i += 1) {
+            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
+            x += imgSize;
+        }
+
+        img = $("<img>").attr("src", "icon-justice.png").get(0);
+        for (i = 0; i < influence.justice; i += 1) {
+            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
+            x += imgSize;
+        }
+
+        img = $("<img>").attr("src", "icon-primal.png").get(0);
+        for (i = 0; i < influence.primal; i += 1) {
+            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
+            x += imgSize;
+        }
+
+        img = $("<img>").attr("src", "icon-shadow.png").get(0);
+        for (i = 0; i < influence.shadow; i += 1) {
+            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
+            x += imgSize;
+        }
+    }
+
     /*  Graph the odds for one influence requirement  */
     function drawInfluence(
         influence,
         labelPos
     ) {
         var odds, oddsY, mid, draws, x, y, fx, text, textSize;
+
+        ctx.save();
+        /*  Color the curve according to influence type  */
+        if (influence.fire > 0) {
+            ctx.strokeStyle = "#8C1721";
+        } else if (influence.time > 0) {
+            ctx.strokeStyle = "#B56E07";
+        } else if (influence.justice > 0) {
+            ctx.strokeStyle = "#218421";
+        } else if (influence.primal > 0) {
+            ctx.strokeStyle = "#0F3676";
+        } else if (influence.shadow > 0) {
+            ctx.strokeStyle = "#5D1C9A";
+        }
 
         /*  Draw the curve  */
         ctx.beginPath();
@@ -1192,6 +1256,7 @@ function drawPowerGraph(
             }
         }
         ctx.stroke();
+        ctx.restore();
 
         /*  Compute the coordinates for the label  */
         mid = Math.floor(minDraws + labelPos * (maxDraws - minDraws));
@@ -1202,15 +1267,18 @@ function drawPowerGraph(
         y = graphCoord.bottom + oddsY * (graphCoord.top - graphCoord.bottom);
 
         /*  Adjust for the text size  */
+        ctx.save();
         text = influence.toString();
+        ctx.font = String(imgSize) + "px sans-serif";
         textSize = ctx.measureText(text);
         x = x - textSize.width / 2;
         if (odds < 0.75) {
-            y -= fontSize;
+            y -= imgSize;
         } else {
-            y += fontSize;
+            y += imgSize;
         }
-        ctx.fillText(text, x, y);
+        drawInfluenceText(influence, x, y);
+        ctx.restore();
     }
 
     /*  Draw all of the influence components  */
@@ -1326,11 +1394,16 @@ function makeEternalPowerCalculator(
         validationDiv: params.validationDiv,
         graphDiv: params.graphDiv,
         cardlist: params.cardlist,  // all cards available
+        iconSize: params.iconSize,
 
         minDraws: 7,
         maxDraws: 20,
         cardlibrary: makeEternalCardLibrary(params.cardlist)
     };
+
+    if (!calculator.iconSize) {
+        calculator.iconSize = 20;
+    }
 
     calculator.graphDiv.css("display", "none");
 
@@ -1345,7 +1418,12 @@ function makeEternalPowerCalculator(
 
         canvas = $("<canvas>").addClass("power-graph-canvas")
             .appendTo(calculator.graphDiv);
-        drawPowerGraph(canvas, undefined, deck, influence);
+        drawPowerGraph(
+            canvas,
+            undefined,
+            deck,
+            influence
+        );
 
         calculator.showingGraph = true;
         calculator.graphInfluence = influence;
@@ -1368,7 +1446,12 @@ function makeEternalPowerCalculator(
                 x: event.clientX - clientRect.left,
                 y: event.clientY - clientRect.top
             };
-            drawPowerGraph(canvas, mousePos, deck, influence);
+            drawPowerGraph(
+                canvas,
+                mousePos,
+                deck,
+                influence
+            );
         }
 
         canvas.bind("mouseenter", redrawWithMouse);
@@ -1387,6 +1470,53 @@ function makeEternalPowerCalculator(
         tableElement.bind("click", function () {
             showGraph(deck, influence);
         });
+    }
+
+    /*  Append an influence icon to the influence cell of the table  */
+    function appendInfluenceImage(
+        cell,
+        imageFile
+    ) {
+        $("<img>").addClass("influence-icon")
+            .attr("src", imageFile)
+            .attr("width", calculator.iconSize)
+            .attr("height", calculator.iconSize)
+            .appendTo(cell);
+    }
+
+    /*
+        Add the text and icons representing an influence requirement
+        to a table cell
+    */
+    function addInfluenceDisplay(
+        cell,
+        influence
+    ) {
+        var i;
+
+        if (influence.power > 0) {
+            cell.text(String(influence.power));
+        }
+
+        for (i = 0; i < influence.fire; i += 1) {
+            appendInfluenceImage(cell, "icon-fire.png");
+        }
+
+        for (i = 0; i < influence.time; i += 1) {
+            appendInfluenceImage(cell, "icon-time.png");
+        }
+
+        for (i = 0; i < influence.justice; i += 1) {
+            appendInfluenceImage(cell, "icon-justice.png");
+        }
+
+        for (i = 0; i < influence.primal; i += 1) {
+            appendInfluenceImage(cell, "icon-primal.png");
+        }
+
+        for (i = 0; i < influence.shadow; i += 1) {
+            appendInfluenceImage(cell, "icon-shadow.png");
+        }
     }
 
     /*
@@ -1424,8 +1554,8 @@ function makeEternalPowerCalculator(
             cardPower = cardList[0].influenceRequirements[0].power;
 
             row = $("<tr>").addClass("power-table-row-body").appendTo(table);
-            th = $("<th>").addClass("power-table-influence").
-                text(influence.toString()).appendTo(row);
+            th = $("<th>").addClass("power-table-influence").appendTo(row);
+            addInfluenceDisplay(th, influence);
             addGraphHook(th, deck, influence);
 
             for (drawCount = calculator.minDraws;

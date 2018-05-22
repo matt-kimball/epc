@@ -107,7 +107,7 @@ textarea {
 }
 
 .power-table-head-draws {
-    width: 6em;
+    width: 10em;
 }
 
 .power-table-head-draw-count {
@@ -134,4 +134,8 @@ textarea {
     margin-right: auto;
     width: 900px;
     height: 600px;
+}
+
+.influence-icon {
+    vertical-align: bottom;
 }
