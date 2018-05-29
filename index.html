@@ -32,12 +32,14 @@
 <body>
     <div id="heading">
         <h1>Eternal Power Calculator</h1>
-
-        Paste a decklist below.
     </div>
 
     <div id="deck-and-table">
         <div id="deck-text-div">
+            <div id="deck-paste-text">
+                Paste a decklist below
+            </div>
+
             <!--  The input decklist for the table  -->
             <textarea id="deck-text" rows="20">
 2 Grenadin Drone (Set1 #5)
@@ -66,16 +68,54 @@
         </div>
 
         <div id="table-and-text">
+            <div id="power-table-text">
+                Select a row to graph influence requirements
+            </div>
+
             <!--  The table of draw odds is generated here  -->
             <div id="power-table-div">
             </div>
-            <div id="power-table-text">
-                Select a row to graph influence requirements.
+
+            <!--
+                Text describing the power and influence sources
+                is generated here.
+            -->
+            <p>
+            <div id="power-table-sources">
             </div>
         </div>
 
-        <div id="power-graph-div">
+        <div id="power-graph-container">
+            <div id="power-graph-back-button">
+                <img src="back-button.png">
+            </div>
+
+            <!-- The graph of power and influence is generated here  -->
+            <div id="power-graph-div">
+            </div>
         </div>
+    </div>
+
+    <p>
+    <div id="calculator-description">
+        <h3>About the probabilities</h3>
+
+        <p>
+        The number of draws represent cards drawn beyond the opening hand.
+
+        <p>
+        The probabilities in the table represent only the odds of
+        drawing power and influence sources, without a mulligan.
+        The requirements for playing those sources isn't considered
+        for the purposes of computing odds.  For example, Vara's Favor
+        is considered to be a source of both one power and one shadow
+        influence for the purposes of the probability table, but the
+        prerequisite of two power and one shadow influence, in order
+        to play Vara's Favor, isn't a factor in the calculation.
+
+        <p>
+        The original source for Eternal Power Calculator is
+        <a href="https://github.com/matt-kimball/epc">available on Github</a>.
     </div>
 
     <!--
@@ -507,7 +547,7 @@
         Set1 #406;;
         Set1 #407;; 1
         Set1 #408; 1X; 1
-        Set1 #409; FS; 2
+        Set1 #409; PS; 2
         Set1 #410; TJ; 2
         Set1 #411; FJ; 2
         Set1 #412; TP; 2
@@ -981,7 +1021,7 @@
         Set3 #175;; 3PP,5
         Set3 #176;; 3P
         Set3 #177;; 3P
-        Set3 #178;; 3PPP,8
+        Set3 #178;; 3PPP,6
         Set3 #179;; 4P
         Set3 #180;; 4P
         Set3 #181;; 4P
@@ -1161,22 +1201,20 @@
     <script type="text/javascript" src="epc-polyfill.js"></script>
     <script type="text/javascript" src="epc.js"></script>
     <script type="text/javascript">
-        var calculator, cardlist, decktext, table, graph, validation;
+        var calculator, decktext;
 
-        cardlist = $("#card-list").html();
-        tableContainer = $("#table-and-text");
-        table = $("#power-table-div");
-        graph = $("#power-graph-div");
         decktext = $("#deck-text");
-        validation = $("#deck-validation-result");
 
         decktext.select();
         calculator = makeEternalPowerCalculator({
-            tableContainer: tableContainer,
-            tableDiv: table,
-            validationDiv: validation,
-            graphDiv: graph,
-            cardlist: cardlist,
+            tableContainer: $("#table-and-text"),
+            tableDiv: $("#power-table-div"),
+            validationDiv: $("#deck-validation-result"),
+            powerSourcesDiv: $("#power-table-sources"),
+            graphContainer: $("#power-graph-container"),
+            graphDiv: $("#power-graph-div"),
+            graphBackButton: $("#power-graph-back-button"),
+            cardlist: $("#card-list").html(),
             iconSize: 20
         });
 

@@ -1,4 +1,4 @@
-/*global $, window*/
+/*global $, window, document*/
 /*jslint unparam: true, regexp: true*/
 /*
 
@@ -654,6 +654,7 @@ function makeEternalDeck(
     var deck = {
         cardlibrary: cardlibrary,
         cards: [],  // all distinct cards in the deck
+        cardNames: {},  // indexed by card.id
         cardCount: {}  // indexed by card.id
     };
 
@@ -661,14 +662,14 @@ function makeEternalDeck(
     function addCardLine(
         line
     ) {
-        var re, match, count, cardid, card, i;
+        var re, match, count, name, cardid, card, i;
 
         line = line.trim();
         if (line.length <= 0) {
             return;
         }
 
-        re = /^([0-9]+) .+ \((Set[0-9]+ #[0-9]+)\)$/;
+        re = /^([0-9]+) (.+) \((Set[0-9]+ #[0-9]+)\)$/;
         match = line.match(re);
 
         if (!match) {
@@ -677,7 +678,8 @@ function makeEternalDeck(
         }
 
         count = Number(match[1]);
-        cardid = match[2];
+        name = match[2];
+        cardid = match[3];
 
         if (count > 100) {
             deck.makeError = 'too many cards: "' + line + '"';
@@ -691,9 +693,10 @@ function makeEternalDeck(
         }
 
         for (i = 0; i < count; i += 1) {
-
             deck.cards.push(card);
         }
+
+        deck.cardNames[card.id] = name;
 
         if (deck.cardCount[card.id]) {
             count += deck.cardCount[card.id];
@@ -916,6 +919,31 @@ function makeEternalDeck(
         return odds;
     };
 
+    /*  Return a list of all cards which provide power or influence  */
+    deck.listPowerInfluenceSources = function () {
+        var ret, used;
+
+        ret = [];
+        used = {};
+
+        $.each(deck.cards, function (index, card) {
+            var influence;
+
+            if (used[card.id]) {
+                return;
+            }
+            influence = card.influenceGenerated;
+
+            if (!influence.isEmpty()) {
+                ret.push(card);
+            }
+
+            used[card.id] = true;
+        });
+
+        return ret;
+    };
+
     /*  For each line in the decklist input, decode the card and count  */
     $.each(decklist.split("\n"), function (index, line) {
         if (deck.makeError) {
@@ -933,7 +961,9 @@ function drawPowerGraph(
     canvas,
     mousePos,
     deck,
-    totalInfluence
+    totalInfluence,
+    minDraws,
+    maxDraws
 ) {
     var ctx,
         w,
@@ -944,12 +974,8 @@ function drawPowerGraph(
         imgSize,
         componentInfluences,
         minValue,
-        minDraws,
-        maxDraws,
         labels;
 
-    minDraws = 7;
-    maxDraws = 20;
     margin = 96;
     fontSize = 20;
     imgSize = 40;
@@ -1162,9 +1188,9 @@ function drawPowerGraph(
         minLabel = String(Math.floor(100 * minValue)) + "%";
         drawLeftLabel(minLabel, graphCoord.bottom);
 
-        bottomLabel = String(minDraws) + " draws";
+        bottomLabel = "0 draws";
         drawBottomLabel(bottomLabel, graphCoord.left);
-        bottomLabel = String(maxDraws) + " draws";
+        bottomLabel = String(maxDraws - minDraws) + " draws";
         drawBottomLabel(bottomLabel, graphCoord.right);
     }
 
@@ -1216,12 +1242,11 @@ function drawPowerGraph(
         }
     }
 
-    /*  Graph the odds for one influence requirement  */
-    function drawInfluence(
-        influence,
-        labelPos
+    /*  Graph the graph curve for the odds of one influence component  */
+    function drawInfluenceCurve(
+        influence
     ) {
-        var odds, oddsY, mid, draws, x, y, fx, text, textSize;
+        var odds, oddsY, draws, x, y, fx;
 
         ctx.save();
         /*  Color the curve according to influence type  */
@@ -1257,6 +1282,14 @@ function drawPowerGraph(
         }
         ctx.stroke();
         ctx.restore();
+    }
+
+    /*  Draw the icons or text next to the influence curve it represents  */
+    function drawInfluenceLabel(
+        influence,
+        labelPos
+    ) {
+        var x, y, mid, odds, oddsY, fx, text, textSize;
 
         /*  Compute the coordinates for the label  */
         mid = Math.floor(minDraws + labelPos * (maxDraws - minDraws));
@@ -1281,12 +1314,16 @@ function drawPowerGraph(
         ctx.restore();
     }
 
-    /*  Draw all of the influence components  */
-    function drawComponents() {
+    /*  Draw all of the influence component curves  */
+    function drawComponentCurves() {
         var influences = componentInfluences.slice();
 
         influences.sort(function (a, b) {
             return deck.drawOdds(minDraws, b) - deck.drawOdds(minDraws, a);
+        });
+
+        $.each(influences, function (index, influence) {
+            drawInfluenceCurve(influence);
         });
 
         $.each(influences, function (index, influence) {
@@ -1298,7 +1335,7 @@ function drawPowerGraph(
                 pos = 0.5;
             }
 
-            drawInfluence(influence, pos);
+            drawInfluenceLabel(influence, pos);
         });
     }
 
@@ -1348,7 +1385,7 @@ function drawPowerGraph(
         ctx.stroke();
         ctx.restore();
 
-        drawText = String(draw) + " draws";
+        drawText = String(draw - minDraws) + " draws";
         drawBottomLabel(drawText, drawX);
 
         $.each(componentInfluences, function (index, influence) {
@@ -1376,7 +1413,7 @@ function drawPowerGraph(
     addGraphLabels();
     drawLabels();
 
-    drawComponents();
+    drawComponentCurves();
 }
 
 /*
@@ -1392,12 +1429,15 @@ function makeEternalPowerCalculator(
         tableContainer: params.tableContainer,
         tableDiv: params.tableDiv,
         validationDiv: params.validationDiv,
+        powerSourcesDiv: params.powerSourcesDiv,
+        graphContainer: params.graphContainer,
         graphDiv: params.graphDiv,
+        graphBackButton: params.graphBackButton,
         cardlist: params.cardlist,  // all cards available
         iconSize: params.iconSize,
 
         minDraws: 7,
-        maxDraws: 20,
+        maxDraws: 19,
         cardlibrary: makeEternalCardLibrary(params.cardlist)
     };
 
@@ -1405,7 +1445,11 @@ function makeEternalPowerCalculator(
         calculator.iconSize = 20;
     }
 
-    calculator.graphDiv.css("display", "none");
+    if (!calculator.graphContainer) {
+        calculator.graphContainer = calculator.graphDiv;
+    }
+
+    calculator.graphContainer.css("display", "none");
 
     /*  Hide the power table and replace it with the power graph  */
     function showGraph(
@@ -1422,21 +1466,25 @@ function makeEternalPowerCalculator(
             canvas,
             undefined,
             deck,
-            influence
+            influence,
+            calculator.minDraws,
+            calculator.maxDraws
         );
 
         calculator.showingGraph = true;
         calculator.graphInfluence = influence;
 
         calculator.tableContainer.css("display", "none");
-        calculator.graphDiv.css("display", "inline");
+        calculator.graphContainer.css("display", "inline");
 
-        canvas.bind("click", function () {
-            calculator.showingGraph = false;
+        if (calculator.graphBackButton) {
+            calculator.graphBackButton.bind("click", function () {
+                calculator.showingGraph = false;
 
-            calculator.tableContainer.css("display", "inline");
-            calculator.graphDiv.css("display", "none");
-        });
+                calculator.tableContainer.css("display", "inline");
+                calculator.graphContainer.css("display", "none");
+            });
+        }
 
         function redrawWithMouse(event) {
             var clientRect, mousePos;
@@ -1450,7 +1498,9 @@ function makeEternalPowerCalculator(
                 canvas,
                 mousePos,
                 deck,
-                influence
+                influence,
+                calculator.minDraws,
+                calculator.maxDraws
             );
         }
 
@@ -1528,7 +1578,7 @@ function makeEternalPowerCalculator(
         table,
         deck
     ) {
-        var drawCount, row, influenceCards;
+        var drawCount, text, row, influenceCards;
 
         influenceCards = deck.listInfluenceRequirements();
 
@@ -1541,8 +1591,14 @@ function makeEternalPowerCalculator(
                 drawCount <= calculator.maxDraws;
                 drawCount += 1) {
 
+            if (drawCount === calculator.minDraws) {
+                text = "-";
+            } else {
+                text = "+" + String(drawCount - calculator.minDraws);
+            }
+
             $("<th>").addClass("power-table-head-draw-count").
-                text(drawCount).appendTo(row);
+                text(text).appendTo(row);
         }
 
         /*  Add the body cells  */
@@ -1581,6 +1637,37 @@ function makeEternalPowerCalculator(
     }
 
     /*
+        Generate the list of power and influence sources used for
+        computing odds.
+    */
+    function generatePowerSourceText(
+        deck
+    ) {
+        var div, text;
+
+        div = calculator.powerSourcesDiv;
+        div.empty();
+
+        text = "";
+        $.each(deck.listPowerInfluenceSources(), function (index, card) {
+            var name;
+
+            name = deck.cardNames[card.id];
+
+            if (index > 0) {
+                text = text + ", ";
+            }
+
+            /*  Replace spaces with non-breaking spaces  */
+            text = text + name.replace(/ /g, "\u00A0");
+        });
+
+        div.append("Power and influence sources:");
+        $("<br>").appendTo(div);
+        div.append(text);
+    }
+
+    /*
         Generate the odds table from a new decklist.
         Report the status of the table generation in the
         'validationDiv' region.
@@ -1609,6 +1696,7 @@ function makeEternalPowerCalculator(
 
         table = $("<table>").addClass("power-table");
         generateTableRows(table, deck);
+        generatePowerSourceText(deck);
 
         calculator.tableDiv.empty();
         calculator.tableDiv.append(table);
