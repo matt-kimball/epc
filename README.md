@@ -13,13 +13,19 @@ required by cards in the deck.
 
 # Contents
 
-Eternal Power Calculator has the following components:
+Eternal Power Calculator contains the following Javascript code:
+
+* `epc-deck.js` - Data structures relating to eternal cards and decks
+* `epc-graph.js` - Graph drawing routines
+* `epc-polyfill.js` - Polyfill from external sources, for older web browsers
+* `epc-table.js` - Table generation routines
+* `epc-test.js` - Tests for odds calculation
+* `jquery-1.12.4.min.js` - Standard jQuery  --  http://jquery.com/
+
+The following other components are present:
 
 * `index.html` - HTML shell for the power calculator
-* `epc.js` - Javascript for odds calculation and table generation
-* `epc-polyfill.js` - Polyfill from external sources, for older web browsers
 * `epc.css` - CSS style sheet for `index.html`
-* `jquery-1.12.4.min.js` - Standard jQuery  --  http://jquery.com/
 * `lint.sh` - Shell script for linting Javascript source
 
 # Usage

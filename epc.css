@@ -26,6 +26,7 @@ body {
 }
 
 textarea {
+    border-radius: 8px;
     font-family: monospace;
     font-size: 15px;
     resize: none;
@@ -33,6 +34,11 @@ textarea {
 
 #heading h1 {
     text-align: center;
+}
+
+/*  Don't display the preloaded influence icons  */
+#influence-icons {
+    display: none;
 }
 
 #deck-and-table {
@@ -48,29 +54,34 @@ textarea {
     margin-right: 30px;
 }
 
-#table-and-text {
-    width: 900px;
+#table-or-graph-menu {
+    margin: 0px 80px 0px 80px;
     float: left;
 }
 
-#power-table-text {
+.menu-item {
+    cursor: pointer;
     text-align: center;
-    margin-bottom: 16px;
+    border: 1px solid;
+    border-radius: 6px;
+    width: 336px;
+    height: 40px;
+    float: left;
+    margin: 0px 16px 18px 16px;
+}
+
+.active-menu-item {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+
+.menu-item-text {
+    margin: 12px;
 }
 
 #deck-paste-text {
-    margin-bottom: 16px;
-}
-
-#power-table-sources {
-    font-size: 14px;
-    width: 840px;
-    text-align: center;
-}
-
-#power-table-text {
-    text-align: center;
-    margin-bottom: 16px;
+    margin-top: 30px;
+    margin-bottom: 12px;
 }
 
 #deck-text {
@@ -95,8 +106,27 @@ textarea {
     color: #606060;
 }
 
+#power-graph-container {
+    float: left;
+    display: none;
+}
+
+.power-graph-canvas {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 900px;
+    height: 580px;
+}
+
+#table-and-sources {
+    width: 900px;
+    float: left;
+}
+
 .power-table {
     background-color: #000000;
+    margin-top: 8px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -122,44 +152,29 @@ textarea {
     width: 3em;
 }
 
-.power-table-influence, .power-table-odds {
-    cursor: pointer;
-}
-
 .power-table-odds {
     text-align: right;
     padding: 0px 8px 0px 8px;
 }
 
 /*  Darken cells with fewer draws than the number of power required  */
-.power-table-odds-shaded {
+tr:nth-child(even) .power-table-odds-shaded {
     background-color: #909080;
 }
 
-#power-graph-container {
-    float: left;
-    margin-top: 24px;
-    display: none;
+tr:nth-child(odd) .power-table-odds-shaded {
+    background-color: #707060;
 }
 
-#power-graph-back-button {
-    position: absolute;
-    margin-top: 24px;
-    margin-left: 112px;
-    height: 24px;
-    width: 24px;
-    border-color: #000000;
-    border: solid 2px;
+#power-table-sources {
+    font-size: 14px;
+    width: 840px;
     text-align: center;
-    cursor: pointer;
 }
 
-.power-graph-canvas {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 900px;
-    height: 600px;
+#power-table-text {
+    text-align: center;
+    margin-bottom: 16px;
 }
 
 .influence-icon {
@@ -168,7 +183,14 @@ textarea {
 
 #calculator-description {
     width: 960px;
+    border: solid 1px;
+    border-radius: 8px;
+    box-shadow: 4px 4px 4px #606060;
     margin-left: auto;
     margin-right: auto;
     clear: both;
+}
+
+#calculator-description-body {
+    margin: 24px;
 }

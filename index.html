@@ -34,6 +34,18 @@
         <h1>Eternal Power Calculator</h1>
     </div>
 
+    <!--
+        Pre-load all the influence icons symbols.
+        The graph drawing pulls the influence symbols from these elements.
+    -->
+    <div id="influence-icons">
+        <img id="icon-fire" src="icon-fire.png">
+        <img id="icon-time" src="icon-time.png">
+        <img id="icon-justice" src="icon-justice.png">
+        <img id="icon-primal" src="icon-primal.png">
+        <img id="icon-shadow" src="icon-shadow.png">
+    </div>
+
     <div id="deck-and-table">
         <div id="deck-text-div">
             <div id="deck-paste-text">
@@ -42,80 +54,94 @@
 
             <!--  The input decklist for the table  -->
             <textarea id="deck-text" rows="20">
-2 Grenadin Drone (Set1 #5)
-4 Oni Ronin (Set1 #13)
-4 Permafrost (Set1 #193)
-4 Pyroknight (Set1 #16)
-4 Snowcrust Yeti (Set2 #105)
+4 Seek Power (Set1 #408)
 4 Torch (Set1 #8)
-4 Champion of Fury (Set2 #187)
-4 Ornate Katana (Set1 #23)
-4 Rakano Outlaw (Set1 #20)
-4 Cinder Yeti (Set1002 #1)
-4 Shogun's Scepter (Set1 #26)
-4 Vadius, Clan Father (Set2 #191)
-2 Mortar (Set2 #194)
-2 Obliterate (Set1 #48)
-9 Fire Sigil (Set1 #1)
-4 Primal Sigil (Set1 #187)
-4 Diplomatic Seal (Set1 #425)
-4 Seat of Fury (Set0 #53)
-4 Skycrag Banner (Set2 #186)
+4 Strategize (Set3 #165)
+2 Vanquish (Set1 #143)
+3 Eilyn's Choice (Set2 #220)
+4 Hailstorm (Set1003 #11)
+4 Wisdom of the Elders (Set1 #218)
+4 Auric Runehammer (Set1 #166)
+4 Rise to the Challenge (Set1 #320)
+4 Shelterwing Rider (Set2 #223)
+4 Harsh Rule (Set1 #172)
+2 Throne Warden (Set1 #514)
+1 Starsteel Daisho (Set1 #328)
+4 Icaria, the Liberator (Set1 #329)
+3 Fire Sigil (Set1 #1)
+5 Justice Sigil (Set1 #126)
+2 Primal Sigil (Set1 #187)
+4 Crest of Fury (Set3 #266)
+3 Hooru Banner (Set2 #216)
+2 Seat of Fury (Set0 #53)
+4 Seat of Glory (Set0 #56)
+4 Seat of Order (Set0 #51)
 </textarea>
 
             <!--  Any syntax error in the decklist is reported here  -->
             <div id="deck-validation-result"></div>
         </div>
 
-        <div id="table-and-text">
-            <div id="power-table-text">
-                Select a row to graph influence requirements
+        <div id="table-or-graph">
+            <!--  Buttons to switch between the table and the graph  -->
+            <div id="table-or-graph-menu">
+                <div id="graph-menu-item" class="menu-item active-menu-item">
+                    <div class="menu-item-text">
+                        Influence Graph
+                    </div>
+                </div>
+                <div id="table-menu-item" class="menu-item">
+                    <div class="menu-item-text">
+                        Power Odds Table
+                    </div>
+                </div>
             </div>
 
-            <!--  The table of draw odds is generated here  -->
-            <div id="power-table-div">
+            <div id="table-and-sources">
+                <!--  The table of draw odds is generated here  -->
+                <div id="power-table-div">
+                </div>
+
+                <!--
+                    Text describing the power and influence sources
+                    is generated here.
+                -->
+                <p>
+                <div id="power-table-sources">
+                </div>
             </div>
 
-            <!--
-                Text describing the power and influence sources
-                is generated here.
-            -->
-            <p>
-            <div id="power-table-sources">
-            </div>
-        </div>
-
-        <div id="power-graph-container">
-            <div id="power-graph-back-button">
-                <img src="back-button.png">
-            </div>
-
-            <!-- The graph of power and influence is generated here  -->
-            <div id="power-graph-div">
+            <div id="power-graph-container">
+                <!-- The graph of power and influence is generated here  -->
+                <div id="power-graph-div">
+                </div>
             </div>
         </div>
     </div>
 
     <p>
     <div id="calculator-description">
-        <h3>About the probabilities</h3>
+        <div id="calculator-description-body">
+            <h3>About the probabilities</h3>
 
-        <p>
-        The number of draws represent cards drawn beyond the opening hand.
+            <p>
+            The number of draws represent cards drawn beyond the opening hand.
 
-        <p>
-        The probabilities in the table represent only the odds of
-        drawing power and influence sources, without a mulligan.
-        The requirements for playing those sources isn't considered
-        for the purposes of computing odds.  For example, Vara's Favor
-        is considered to be a source of both one power and one shadow
-        influence for the purposes of the probability table, but the
-        prerequisite of two power and one shadow influence, in order
-        to play Vara's Favor, isn't a factor in the calculation.
+            <p>
+            The probabilities in the table represent only the odds of
+            drawing power and influence sources, without a mulligan.
+            The requirements for playing those sources isn't considered
+            for the purposes of computing odds.  For example, Vara's Favor
+            is considered to be a source of both one power and one shadow
+            influence for the purposes of the probability table, but the
+            prerequisite of two power and one shadow influence, in order
+            to play Vara's Favor, isn't a factor in the calculation.
 
-        <p>
-        The original source for Eternal Power Calculator is
-        <a href="https://github.com/matt-kimball/epc">available on Github</a>.
+            <p>
+            The original source for Eternal Power Calculator is
+            <a href="https://github.com/matt-kimball/epc">available
+            on Github</a>.
+        </div>
     </div>
 
     <!--
@@ -1199,7 +1225,11 @@
 
     <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="epc-polyfill.js"></script>
-    <script type="text/javascript" src="epc.js"></script>
+    <script type="text/javascript" src="epc-deck.js"></script>
+    <script type="text/javascript" src="epc-graph.js"></script>
+    <script type="text/javascript" src="epc-table.js"></script>
+    <script type="text/javascript" src="epc-test.js"></script>
+
     <script type="text/javascript">
         var calculator, decktext;
 
@@ -1207,13 +1237,14 @@
 
         decktext.select();
         calculator = makeEternalPowerCalculator({
-            tableContainer: $("#table-and-text"),
+            tableMenuItem: $("#table-menu-item"),
+            tableContainer: $("#table-and-sources"),
             tableDiv: $("#power-table-div"),
             validationDiv: $("#deck-validation-result"),
             powerSourcesDiv: $("#power-table-sources"),
+            graphMenuItem: $("#graph-menu-item"),
             graphContainer: $("#power-graph-container"),
             graphDiv: $("#power-graph-div"),
-            graphBackButton: $("#power-graph-back-button"),
             cardlist: $("#card-list").html(),
             iconSize: 20
         });
