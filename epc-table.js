@@ -71,7 +71,22 @@ function makeEternalPowerCalculator(
 
         canvas = $("<canvas>").addClass("power-graph-canvas")
             .appendTo(calculator.graphDiv);
-        drawPowerGraph(canvas, deck);
+
+        function regenerate() {
+            drawPowerGraph(canvas, deck);
+        }
+
+        /*
+            If any of the influence icons are still loading, we will need
+            to regenerate the graph image when they finish
+        */
+        $("#icon-fire").bind("load", regenerate);
+        $("#icon-time").bind("load", regenerate);
+        $("#icon-justice").bind("load", regenerate);
+        $("#icon-primal").bind("load", regenerate);
+        $("#icon-shadow").bind("load", regenerate);
+
+        regenerate();
     }
 
     /*  Hide the power table and replace it with the power graph  */
