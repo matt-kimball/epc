@@ -35,22 +35,11 @@
 function makeEternalPowerCalculator(
     params
 ) {
-    var calculator = {
-        tableMenuItem: params.tableMenuItem,
-        tableContainer: params.tableContainer,
-        tableDiv: params.tableDiv,
-        validationDiv: params.validationDiv,
-        powerSourcesDiv: params.powerSourcesDiv,
-        graphMenuItem: params.graphMenuItem,
-        graphContainer: params.graphContainer,
-        graphDiv: params.graphDiv,
-        cardlist: params.cardlist,  // all cards available
-        iconSize: params.iconSize,
+    var calculator = params;
 
-        minDraws: 7,
-        maxDraws: 17,
-        cardlibrary: makeEternalCardLibrary(params.cardlist)
-    };
+    calculator.minDraws = 7;
+    calculator.maxDraws = 17;
+    calculator.cardlibrary = makeEternalCardLibrary(params.cardlist);
 
     if (!calculator.iconSize) {
         calculator.iconSize = 20;
@@ -73,7 +62,7 @@ function makeEternalPowerCalculator(
             .appendTo(calculator.graphDiv);
 
         function regenerate() {
-            drawPowerGraph(canvas, deck);
+            drawPowerGraph(canvas, calculator.graphStyle, deck);
         }
 
         /*

@@ -27,6 +27,7 @@ The following other components are present:
 * `index.html` - HTML shell for the power calculator
 * `epc.css` - CSS style sheet for `index.html`
 * `lint.sh` - Shell script for linting Javascript source
+* `generate.sh` - Shell script to generate `epc.min.js` (minified Javascript)
 
 # Usage
 

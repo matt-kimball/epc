@@ -26,6 +26,7 @@
 <head>
     <title>Eternal Power Calculator</title>
 
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="epc.css">
 </head>
 
@@ -1231,11 +1232,18 @@
     <script type="text/javascript" src="epc-test.js"></script>
 
     <script type="text/javascript">
-        var calculator, decktext;
+        var calculator, decktext, graphStyle;
 
         decktext = $("#deck-text");
-
         decktext.select();
+
+        graphStyle = {
+            textColor: "rgb(0, 0, 0)",
+            borderColor: "rgb(0, 0, 0)",
+            backgroundColor: "rgb(240, 240, 224)",
+            interiorLineColor: "rgb(176, 176, 160)"
+        };
+
         calculator = makeEternalPowerCalculator({
             tableMenuItem: $("#table-menu-item"),
             tableContainer: $("#table-and-sources"),
@@ -1245,6 +1253,7 @@
             graphMenuItem: $("#graph-menu-item"),
             graphContainer: $("#power-graph-container"),
             graphDiv: $("#power-graph-div"),
+            graphStyle: graphStyle,
             cardlist: $("#card-list").html(),
             iconSize: 20
         });

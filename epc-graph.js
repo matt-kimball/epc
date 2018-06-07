@@ -27,6 +27,7 @@
 /*  Draw a graph of influence component odds on a canvas element  */
 function drawPowerGraph(
     canvas,
+    graphStyle,
     deck
 ) {
     var ctx,
@@ -231,7 +232,7 @@ function drawPowerGraph(
         var midline, frac, midpos;
 
         ctx.save();
-        ctx.fillStyle = "#f0f0e0";
+        ctx.fillStyle = graphStyle.backgroundColor;
         ctx.beginPath();
         ctx.moveTo(graphCoord.left, graphCoord.top);
         ctx.lineTo(graphCoord.left, graphCoord.bottom);
@@ -240,7 +241,7 @@ function drawPowerGraph(
         ctx.lineTo(graphCoord.left, graphCoord.top);
         ctx.fill();
 
-        ctx.strokeStyle = "#b0b0a0";
+        ctx.strokeStyle = graphStyle.interiorLineColor;
 
         /*  Draw the horizontal intermediate lines  */
         midline = 1.0 - horizontalMidlineStep;
@@ -572,8 +573,8 @@ function drawPowerGraph(
         );
     }
 
-    ctx.fillStyle = "#000000";
-    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = graphStyle.textColor;
+    ctx.strokeStyle = graphStyle.textColor;
     ctx.font = String(fontSize) + "px sans-serif";
     ctx.lineWidth = 2;
 
