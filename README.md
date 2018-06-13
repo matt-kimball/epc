@@ -20,6 +20,7 @@ Eternal Power Calculator contains the following Javascript code:
 * `epc-polyfill.js` - Polyfill from external sources, for older web browsers
 * `epc-table.js` - Table generation routines
 * `epc-test.js` - Tests for odds calculation
+* `epc-ui.js` - Top level user interface logic
 * `jquery-1.12.4.min.js` - Standard jQuery  --  http://jquery.com/
 
 The following other components are present:
@@ -28,6 +29,8 @@ The following other components are present:
 * `epc.css` - CSS style sheet for `index.html`
 * `lint.sh` - Shell script for linting Javascript source
 * `generate.sh` - Shell script to generate `epc.min.js` (minified Javascript)
+* `build-semantic.sh` - Build a `semantic.min.css` and `semantic.min.js`
+* `semantic.json` - Configuration for Semantic-UI
 
 # Usage
 

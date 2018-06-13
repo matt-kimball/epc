@@ -1,5 +1,5 @@
 /*global window*/
-/*global makeEternalCardLibrary, makeEternalDeck*/
+/*global makeEternalCardLibrary, makeEternalDeckFromString*/
 /*jslint unparam: true*/
 /*
 
@@ -30,19 +30,19 @@ function testEPC() {
     var cardsstr, deckstr, library, deck, influence, odds, start, stop, i;
 
     cardsstr = "\
-        Set0 #1;;2F\n\
-        Set0 #2;1F;\n\
-        Set0 #3;1F;\n\
-        Set0 #4;1F;\n\
-        Set0 #5;1F;\n\
-        Set0 #6;1F;\n\
-        Set0 #7;1F;\n\
-        Set0 #8;1F;\n\
-        Set0 #9;1F;\n\
-        Set0 #10;1F;\n\
-        Set0 #11;1F;\n\
-        Set0 #12;1F;\n\
-        Set0 #13;1F;\n\
+        Set0 #1;;2F;Creature;\n\
+        Set0 #2;1F;;Sigil;\n\
+        Set0 #3;1F;;Sigil;\n\
+        Set0 #4;1F;;Sigil;\n\
+        Set0 #5;1F;;Sigil;\n\
+        Set0 #6;1F;;Sigil;\n\
+        Set0 #7;1F;;Sigil;\n\
+        Set0 #8;1F;;Sigil;\n\
+        Set0 #9;1F;;Sigil;\n\
+        Set0 #10;1F;;Sigil;\n\
+        Set0 #11;1F;;Sigil;\n\
+        Set0 #12;1F;;Sigil;\n\
+        Set0 #13;1F;;Sigil;\n\
         ";
 
     /*  Check that we can do simple probabilities correctly  */
@@ -52,7 +52,7 @@ function testEPC() {
         ";
 
     library = makeEternalCardLibrary(cardsstr);
-    deck = makeEternalDeck(library, deckstr);
+    deck = makeEternalDeckFromString(library, deckstr);
 
     influence = library.cards["Set0 #1"].influenceRequirements[0];
     console.assert(influence.power === 2);
@@ -70,7 +70,7 @@ function testEPC() {
         13 Power (Set0 #3)\n\
     ";
 
-    deck = makeEternalDeck(library, deckstr);
+    deck = makeEternalDeckFromString(library, deckstr);
 
     odds = deck.drawOdds(7, influence);
     console.assert(odds > 0.749 && odds < 0.750);
@@ -93,7 +93,7 @@ function testEPC() {
         3 Power (Set0 #13)\n\
     ";
 
-    deck = makeEternalDeck(library, deckstr);
+    deck = makeEternalDeckFromString(library, deckstr);
 
     odds = deck.drawOdds(7, influence);
     console.assert(odds > 0.749 && odds < 0.750);
@@ -114,7 +114,32 @@ function testEPC() {
         10 Creature (Set0 #1)\n\
     ";
 
-    deck = makeEternalDeck(library, deckstr);
+    deck = makeEternalDeckFromString(library, deckstr);
     console.assert(deck.cards.length === 40);
     console.assert(deck.cardCount["Set0 #1"] === 40);
+
+    /*
+        Test that the probability is zero if there are
+        no influence sources
+    */
+    deckstr = "\
+        1 Creature (Set0 #1)\n\
+    ";
+
+    deck = makeEternalDeckFromString(library, deckstr);
+    odds = deck.drawOdds(7, influence);
+    console.assert(odds < 0.01);
+
+    /*
+        Test that the probability is 100% if the entire deck
+        is drawn.
+    */
+    deckstr = "\
+        1 Creature (Set0 #1)\n\
+        4 Power (Set0 #2)\n\
+    ";
+
+    deck = makeEternalDeckFromString(library, deckstr);
+    odds = deck.drawOdds(7, influence);
+    console.assert(odds > 0.99);
 }

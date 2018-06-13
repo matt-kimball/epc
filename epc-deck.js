@@ -372,11 +372,13 @@ function makeInfluence(
 */
 function makeEternalCardInfo(
     id,
+    name,
     influenceGenerated,
     influenceRequired
 ) {
     var card = {
         id: id,  //  "SetN #XXX"
+        name: name,
         influenceRequirements: []  // both casting cost and card effects
     };
 
@@ -416,19 +418,23 @@ function makeEternalCardInfo(
 
     The input string is formatted like this:
 
-        Set1 #1; 1F;
-        Set1 #2;; 2FFF
-        Set1 #3;; 2FF
+        Set1 #1; 1F;; Fire Sigil;
+        Set1 #2;; 2FFF; Flame Blast;
+        Set1 #3;; 2FF; Charchain Flail;
         ...
 
     Each line has the value for one card, separated by semicolons.
     First we have the card identifier, with the set the card is
     from and the card number.  Next we have the influence provided
-    by that card.  Finally we have the influence required by that
-    card.  The influence required can have multiple influence
+    by that card and then the influence required by that card.
+    The influence required can have multiple influence
     values, separated by commas.  (i.e. "2FP,FF,PP")  The first
     value is the casting cost, followed by influence effect
     requirements.
+
+    After the influence fields, we have the card name, and finally
+    a list of flags relevant to the card.  (The flag list is currently
+    unused.)
 
 */
 function makeEternalCardLibrary(
@@ -445,14 +451,20 @@ function makeEternalCardLibrary(
     function addCardInfo(
         line
     ) {
-        var re, match, card, id, influenceGenerated, influenceRequired;
+        var re,
+            match,
+            card,
+            id,
+            name,
+            influenceGenerated,
+            influenceRequired;
 
         line = line.trim();
         if (line.length <= 0) {
             return;
         }
 
-        re = /^(Set[0-9]+ #[0-9]+);(.*);(.*)$/;
+        re = /(Set[0-9]+ #[0-9]+);([^;]*);([^;]*);([^;]*);([^;]*)/;
         match = line.match(re);
 
         if (!match) {
@@ -463,8 +475,15 @@ function makeEternalCardLibrary(
         id = match[1];
         influenceGenerated = match[2].trim();
         influenceRequired = match[3].trim();
+        name = match[4].trim();
 
-        card = makeEternalCardInfo(id, influenceGenerated, influenceRequired);
+        card = makeEternalCardInfo(
+            id,
+            name,
+            influenceGenerated,
+            influenceRequired
+        );
+
         if (card.makeError) {
             library.makeError = card.makeError + ' in "' + line + '"';
         }
@@ -634,74 +653,84 @@ function makeDrawCombinationIterator(
 }
 
 /*
-    Construct a collection of cards in a particular deck, as specified by
-    an exported decklist string.
-
-    The decklist string is of this format:
-
-        2 Grenadin Drone (Set1 #5)
-        4 Oni Ronin (Set1 #13)
-        ...
-
-    The card id ("Set1 #5") is used to determine the card tracked.
-    The name of the card is ignored.
-
+    Construct a deck from a list of cardcount objects.  Each object
+    in `inCardlist` is expected to have three fields: id, name, and
+    count.  id is the card identifier.  (i.e. 'Set1 #32')
 */
 function makeEternalDeck(
     cardlibrary,
-    decklist
+    inCardlist
 ) {
-    var deck = {
+    var deck, cardlist;
+
+    /*
+        Given a list of cardcount objects, merge cardcounts which
+        reference the same card id into a single cardcount.
+        Return the list of merged cardcounts.
+    */
+    function mergeCardlist(
+        inCardlist
+    ) {
+        var ret, cardcountId;
+
+        ret = [];
+        cardcountId = {};
+
+        $.each(inCardlist, function (index, cardcount) {
+            var dupCardcount;
+
+            dupCardcount = cardcountId[cardcount.id];
+
+            if (dupCardcount) {
+                dupCardcount.count += cardcount.count;
+            } else {
+                dupCardcount = {
+                    id: cardcount.id,
+                    name: cardcount.name,
+                    count: cardcount.count
+                };
+
+                ret.push(dupCardcount);
+                cardcountId[cardcount.id] = dupCardcount;
+            }
+        });
+
+        return ret;
+    }
+
+    cardlist = mergeCardlist(inCardlist);
+    deck = {
         cardlibrary: cardlibrary,
+        cardlist: cardlist,  // a list of cardcount items (name, id, count)
         cards: [],  // all distinct cards in the deck
         cardNames: {},  // indexed by card.id
         cardCount: {}  // indexed by card.id
     };
 
-    /*  Decode an individual line in the decklist input  */
-    function addCardLine(
-        line
+    /*  Add a card with a count to the deck  */
+    function addCardCount(
+        cardcount
     ) {
-        var re, match, count, name, cardid, card, i;
+        var cardid, card, count, i;
 
-        line = line.trim();
-        if (line.length <= 0) {
-            return;
-        }
-
-        re = /^([0-9]+) (.+) \((Set[0-9]+ #[0-9]+)\)$/;
-        match = line.match(re);
-
-        if (!match) {
-            deck.makeError = 'malformed line: "' + line + '"';
-            return;
-        }
-
-        count = Number(match[1]);
-        name = match[2];
-        cardid = match[3];
-
-        if (count > 100) {
-            deck.makeError = 'too many cards: "' + line + '"';
-            return;
-        }
-
+        cardid = cardcount.id;
         card = cardlibrary.cards[cardid];
         if (!card) {
             deck.makeError = 'unknown card: "' + cardid + '"';
             return;
         }
 
-        for (i = 0; i < count; i += 1) {
+        for (i = 0; i < cardcount.count; i += 1) {
             deck.cards.push(card);
         }
 
-        deck.cardNames[card.id] = name;
+        deck.cardNames[cardid] = cardcount.name;
 
-        if (deck.cardCount[card.id]) {
-            count += deck.cardCount[card.id];
+        count = cardcount.count;
+        if (deck.cardCount[cardid]) {
+            count += deck.cardCount[cardid];
         }
-        deck.cardCount[card.id] = count;
+        deck.cardCount[cardid] = count;
     }
 
     /*
@@ -720,13 +749,13 @@ function makeEternalDeck(
             influence requirement.
         */
         cards.sort(function (a, b) {
-            var infA, infB;
+            var infA, infB, powerDiff;
 
             infA = a.influenceRequirements[0];
             infB = b.influenceRequirements[0];
 
             if (!infA && !infB) {
-                return 0;
+                return a.id.localeCompare(b.id);
             }
             if (!infA) {
                 return -1;
@@ -735,7 +764,16 @@ function makeEternalDeck(
                 return 1;
             }
 
-            return infA.power - infB.power;
+            powerDiff = infA.power - infB.power;
+            if (powerDiff) {
+                return powerDiff;
+            }
+
+            /*
+                If the power requirement is the same, use the card id
+                for a consistent ordering.
+            */
+            return a.id.localeCompare(b.id);
         });
 
         influenceList = [];
@@ -881,6 +919,23 @@ function makeEternalDeck(
     }
 
     /*
+        Add up the influence provided by all cards in the deck
+        and return that total.
+    */
+    function gatherTotalInfluence() {
+        var influence;
+
+        influence = makeInfluence("");
+        $.each(deck.cards, function (index, card) {
+            if (card.influenceGenerated) {
+                influence.add(1, card.influenceGenerated);
+            }
+        });
+
+        return influence;
+    }
+
+    /*
         Return the probably of drawing a hand which can satisfy
         a target influence requirement, given that we have drawn
         a particular number of cards.
@@ -892,7 +947,11 @@ function makeEternalDeck(
         var drawCombinations, combinationIter, odds;
 
         if (drawCount >= deck.cards.length) {
-            return 1;
+            if (gatherTotalInfluence().satisfies(influence)) {
+                return 1;
+            }
+
+            return 0;
         }
 
         drawCombinations = listDrawCombinations(influence, drawCount);
@@ -944,14 +1003,110 @@ function makeEternalDeck(
         return ret;
     };
 
+    /*
+        Return a decklist in the format that Eternal uses.
+        This can be used to import the deck back into Eternal, but
+        is also used to store the current deck in browser local
+        storage, so that the next time the page is visited the same
+        deck will be available.
+    */
+    deck.generateDecklist = function (
+        forExport
+    ) {
+        var decklist;
+
+        decklist = "";
+        $.each(deck.cardlist, function (index, cardcount) {
+            var cardline;
+
+            /*
+                If we are exporting to the clipboard, leave out
+                zero card count entries, because that is unusual
+                and may confuse other tools which manipulate decklists.
+                (We want to leave the zero card count cards in if 
+                we are saving to local storage, though, to keep them
+                in the list.)
+            */
+            if (!cardcount.count && forExport) {
+                return;
+            }
+
+            cardline = String(cardcount.count) + " " +
+                cardcount.name + " (" +
+                cardcount.id + ")";
+            decklist += cardline + "\n";
+        });
+
+        return decklist;
+    };
+
+    $.each(cardlist, function (index, cardcount) {
+        addCardCount(cardcount);
+    });
+
+    return deck;
+}
+
+/*
+    Construct a collection of cards in a particular deck, as specified by
+    an exported decklist string.
+
+    The decklist string is of this format:
+
+        2 Grenadin Drone (Set1 #5)
+        4 Oni Ronin (Set1 #13)
+        ...
+
+    The card id ("Set1 #5") is used to determine the card tracked.
+
+    The string is converted to a list of cardcount objects, and then
+    constructed using those cardcounts.
+*/
+function makeEternalDeckFromString(
+    library,
+    deckstr
+) {
+    var deck, cardcounts, makeError;
+
+    cardcounts = [];
+
     /*  For each line in the decklist input, decode the card and count  */
-    $.each(decklist.split("\n"), function (index, line) {
-        if (deck.makeError) {
+    $.each(deckstr.split("\n"), function (index, line) {
+        var re, match, count, name, cardid;
+
+        line = line.trim();
+        if (line.length <= 0) {
             return;
         }
 
-        addCardLine(line);
+        re = /^([0-9]+) (.+) \((Set[0-9]+ #[0-9]+)\)$/;
+        match = line.match(re);
+
+        if (!match) {
+            makeError = 'malformed line: "' + line + '"';
+            return;
+        }
+
+        count = Number(match[1]);
+        name = match[2];
+        cardid = match[3];
+
+        if (count > 100) {
+            makeError = 'too many cards: "' + line + '"';
+            return;
+        }
+
+        cardcounts.push({
+            id: cardid,
+            name: name,
+            count: count
+        });
     });
+
+    deck = makeEternalDeck(library, cardcounts);
+    if (makeError) {
+        deck.makeError = makeError;
+    }
 
     return deck;
 }

@@ -20,7 +20,6 @@
 */
 
 body {
-    font-family: sans-serif;
     font-size: 16px;
 }
 
@@ -33,11 +32,43 @@ textarea {
 
 #heading h1 {
     text-align: center;
+    padding: 20px 0px 40px 0px;
 }
 
 /*  Don't display the preloaded influence icons  */
 #influence-icons {
     display: none;
+}
+
+#import-modal {
+    width: 600px;
+}
+
+#add-card-modal {
+    width: 400px;
+}
+
+#card-select {
+    margin: 16px;
+}
+
+#about-modal {
+    width: 600px;
+}
+
+#import-form {
+    margin: 16px;
+}
+
+#import-validation-result {
+    font-size: 14px;
+    height: 14px;
+    color: #c00000;
+    text-align: center;
+}
+
+#about-text {
+    margin: 16px;
 }
 
 #deck-and-table {
@@ -54,33 +85,47 @@ textarea {
 }
 
 #table-or-graph-menu {
-    margin: 0px 80px 0px 80px;
+    margin: 0px 0px 14px 0px;
     float: left;
+    width: 900px;
 }
 
-.menu-item {
-    cursor: pointer;
-    text-align: center;
-    border: 1px solid;
-    border-radius: 6px;
-    width: 336px;
-    height: 40px;
-    float: left;
-    margin: 0px 16px 18px 16px;
-}
-
-.active-menu-item {
-    font-weight: bold;
-    background-color: #f0f0f0;
-}
-
-.menu-item-text {
-    margin: 12px;
-}
-
-#deck-paste-text {
-    margin-top: 30px;
+#deck-buttons {
+    margin-top: 14px;
     margin-bottom: 12px;
+}
+
+#about-button {
+    float: right;
+}
+
+.card-count-edit {
+    height: 24px;
+}
+
+#deck-edit-rows button {
+    float: left;
+    width: 30px;
+    height: 22px;
+    padding: 2px;
+    margin: 0px 0px 0px 2px;
+    font-size: 16px;
+}
+
+.card-count {
+    float: left;
+    width: 38px;
+}
+
+.card-name {
+    clear: both;
+    float: left;
+    width: 246px;
+}
+
+#add-card-button {
+    float: left;
+    width: 240px;
 }
 
 #deck-text {
@@ -94,20 +139,13 @@ textarea {
 
 #deck-validation-result {
     font-size: 14px;
+    padding-top: 6px;
     text-align: right;
-}
-
-.validation-error {
-    color: #c00000;
-}
-
-.validation-success {
     color: #606060;
 }
 
 #power-graph-container {
     float: left;
-    display: none;
 }
 
 .power-graph-canvas {
@@ -178,16 +216,6 @@ tr:nth-child(odd) .power-table-odds-shaded {
 
 .influence-icon {
     vertical-align: bottom;
-}
-
-#calculator-description {
-    width: 960px;
-    border: solid 1px;
-    border-radius: 8px;
-    box-shadow: 4px 4px 4px #606060;
-    margin-left: auto;
-    margin-right: auto;
-    clear: both;
 }
 
 #calculator-description-body {

@@ -26,11 +26,12 @@
 
 /*  Draw a graph of influence component odds on a canvas element  */
 function drawPowerGraph(
-    canvas,
+    container,
     graphStyle,
     deck
 ) {
     var ctx,
+        canvas,
         canvasWidth,
         canvasHeight,
         margin,
@@ -45,30 +46,9 @@ function drawPowerGraph(
         verticalMidlineStep,
         labels;
 
-    margin = 96;
-    fontSize = 20;
+    margin = 64;
+    fontSize = 18;
     imgSize = 30;
-    labels = [];
-
-    /*  Set the back buffer size to be the same as the CSS size  */
-    canvasWidth = canvas.width();
-    canvasHeight = canvas.height();
-    canvas.attr("width", canvasWidth);
-    canvas.attr("height", canvasHeight);
-
-    ctx = canvas.get(0).getContext("2d");
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    /*
-        We'll need space around the edge for label text, so
-        the actual graph will be drawn within these coordinates.
-    */
-    graphCoord = {
-        left: margin,
-        top: fontSize / 2,
-        right: canvasWidth - margin,
-        bottom: canvasHeight - margin
-    };
 
     /*
         Break down influence requirements into a set of component
@@ -273,8 +253,7 @@ function drawPowerGraph(
             midline += verticalMidlineStep;
         }
 
-        ctx.restore();
-
+        ctx.strokeStyle = graphStyle.borderColor;
         ctx.beginPath();
         ctx.moveTo(graphCoord.left, graphCoord.top);
         ctx.lineTo(graphCoord.left, graphCoord.bottom);
@@ -282,6 +261,8 @@ function drawPowerGraph(
         ctx.lineTo(graphCoord.right, graphCoord.top);
         ctx.lineTo(graphCoord.left, graphCoord.top);
         ctx.stroke();
+
+        ctx.restore();
     }
 
     /*  Add the labels for the extents of the graph  */
@@ -573,17 +554,65 @@ function drawPowerGraph(
         );
     }
 
-    ctx.fillStyle = graphStyle.textColor;
-    ctx.strokeStyle = graphStyle.textColor;
-    ctx.font = String(fontSize) + "px sans-serif";
-    ctx.lineWidth = 2;
+    /*  Generate the entire graph  */
+    function drawOnCanvas() {
+        /*  Set the back buffer size to be the same as the CSS size  */
+        canvasWidth = canvas.width();
+        canvasHeight = canvas.height();
+        canvas.attr("width", canvasWidth);
+        canvas.attr("height", canvasHeight);
 
-    influenceTurns = listInfluenceTurns();
-    findGraphExtents();
-    drawOutline();
-    addGraphLabels();
+        labels = [];
 
-    drawComponentCurves();
-    drawInfluenceLabels();
+        ctx = canvas.get(0).getContext("2d");
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        /*
+            We'll need space around the edge for label text, so
+            the actual graph will be drawn within these coordinates.
+        */
+        graphCoord = {
+            left: margin,
+            top: fontSize / 2,
+            right: canvasWidth - margin,
+            bottom: canvasHeight - fontSize * 2 - 4
+        };
+
+        ctx.fillStyle = graphStyle.textColor;
+        ctx.strokeStyle = graphStyle.textColor;
+        ctx.font = String(fontSize) + "px sans-serif";
+        ctx.lineWidth = 2;
+
+        influenceTurns = listInfluenceTurns();
+        findGraphExtents();
+        drawOutline();
+        addGraphLabels();
+
+        drawComponentCurves();
+        drawInfluenceLabels();
+    }
+
+    /*
+        Add the canvas element, and generate the graph.
+        Add hooks to redraw the graph if a new icon image is
+        loaded.
+    */
+    function makeCanvas() {
+        container.empty();
+        canvas = $("<canvas>").addClass("power-graph-canvas")
+            .appendTo(container);
+
+        /*
+            If any of the influence icons are still loading, we will need
+            to regenerate the graph image when they finish
+        */
+        $("#icon-fire").bind("load", drawOnCanvas);
+        $("#icon-time").bind("load", drawOnCanvas);
+        $("#icon-justice").bind("load", drawOnCanvas);
+        $("#icon-primal").bind("load", drawOnCanvas);
+        $("#icon-shadow").bind("load", drawOnCanvas);
+        drawOnCanvas();
+    }
+
+    makeCanvas();
 }
-

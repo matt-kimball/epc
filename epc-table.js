@@ -1,6 +1,4 @@
-/*global $, window, document*/
-/*global drawPowerGraph*/
-/*global makeEternalCardLibrary, makeEternalDeck*/
+/*global $*/
 /*jslint unparam: true*/
 /*
 
@@ -32,68 +30,18 @@
 
     We need a text list of all possible cards to get started.
 */
-function makeEternalPowerCalculator(
-    params
+function generateOddsTable(
+    tableDiv,
+    powerSourcesDiv,
+    validationDiv,
+    cardLibrary,
+    deck
 ) {
-    var calculator = params;
+    var minDraws, maxDraws, iconSize;
 
-    calculator.minDraws = 7;
-    calculator.maxDraws = 17;
-    calculator.cardlibrary = makeEternalCardLibrary(params.cardlist);
-
-    if (!calculator.iconSize) {
-        calculator.iconSize = 20;
-    }
-
-    if (!calculator.graphContainer) {
-        calculator.graphContainer = calculator.graphDiv;
-    }
-
-    calculator.tableContainer.css("display", "none");
-
-    function generateGraph(
-        deck
-    ) {
-        var canvas;
-
-        calculator.graphDiv.empty();
-
-        canvas = $("<canvas>").addClass("power-graph-canvas")
-            .appendTo(calculator.graphDiv);
-
-        function regenerate() {
-            drawPowerGraph(canvas, calculator.graphStyle, deck);
-        }
-
-        /*
-            If any of the influence icons are still loading, we will need
-            to regenerate the graph image when they finish
-        */
-        $("#icon-fire").bind("load", regenerate);
-        $("#icon-time").bind("load", regenerate);
-        $("#icon-justice").bind("load", regenerate);
-        $("#icon-primal").bind("load", regenerate);
-        $("#icon-shadow").bind("load", regenerate);
-
-        regenerate();
-    }
-
-    /*  Hide the power table and replace it with the power graph  */
-    function showGraph() {
-        calculator.tableContainer.css("display", "none");
-        calculator.graphContainer.css("display", "inline");
-
-        calculator.tableMenuItem.removeClass("active-menu-item");
-        calculator.graphMenuItem.addClass("active-menu-item");
-    }
-
-    function showTable() {
-        calculator.tableContainer.css("display", "inline");
-        calculator.graphContainer.css("display", "none");
-
-        calculator.tableMenuItem.addClass("active-menu-item");
-        calculator.graphMenuItem.removeClass("active-menu-item");
-    }
+    minDraws = 7;
+    maxDraws = 17;
+    iconSize = 20;
 
     /*  Append an influence icon to the influence cell of the table  */
     function appendInfluenceImage(
@@ -102,8 +50,8 @@ function makeEternalPowerCalculator(
     ) {
         $("<img>").addClass("influence-icon")
             .attr("src", imageFile)
-            .attr("width", calculator.iconSize)
-            .attr("height", calculator.iconSize)
+            .attr("width", iconSize)
+            .attr("height", iconSize)
             .appendTo(cell);
     }
 
@@ -160,14 +108,14 @@ function makeEternalPowerCalculator(
             text("Draws").appendTo(row);
 
         /*  Add the heading cells  */
-        for (drawCount = calculator.minDraws;
-                drawCount <= calculator.maxDraws;
+        for (drawCount = minDraws;
+                drawCount <= maxDraws;
                 drawCount += 1) {
 
-            if (drawCount === calculator.minDraws) {
+            if (drawCount === minDraws) {
                 text = "-";
             } else {
-                text = "+" + String(drawCount - calculator.minDraws);
+                text = "+" + String(drawCount - minDraws);
             }
 
             $("<th>").addClass("power-table-head-draw-count").
@@ -186,8 +134,8 @@ function makeEternalPowerCalculator(
             th = $("<th>").addClass("power-table-influence").appendTo(row);
             addInfluenceDisplay(th, influence);
 
-            for (drawCount = calculator.minDraws;
-                    drawCount <= calculator.maxDraws;
+            for (drawCount = minDraws;
+                    drawCount <= maxDraws;
                     drawCount += 1) {
 
                 odds = 0;
@@ -200,7 +148,7 @@ function makeEternalPowerCalculator(
                     Darken the cells where we typically won't have enough
                     draws for the power requirements.
                 */
-                if (drawCount - calculator.minDraws + 1 < cardPower) {
+                if (drawCount - minDraws + 1 < cardPower) {
                     td.addClass("power-table-odds-shaded");
                 }
             }
@@ -216,7 +164,7 @@ function makeEternalPowerCalculator(
     ) {
         var div, text;
 
-        div = calculator.powerSourcesDiv;
+        div = powerSourcesDiv;
         div.empty();
 
         text = "";
@@ -243,25 +191,14 @@ function makeEternalPowerCalculator(
         Report the status of the table generation in the
         'validationDiv' region.
     */
-    calculator.generateTable = function (
-        decklist
-    ) {
-        var deck, table, validText;
+    function generateTable() {
+        var table, validText;
 
-        if (calculator.cardlibrary.makeError) {
-            calculator.validationDiv
-                .text(calculator.cardlibrary.makeError)
-                .attr("class", "validation-error");
-
+        if (cardLibrary.makeError) {
             return;
         }
 
-        deck = makeEternalDeck(calculator.cardlibrary, decklist);
         if (deck.makeError) {
-            calculator.validationDiv
-                .text(deck.makeError)
-                .attr("class", "validation-error");
-
             return;
         }
 
@@ -269,26 +206,14 @@ function makeEternalPowerCalculator(
         generateTableRows(table, deck);
         generatePowerSourceText(deck);
 
-        calculator.tableDiv.empty();
-        calculator.tableDiv.append(table);
+        tableDiv.empty();
+        tableDiv.append(table);
 
         validText = deck.cards.length + " cards";
-        calculator.validationDiv
+        validationDiv
             .text(validText)
             .attr("class", "validation-success");
+    }
 
-        generateGraph(deck);
-    };
-
-    calculator.graphMenuItem.bind("click", function () {
-        showGraph();
-    });
-
-    calculator.tableMenuItem.bind("click", function () {
-        showTable();
-    });
-
-    showGraph();
-
-    return calculator;
+    generateTable();
 }

@@ -33,3 +33,16 @@ if (!String.prototype.repeat) {
     return rpt;
   }
 }
+
+
+/*
+    Internet Explorer lacks Object.values, so we'll generate it by
+    iterating over Object.keys
+*/
+if (!Object.values) {
+  Object.values = function values(object) {
+    return Object.keys(object).map(function(key) {
+      return object[key];
+    });
+  };
+}
