@@ -77,6 +77,80 @@ function buildEpcUI(
     }
 
     /*
+        Set the influence count for a type in the influence panel
+        Add the 'zero' class if the value is zeroed.
+    */
+    function setInfluenceCount(
+        numberDiv,
+        count
+    ) {
+        numberDiv.text(count);
+        if (count) {
+            numberDiv.removeClass("zero");
+        } else {
+            numberDiv.addClass("zero");
+        }
+    }
+
+    /*
+        Count the sources of power and influence in the deck and
+        update the counts in the influence panel.
+    */
+    function generateInfluencePanel(
+        deck
+    ) {
+        var count, power, fire, time, justice, primal, shadow, wild;
+
+        count = deck.cards.length;
+        power = 0;
+        fire = 0;
+        time = 0;
+        justice = 0;
+        primal = 0;
+        shadow = 0;
+        wild = 0;
+
+        $.each(deck.cards, function (index, card) {
+            var influence;
+
+            influence = card.influenceGenerated;
+
+            power += influence.power;
+            fire += influence.fire;
+            time += influence.time;
+            justice += influence.justice;
+            primal += influence.primal;
+            shadow += influence.shadow;
+            wild += influence.wild;
+        });
+
+        if (fire) {
+            fire += wild;
+        }
+        if (time) {
+            time += wild;
+        }
+        if (justice) {
+            justice += wild;
+        }
+        if (primal) {
+            primal += wild;
+        }
+        if (shadow) {
+            shadow += wild;
+        }
+
+        $("#card-count-number").text(String(count));
+        $("#power-sources-number").text(String(power));
+
+        setInfluenceCount($("#fire-sources-number"), fire);
+        setInfluenceCount($("#time-sources-number"), time);
+        setInfluenceCount($("#justice-sources-number"), justice);
+        setInfluenceCount($("#primal-sources-number"), primal);
+        setInfluenceCount($("#shadow-sources-number"), shadow);
+    }
+
+    /*
         When the deck changes, store the new deck in local storage
         and regenerate the user interface components which depend
         on the contents of the deck.
@@ -96,11 +170,11 @@ function buildEpcUI(
         generateOddsTable(
             $("#power-table-div"),
             $("#power-table-sources"),
-            $("#deck-validation-result"),
             cardLibrary,
             deck
         );
         drawPowerGraph($("#power-graph-container"), graphStyle, deck);
+        generateInfluencePanel(deck);
         buildDeckRows(deck);
     }
 
@@ -234,6 +308,12 @@ function buildEpcUI(
                 }
             });
         }
+
+        /*
+            Fonts may have been loaded, which means we should redraw
+            the graph.
+        */
+        onDeckChange(currentDeck);
     }
 
     /*  Bind all buttons to their behavior handlers  */
@@ -272,11 +352,11 @@ function buildEpcUI(
             onAddCard($("#add-card-dropdown option:selected"));
         });
 
-        $("#table-and-sources").css("display", "none");
+        $("#power-table-container").css("display", "none");
 
         $("#graph-menu-item").bind("click", function () {
             $("#power-graph-container").css("display", "inline");
-            $("#table-and-sources").css("display", "none");
+            $("#power-table-container").css("display", "none");
 
             $("#graph-menu-item").addClass("active");
             $("#table-menu-item").removeClass("active");
@@ -284,7 +364,7 @@ function buildEpcUI(
 
         $("#table-menu-item").bind("click", function () {
             $("#power-graph-container").css("display", "none");
-            $("#table-and-sources").css("display", "inline");
+            $("#power-table-container").css("display", "inline");
 
             $("#graph-menu-item").removeClass("active");
             $("#table-menu-item").addClass("active");

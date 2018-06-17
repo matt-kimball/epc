@@ -33,14 +33,13 @@
 function generateOddsTable(
     tableDiv,
     powerSourcesDiv,
-    validationDiv,
     cardLibrary,
     deck
 ) {
     var minDraws, maxDraws, iconSize;
 
     minDraws = 7;
-    maxDraws = 17;
+    maxDraws = 19;
     iconSize = 20;
 
     /*  Append an influence icon to the influence cell of the table  */
@@ -48,7 +47,7 @@ function generateOddsTable(
         cell,
         imageFile
     ) {
-        $("<img>").addClass("influence-icon")
+        $("<img>").addClass("power-table-influence-icon")
             .attr("src", imageFile)
             .attr("width", iconSize)
             .attr("height", iconSize)
@@ -105,18 +104,14 @@ function generateOddsTable(
 
         row = $("<tr>").addClass("power-table-row-head").appendTo(table);
         $("<th>").addClass("power-table-head-draws").
-            text("Draws").appendTo(row);
+            text("Turns").appendTo(row);
 
         /*  Add the heading cells  */
         for (drawCount = minDraws;
                 drawCount <= maxDraws;
                 drawCount += 1) {
 
-            if (drawCount === minDraws) {
-                text = "-";
-            } else {
-                text = "+" + String(drawCount - minDraws);
-            }
+            text = String(drawCount - minDraws + 1);
 
             $("<th>").addClass("power-table-head-draw-count").
                 text(text).appendTo(row);
@@ -162,13 +157,18 @@ function generateOddsTable(
     function generatePowerSourceText(
         deck
     ) {
-        var div, text;
+        var div, text, sources;
 
         div = powerSourcesDiv;
         div.empty();
 
+        sources = deck.listPowerInfluenceSources();
+        if (!sources.length) {
+            return;
+        }
+
         text = "";
-        $.each(deck.listPowerInfluenceSources(), function (index, card) {
+        $.each(sources, function (index, card) {
             var name;
 
             name = deck.cardNames[card.id];
@@ -188,11 +188,9 @@ function generateOddsTable(
 
     /*
         Generate the odds table from a new decklist.
-        Report the status of the table generation in the
-        'validationDiv' region.
     */
     function generateTable() {
-        var table, validText;
+        var table;
 
         if (cardLibrary.makeError) {
             return;
@@ -208,11 +206,6 @@ function generateOddsTable(
 
         tableDiv.empty();
         tableDiv.append(table);
-
-        validText = deck.cards.length + " cards";
-        validationDiv
-            .text(validText)
-            .attr("class", "validation-success");
     }
 
     generateTable();

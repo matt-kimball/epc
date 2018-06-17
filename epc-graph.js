@@ -34,10 +34,7 @@ function drawPowerGraph(
         canvas,
         canvasWidth,
         canvasHeight,
-        margin,
         graphCoord,
-        fontSize,
-        imgSize,
         influenceTurns,
         minValue,
         minDraws,
@@ -45,10 +42,6 @@ function drawPowerGraph(
         horizontalMidlineStep,
         verticalMidlineStep,
         labels;
-
-    margin = 64;
-    fontSize = 18;
-    imgSize = 30;
 
     /*
         Break down influence requirements into a set of component
@@ -189,21 +182,22 @@ function drawPowerGraph(
         var drawX, drawY, textSize;
 
         textSize = ctx.measureText(label);
-        drawX = graphCoord.left - textSize.width - fontSize;
-        drawY = y + fontSize / 2;
+        drawX = graphCoord.left - textSize.width - 12;
+        drawY = y + graphStyle.fontSize / 2;
         ctx.fillText(label, drawX, drawY);
     }
 
     /*  Draw a label along the bottom of the graph  */
     function drawBottomLabel(
         label,
-        x
+        x,
+        yOffset
     ) {
         var drawX, drawY, textSize;
 
         textSize = ctx.measureText(label);
         drawX = x - textSize.width / 2;
-        drawY = graphCoord.bottom + 2 * fontSize;
+        drawY = canvasHeight + yOffset;
         ctx.fillText(label, drawX, drawY);
     }
 
@@ -222,6 +216,7 @@ function drawPowerGraph(
         ctx.fill();
 
         ctx.strokeStyle = graphStyle.interiorLineColor;
+        ctx.lineWidth = 0.75;
 
         /*  Draw the horizontal intermediate lines  */
         midline = 1.0 - horizontalMidlineStep;
@@ -239,15 +234,15 @@ function drawPowerGraph(
         }
 
         /*  Draw the vertical intermediate lines  */
-        midline = minDraws + verticalMidlineStep;
-        while (midline < maxDraws) {
+        midline = minDraws;
+        while (midline <= maxDraws) {
             frac = (midline - minDraws) / (maxDraws - minDraws);
             midpos = graphCoord.left +
                 frac * (graphCoord.right - graphCoord.left);
 
             ctx.beginPath();
             ctx.moveTo(midpos, graphCoord.top);
-            ctx.lineTo(midpos, graphCoord.bottom);
+            ctx.lineTo(midpos, canvasHeight - 2 * graphStyle.fontSize - 6);
             ctx.stroke();
 
             midline += verticalMidlineStep;
@@ -267,7 +262,7 @@ function drawPowerGraph(
 
     /*  Add the labels for the extents of the graph  */
     function addGraphLabels() {
-        var midline, percent, x, y;
+        var midline, turnStr, percent, x, y;
 
         midline = 1.0;
         while (midline > minValue) {
@@ -277,7 +272,7 @@ function drawPowerGraph(
             percent = Math.round(100 * midline);
             drawLeftLabel(String(percent) + "%", y);
 
-            midline = midline - horizontalMidlineStep;
+            midline = midline - horizontalMidlineStep * 2;
         }
 
         midline = minDraws;
@@ -285,10 +280,17 @@ function drawPowerGraph(
             x = graphCoord.left +
                 (midline - minDraws) / (maxDraws - minDraws) *
                 (graphCoord.right - graphCoord.left);
-            drawBottomLabel("Turn " + String(midline - 6), x);
+            drawBottomLabel(String(midline - 6), x, -graphStyle.fontSize);
+            if (midline === 7) {
+                turnStr = "Turn";
+            } else {
+                turnStr = "Turns";
+            }
+            drawBottomLabel(turnStr, x, 0);
 
             midline += verticalMidlineStep;
         }
+
     }
 
     /*  Draw the icons representing the influence requirements  */
@@ -307,32 +309,32 @@ function drawPowerGraph(
 
         img = $("#icon-fire").get(0);
         for (i = 0; i < influence.fire; i += 1) {
-            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
-            x += imgSize;
+            ctx.drawImage(img, x, y - graphStyle.iconSize, graphStyle.iconSize, graphStyle.iconSize);
+            x += graphStyle.iconSize;
         }
 
         img = $("#icon-time").get(0);
         for (i = 0; i < influence.time; i += 1) {
-            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
-            x += imgSize;
+            ctx.drawImage(img, x, y - graphStyle.iconSize, graphStyle.iconSize, graphStyle.iconSize);
+            x += graphStyle.iconSize;
         }
 
         img = $("#icon-justice").get(0);
         for (i = 0; i < influence.justice; i += 1) {
-            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
-            x += imgSize;
+            ctx.drawImage(img, x, y - graphStyle.iconSize, graphStyle.iconSize, graphStyle.iconSize);
+            x += graphStyle.iconSize;
         }
 
         img = $("#icon-primal").get(0);
         for (i = 0; i < influence.primal; i += 1) {
-            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
-            x += imgSize;
+            ctx.drawImage(img, x, y - graphStyle.iconSize, graphStyle.iconSize, graphStyle.iconSize);
+            x += graphStyle.iconSize;
         }
 
         img = $("#icon-shadow").get(0);
         for (i = 0; i < influence.shadow; i += 1) {
-            ctx.drawImage(img, x, y - imgSize, imgSize, imgSize);
-            x += imgSize;
+            ctx.drawImage(img, x, y - graphStyle.iconSize, graphStyle.iconSize, graphStyle.iconSize);
+            x += graphStyle.iconSize;
         }
     }
 
@@ -346,41 +348,37 @@ function drawPowerGraph(
             draws,
             x,
             y,
+            startX,
+            startY,
             fx,
             solidColor,
-            transparentColor,
-            gradient;
+            translucentColor;
 
         ctx.save();
         /*  Color the curve according to influence type  */
         if (influence.fire > 0) {
-            solidColor = "rgb(140, 23, 33)";
-            transparentColor = "rgba(140, 23, 33, 0)";
+            solidColor = "rgb(163, 12, 14)";
+            translucentColor = "rgba(163, 12, 14, 0.33)";
         } else if (influence.time > 0) {
-            solidColor = "rgb(181, 110, 7)";
-            transparentColor = "rgba(181, 110, 7, 0)";
+            solidColor = "rgb(178, 111, 3)";
+            translucentColor = "rgba(178, 111, 3, 0.33)";
         } else if (influence.justice > 0) {
-            solidColor = "rgb(33, 132, 33)";
-            transparentColor = "rgba(33, 132, 33, 0)";
+            solidColor = "rgb(58, 103, 39)";
+            translucentColor = "rgba(58, 103, 39, 0.33)";
         } else if (influence.primal > 0) {
-            solidColor = "rgb(15, 54, 118)";
-            transparentColor = "rgba(15, 54, 118, 0)";
+            solidColor = "rgb(3, 50, 118)";
+            translucentColor = "rgba(3, 50, 118, 0.33)";
         } else if (influence.shadow > 0) {
-            solidColor = "rgb(93, 28, 154)";
-            transparentColor = "rgba(93, 28, 154, 0)";
+            solidColor = "rgb(51, 23, 69)";
+            translucentColor = "rgba(51, 23, 69, 0.33)";
         }
 
-        fx = (startDraw - minDraws) / (maxDraws - minDraws);
-        x = graphCoord.left +
-            fx * (graphCoord.right - graphCoord.left);
-        gradient = ctx.createLinearGradient(x, 0, x + canvasWidth, 0);
-        gradient.addColorStop(0, solidColor);
-        gradient.addColorStop(1, transparentColor);
-        ctx.strokeStyle = gradient;
+        ctx.strokeStyle = solidColor;
+        ctx.fillStyle = translucentColor;
 
         /*  Draw the curve  */
         ctx.beginPath();
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 1.5;
         for (draws = startDraw; draws <= maxDraws; draws += 1) {
             odds = deck.drawOdds(draws, influence);
             oddsY = (odds - minValue) / (1.0 - minValue);
@@ -391,13 +389,20 @@ function drawPowerGraph(
             y = graphCoord.bottom +
                 oddsY * (graphCoord.top - graphCoord.bottom);
 
-            if (draws === minDraws) {
+            if (draws === startDraw) {
+                startX = x;
+                startY = y;
                 ctx.moveTo(x, y);
             } else {
                 ctx.lineTo(x, y);
             }
         }
         ctx.stroke();
+
+        ctx.lineTo(x, graphCoord.bottom);
+        ctx.lineTo(startX, graphCoord.bottom);
+        ctx.lineTo(startX, startY);
+        ctx.fill();
         ctx.restore();
     }
 
@@ -409,9 +414,9 @@ function drawPowerGraph(
         var x, y, iconSize;
 
         /*  Adjust for the text size  */
-        iconSize = imgSize * influence.toString().length;
+        iconSize = graphStyle.iconSize * influence.toString().length;
         x = pos.x - iconSize / 2;
-        y = pos.y + imgSize / 2;
+        y = pos.y + graphStyle.iconSize / 2;
         drawInfluenceIcons(influence, x, y);
     }
 
@@ -496,8 +501,6 @@ function drawPowerGraph(
 
     /*  Draw all of the influence component curves  */
     function drawComponentCurves() {
-        var allInfluenceTurns;
-
         $.each(influenceTurns, function (index, influenceTurn) {
             drawInfluenceCurve(
                 influenceTurn.influence,
@@ -505,8 +508,7 @@ function drawPowerGraph(
             );
         });
 
-        allInfluenceTurns = listAllInfluenceTurns();
-        $.each(allInfluenceTurns, function (index, influenceTurn) {
+        $.each(influenceTurns, function (index, influenceTurn) {
             var pos;
 
             pos = (influenceTurn.turn - 1) / (maxDraws - minDraws);
@@ -520,12 +522,13 @@ function drawPowerGraph(
         and use that for the bottom value of the vertical axis
     */
     function findGraphExtents() {
-        var odds, maxMidLines;
+        var odds, maxHorizMidLines, maxVertMidLines;
 
         minValue = 0.75;
         minDraws = 7;
         maxDraws = 15;
-        maxMidLines = 6;
+        maxHorizMidLines = 10;
+        maxVertMidLines = 16;
 
         $.each(influenceTurns, function (index, influenceTurn) {
             var draws = influenceTurn.turn + minDraws - 1;
@@ -541,16 +544,16 @@ function drawPowerGraph(
             }
         });
 
-        minValue = (Math.floor(minValue * 10) - 1) / 10;
+        minValue = (Math.floor(minValue * 10) - 3) / 10;
         if (minValue < 0) {
             minValue = 0;
         }
 
         verticalMidlineStep = Math.ceil(
-            (maxDraws - minDraws) / maxMidLines
+            (maxDraws - minDraws) / maxVertMidLines
         );
         horizontalMidlineStep = 0.1 * Math.ceil(
-            (1.0 - minValue) * 10 / maxMidLines
+            (1.0 - minValue) * 10 / maxHorizMidLines
         );
     }
 
@@ -572,16 +575,16 @@ function drawPowerGraph(
             the actual graph will be drawn within these coordinates.
         */
         graphCoord = {
-            left: margin,
-            top: fontSize / 2,
-            right: canvasWidth - margin,
-            bottom: canvasHeight - fontSize * 2 - 4
+            left: graphStyle.marginLeft,
+            top: graphStyle.fontSize / 2,
+            right: canvasWidth - graphStyle.marginRight,
+            bottom: canvasHeight - graphStyle.marginBottom
         };
 
         ctx.fillStyle = graphStyle.textColor;
         ctx.strokeStyle = graphStyle.textColor;
-        ctx.font = String(fontSize) + "px sans-serif";
-        ctx.lineWidth = 2;
+        ctx.font = String(graphStyle.fontSize) + "px " + graphStyle.font;
+        ctx.lineWidth = 1;
 
         influenceTurns = listInfluenceTurns();
         findGraphExtents();

@@ -19,8 +19,51 @@
 
 */
 
+/*
+    Fonts
+*/
+
+@font-face {
+    font-family: 'Open Sans Condensed Bold';
+    font-style: normal;
+    font-weight: 700;
+    src: url(open-sans-condensed-bold.woff2) format('woff2'),
+            url(open-sans-condensed-bold.woff) format('woff');
+}
+
+@font-face {
+    font-family: 'Open Sans ExtraBold';
+    font-style: normal;
+    font-weight: 800;
+    src: url(open-sans-extra-bold.woff2) format('woff2'),
+            url(open-sans-extra-bold.woff) format('woff');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url(open-sans-regular.woff2) format('woff2'),
+            url(open-sans-regular.woff) format('woff');
+}
+
+
+/*  Don't display the preloaded influence icons  */
+#influence-icons {
+    display: none;
+}
+
+
+/*
+    General styling of Semantic-UI components
+*/
+
 body {
-    font-size: 16px;
+    overflow-y: scroll;
+}
+
+body.animating.in.dimmable, body.dimmed.dimmable {
+    overflow-y: scroll;
 }
 
 textarea {
@@ -30,77 +73,294 @@ textarea {
     resize: none;
 }
 
-#heading h1 {
+.ui.modal {
+    background-color: #533D4F;
+    color: #E7E4E6;
+}
+
+.ui.modal > .header, .ui.modal > .actions {
+    background-color: #664B61;
+    color: #E7E4E6;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.ui.form .field>label {
+    color: #E7E4E6;
+}
+
+.ui.modal .modal-body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 16px;
+}
+
+.ui.button, .ui.button.positive {
+    background-color: #2E2C3D;
+    color: #FFFFFF;
+    border: 1px solid;
+    font-family: 'Open Sans ExtraBold', sans-serif;
+}
+
+.ui.button:hover,
+.ui.button:focus,
+.ui.button.positive:hover,
+.ui.button.positive:focus {
+    background-color: #322C4B;
+    color: #FFFFFF;
+}
+
+.ui.popup {
+    background-color: #322C4B;
+    color: #FFFFFF;
+    max-width: 400px;
+    font-style: 'Open Sans', sans-serif;
+    font-size: 18px;
     text-align: center;
-    padding: 20px 0px 40px 0px;
 }
 
-/*  Don't display the preloaded influence icons  */
-#influence-icons {
-    display: none;
+.ui.popup strong {
+    font-family: 'Open Sans ExtraBold', sans-serif;
+    font-size: 26px;
 }
 
-#import-modal {
-    width: 600px;
+.ui.top.popup:before, .ui.bottom.popup:before {
+    background: #322C4B;
 }
 
-#add-card-modal {
-    width: 400px;
+a {
+    color: #81C3F4;
+    font-family: 'Open Sans ExtraBold', sans-serif;
 }
 
-#card-select {
-    margin: 16px;
+a:hover {
+    color: #4183c4;
 }
 
-#about-modal {
-    width: 600px;
+/*
+    High level page layout
+*/
+
+body {
+    background-color: #17141D;
+    font-family: 'Open Sans Condensed Bold', sans-serif;
+    font-size: 16px;
+    color: #E7E4E6;
 }
 
-#import-form {
-    margin: 16px;
-}
-
-#import-validation-result {
-    font-size: 14px;
-    height: 14px;
-    color: #c00000;
-    text-align: center;
-}
-
-#about-text {
-    margin: 16px;
-}
-
-#deck-and-table {
-    width: 1280px;
-    height: 640px;
+#calculator-content {
     margin-left: auto;
     margin-right: auto;
+    width: 1290px;
 }
 
-#deck-text-div {
+#shiftstoned-heading {
+    margin-left: 40px;
+    height: 104px;
+    width: 1250px;
+}
+
+#calculator-body {
+    margin-left: 40px;
+    background-color: #17141D;
+    border: 1px solid;
+    border-bottom: none;
+    width: 1250px;
+    min-height: 924px;
+}
+
+#influence-panel {
+    background-color: #533D4F;
+    border-bottom: 1px solid;
+    width: 100%;
+    height: 100px;
+}
+
+#deck-edit-panel {
     float: left;
-    width: 350px;
-    margin-right: 30px;
+    background-color: #533D4F;
+    border-right: 1px solid;
+    width: 306px;
+    min-height: 822px
 }
 
-#table-or-graph-menu {
-    margin: 0px 0px 14px 0px;
+#charts-panel {
     float: left;
-    width: 900px;
+    width: 942px;
 }
 
-#deck-buttons {
-    margin-top: 14px;
-    margin-bottom: 12px;
+#charts-menu {
+    height: 94px;
+    width: 100%;
 }
 
-#about-button {
-    float: right;
+#charts-heading {
+    width: 942px;
+    height: 74px;
+}
+
+#calculator-body-footer {
+    clear: both;
+}
+
+
+/*
+    Heading elements
+*/
+
+#background {
+    position: fixed;
+    width: 100%;
+    z-index: -1;
+    top: -100px;
+    left: 0px;
+    margin: 0px auto;
+}
+
+#heading-top {
+    position: relative;
+    width: 100%;
+    height: 65px;
+}
+
+#heading-page-top {
+    width: 100%;
+    height: 39px;
+    background-color: #17141D;
+}
+
+#shiftstoned-img {
+    position: absolute;
+    left: 23px;
+    top: 27px;
+}
+
+#power-calculator-img {
+    position: absolute;
+    left: 308px;
+    top: 16px;
+}
+
+
+/*
+    Influence panel
+*/
+
+#influence-panel > div {
+    position: relative;
+    float: left;
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 48px;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+#influence-panel img {
+    position: absolute;
+    left: 72px;
+    top: -25px;
+}
+
+#card-count-number, #power-sources-number {
+    margin-top: 28px;
+}
+
+#influence-panel #card-count-panel, #influence-panel #power-sources-panel {
+    width: 153px;
+    border-right: solid 1px;
+    font-family: 'Open Sans ExtraBold', sans-serif;
+}
+
+#card-count-label, #power-sources-label {
+    margin-top: 19px;
+    font-size: 12px;
+}
+
+.influence-number {
+    margin-top: 46px;
+}
+
+/*  Use a partially transparent color for zeroed out influence counts  */
+.influence-number.zero {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#fire-sources-panel {
+    width: 188px;
+    background-color: #A30C0E;
+}
+
+#time-sources-panel {
+    width: 189px;
+    background-color: #B26F03;
+}
+
+#justice-sources-panel {
+    width: 188px;
+    background-color: #3A6727;
+}
+
+#primal-sources-panel {
+    width: 189px;
+    background-color: #033276;
+}
+
+#shadow-sources-panel {
+    width: 188px;
+    background-color: #331745;
+}
+
+/*
+    Decklist editing panel
+*/
+
+#deck-edit-buttons {
+    width: 245px;
+    height: 108px;
+    margin: 30px;
+}
+
+#deck-edit-buttons .button {
+    margin: 0px 0px 6px 0px;
+    width: 118px;
+}
+
+#deck-edit-buttons #import-button {
+    margin-right: 4px;
+}
+
+#deck-edit-buttons #about-button {
+    width: 243px;
+}
+
+#deck-edit {
+    width: 305px;
+}
+
+#deck-edit-footer {
+    margin-top: 30px;
+    width: 305px;
+    height: 100px;
 }
 
 .card-count-edit {
-    height: 24px;
+    height: 32px;
+    margin-left: 30px;
+}
+
+.card-name {
+    clear: both;
+    float: left;
+    width: 158px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-count {
+    margin-left: 4px;
+    float: left;
+    width: 18px;
 }
 
 #deck-edit-rows button {
@@ -108,55 +368,64 @@ textarea {
     width: 30px;
     height: 22px;
     padding: 2px;
-    margin: 0px 0px 0px 2px;
+    margin: 0px 0px 0px 4px;
     font-size: 16px;
 }
 
-.card-count {
-    float: left;
-    width: 38px;
-}
-
-.card-name {
-    clear: both;
-    float: left;
-    width: 246px;
-}
-
 #add-card-button {
+    clear: both;
+    margin-left: 30px;
+    width: 243px;
+}
+
+
+/*
+    Charts panel menu
+*/
+
+#charts-menu div {
     float: left;
-    width: 240px;
+    width: 50%;
+    height: 100%;
+    cursor: pointer;
+    background-color: #2E2E2E;
 }
 
-#deck-text {
-    background-color: #f0f0e0;
-    height: 550px;
+#charts-menu div.active {
+    background-color: #17141D;
 }
 
-#deck-text, #deck-validation-result {
-    width: 350px;
+#charts-menu img {
+    display: block;
+    margin: 20px auto 16px auto;
 }
 
-#deck-validation-result {
-    font-size: 14px;
-    padding-top: 6px;
-    text-align: right;
-    color: #606060;
-}
-
-#power-graph-container {
-    float: left;
-}
+/*
+    Influence Graph style
+*/
 
 .power-graph-canvas {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 900px;
-    height: 580px;
+    width: 942px;
+    height: 468px;
 }
 
-#table-and-sources {
+#power-table-sources {
+    clear: both;
+    font-size: 14px;
+    padding-top: 30px;
+    margin-left: 63px;
+    width: 814px;
+    text-align: center;
+}
+
+
+/*
+    Power Odds Table style
+*/
+
+#power-table-container {
+    font-family: 'Open Sans ExtraBold', sans-serif;
     width: 900px;
     float: left;
 }
@@ -164,21 +433,24 @@ textarea {
 .power-table {
     background-color: #000000;
     margin-top: 8px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 63px;
 }
 
 .power-table tr {
     height: 2em;
 }
 
+.power-table-influence-icon {
+    vertical-align: bottom;
+}
+
 /*  Alternate row colors for readability  */
 .power-table tr:nth-child(even) {
-    background-color: #e0e0d0;
+    background-color: #664B61;
 }
 
 .power-table tr:nth-child(odd) {
-    background-color: #c0c0b0;
+    background-color: #533D4F;
 }
 
 .power-table-head-draws {
@@ -190,34 +462,28 @@ textarea {
 }
 
 .power-table-odds {
+    font-family: 'Open Sans', sans-serif;
     text-align: right;
     padding: 0px 8px 0px 8px;
 }
 
 /*  Darken cells with fewer draws than the number of power required  */
 tr:nth-child(even) .power-table-odds-shaded {
-    background-color: #909080;
+    background-color: #3D2D3A;
 }
 
 tr:nth-child(odd) .power-table-odds-shaded {
-    background-color: #707060;
+    background-color: #332530;
 }
 
-#power-table-sources {
+
+/*
+    Import modal dialog
+*/
+
+#import-validation-result {
     font-size: 14px;
-    width: 840px;
+    height: 14px;
+    color: #400000;
     text-align: center;
-}
-
-#power-table-text {
-    text-align: center;
-    margin-bottom: 16px;
-}
-
-.influence-icon {
-    vertical-align: bottom;
-}
-
-#calculator-description-body {
-    margin: 24px;
 }

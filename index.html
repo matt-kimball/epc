@@ -24,19 +24,16 @@
 <html>
 
 <head>
-    <title>Eternal Power Calculator</title>
+    <title>Shiftstoned - Power Calculator</title>
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
     <link rel="stylesheet" href="semantic.min.css">
     <link rel="stylesheet" href="epc.css">
 </head>
 
 <body>
-    <div id="heading">
-        <h1>Eternal Power Calculator</h1>
-    </div>
-
     <!--
         Pre-load all the influence icons symbols.
         The graph drawing pulls the influence symbols from these elements.
@@ -49,39 +46,77 @@
         <img id="icon-shadow" src="icon-shadow.png">
     </div>
 
+    <!--  A dialog displayed when the "About" button is clicked  -->
+    <div id="about-modal" class="ui tiny modal">
+        <div class="header">About Shiftstoned Power Calculator</div>
+
+        <div id="about-text" class="modal-body">
+            <p>
+            Eternal Power Calculator is a tool for probability analysis of
+            decks for <a href="https://www.direwolfdigital.com/eternal/">
+            Eternal Card Game</a>.  It is designed to help understand
+            the odds of drawing resources to play specific cards by
+            a specific turn.
+
+            <p>
+            The probabilities represent only the odds of drawing power and
+            influence sources, without a mulligan.  Note that the requirements
+            for playing those sources isn't considered for the purposes of
+            computing odds.
+
+            <p>
+            For example, Vara's Favor is considered to be a source of both
+            one power and one shadow influence for the purposes of the
+            probability table, but the prerequisite of two power and one shadow
+            influence, in order to play Vara's Favor, isn't a factor in the
+            calculation.
+
+            <p>
+            The original source code for Eternal Power Calculator is
+            <a href="https://github.com/matt-kimball/epc">available
+            on GitHub</a>.
+        </div>
+
+        <div class="actions">
+            <button class="ui positive right button">
+                OK
+            </button>
+        </div>
+    </div>
+
     <!--  Dialog for importing a deck list  -->
-    <div id="import-modal" class="ui modal">
+    <div id="import-modal" class="ui tiny modal">
         <div class="header">
             Paste a deck from Eternal
         </div>
 
-        <div id="import-form" class="ui form">
+        <div id="import-form" class="ui form modal-body">
             <div class="field">
                 <label>Deck list</label>
-                <textarea id="import-modal-deck" rows="20">
-</textarea>
+                <textarea id="import-modal-deck" rows="20"></textarea>
             </div>
 
             <!--  Syntax errors in the decklist are reported here  -->
             <div class="ui label" id="import-validation-result">
             </div>
         </div>
+
         <div class="actions">
             <button
                     id="import-modal-import-button"
                     class="ui positive right button">
-                Import
+                IMPORT
             </button>
         </div>
     </div>
 
     <!--  Dialog for adding a new card  -->
-    <div id="add-card-modal" class="ui modal">
+    <div id="add-card-modal" class="ui mini modal">
         <div class="header">
             Select a card
         </div>
 
-        <div id="card-select">
+        <div id="card-select" class="modal-body">
             <!--  All card names are added by gatherCards in epc-ui.js  -->
             <select
                     id="add-card-dropdown"
@@ -94,38 +129,7 @@
             <button
                     id="add-card-modal-add-button"
                     class="ui positive right button">
-                Add
-            </button>
-        </div>
-    </div>
-
-    <!--  A dialog displayed when the "About" button is clicked  -->
-    <div id="about-modal" class="ui modal">
-        <div class="header">About the probabilities</div>
-
-        <div id="about-text">
-            <p>
-            The number of draws represent cards drawn beyond the opening hand.
-
-            <p>
-            The probabilities in the table represent only the odds of
-            drawing power and influence sources, without a mulligan.
-            The requirements for playing those sources isn't considered
-            for the purposes of computing odds.  For example, Vara's Favor
-            is considered to be a source of both one power and one shadow
-            influence for the purposes of the probability table, but the
-            prerequisite of two power and one shadow influence, in order
-            to play Vara's Favor, isn't a factor in the calculation.
-
-            <p>
-            The original source for Eternal Power Calculator is
-            <a href="https://github.com/matt-kimball/epc">available
-            on Github</a>.
-        </div>
-
-        <div class="actions">
-            <button class="ui positive right button">
-                Ok
+                ADD
             </button>
         </div>
     </div>
@@ -134,83 +138,160 @@
     <div id="card-list-error-modal" class="ui small modal">
         <div class="header">Card list error</div>
 
-        <div id="card-list-error-text" class="content">
+        <div id="card-list-error-text" class="modal-body">
         </div>
 
         <div class="actions">
             <button class="ui positive right button">
-                Ok
+                OK
             </button>
         </div>
     </div>
 
-    <!--
-        The main body of the app, with an editable deck and the
-        graph or table.
-    -->
-    <div id="deck-and-table">
-        <div id="deck-text-div">
-            <div id="deck-buttons" class="actions">
-                <button
-                        id="import-button" class="ui button"
-                        data-content="Import a deck to get started">
-                    Import
-                </button>
+    <div id="calculator-content">
+        <img id="background" src="EternalThroneBackground.jpeg">
 
-                <buttion
-                        id="export-button" class="ui button"
-                        data-content="Deck copied to clipboard">
-                    Export
-                </buttion>
-
-                <buttion id="about-button" class="ui right button">
-                    About
-                </buttion>
+        <div id="shiftstoned-heading">
+            <div id="heading-top">
+                <a href="https://www.shiftstoned.com/">
+                    <img id="shiftstoned-img" src="shiftstoned.png">
+                </a>
+                <img id="power-calculator-img" src="power-calculator.png">
             </div>
-            <div class="ui divider"></div>
-
-            <div id="deck-edit">
-                <div id="deck-edit-rows">
-                </div>
-
-                <button id="add-card-button" class="ui button">
-                    Add card
-                </button>
-            </div>
-
-            <!--  The count of cards in the deck is displayed here  -->
-            <div id="deck-validation-result"></div>
+            <div id="heading-page-top"></div>
         </div>
 
-        <div id="table-or-graph">
-            <!--  Buttons to switch between the table and the graph  -->
-            <div id="table-or-graph-menu" class="ui two item menu">
-                <a id="graph-menu-item" class="item active">
-                    Influence Graph
-                </a>
-                <a id="table-menu-item" class="item">
-                    Power Odds Table
-                </a>
+        <!--
+            The main body of the app, with an editable deck and the
+            graph or table.
+        -->
+        <div id="calculator-body">
+            <div id="influence-panel">
+                <div id="card-count-panel">
+                    <div id="card-count-number">
+                    </div>
+                    <div id="card-count-label">
+                        CARDS
+                    </div>
+                </div>
+
+                <div id="power-sources-panel">
+                    <div id="power-sources-number">
+                    </div>
+                    <div id="power-sources-label">
+                        POWER SOURCES
+                    </div>
+                </div>
+
+                <div id="fire-sources-panel">
+                    <img src="icon-fire.png">
+                    <div id="fire-sources-number" class="influence-number">
+                    </div>
+                </div>
+
+                <div id="time-sources-panel">
+                    <img src="icon-time.png">
+                    <div id="time-sources-number" class="influence-number">
+                    </div>
+                </div>
+
+                <div id="justice-sources-panel">
+                    <img src="icon-justice.png">
+                    <div id="justice-sources-number" class="influence-number">
+                    </div>
+                </div>
+
+                <div id="primal-sources-panel">
+                    <img src="icon-primal.png">
+                    <div id="primal-sources-number" class="influence-number">
+                    </div>
+                </div>
+
+                <div id="shadow-sources-panel">
+                    <img src="icon-shadow.png">
+                    <div id="shadow-sources-number" class="influence-number">
+                    </div>
+                </div>
             </div>
 
-            <div id="table-and-sources">
-                <!--  The table of draw odds is generated here  -->
-                <div id="power-table-div">
+            <div id="deck-edit-panel">
+                <div id="deck-edit-buttons" class="actions">
+                    <button
+                            id="import-button" class="ui button">
+                        IMPORT
+                    </button>
+                    <div
+                            class="ui custom popup transition hidden">
+                        <strong>Greetings Huckleberry!</strong>
+                        <br>
+                        Import a deck to get started
+                    </div>
+
+                    <button
+                            id="export-button" class="ui button"
+                            data-position="top center"
+                            data-content="Deck copied to clipboard">
+                        EXPORT
+                    </button>
+
+                    <button id="about-button" class="ui right button">
+                        ABOUT
+                    </button>
+                </div>
+
+                <div id="deck-edit">
+                    <div id="deck-edit-rows">
+                    </div>
+                </div>
+
+                <div id="deck-edit-footer">
+                    <button id="add-card-button" class="ui button">
+                        ADD CARD
+                    </button>
+                </div>
+            </div>
+
+            <div id="charts-panel">
+                <!--  Buttons to switch between the table and the graph  -->
+                <div id="charts-menu">
+                    <div id="graph-menu-item" class="active">
+                        <img src="influence-graph-menu.png">
+                    </div>
+                    <div id="table-menu-item" class="">
+                        <img src="power-odds-table-menu.png">
+                    </div>
+                </div>
+
+                <div id="charts-heading">
+                </div>
+
+                <div id="power-table-container">
+                    <!--  The table of draw odds is generated here  -->
+                    <div id="power-table-div">
+                    </div>
+
+                    <!--
+                        Text describing the power and influence sources
+                        is generated here.
+                    -->
+                    <p>
+                </div>
+
+                <div id="power-graph-container">
+                    <!-- The graph of power and influence is generated here  -->
+                    <div id="power-graph-div">
+                    </div>
                 </div>
 
                 <!--
-                    Text describing the power and influence sources
-                    is generated here.
+                    An automatically generated list of power and influence
+                    sources used when computing odds
                 -->
-                <p>
                 <div id="power-table-sources">
                 </div>
             </div>
 
-            <div id="power-graph-container">
-                <!-- The graph of power and influence is generated here  -->
-                <div id="power-graph-div">
-                </div>
+            <div id="calculator-body-footer">
             </div>
         </div>
     </div>
@@ -713,7 +794,7 @@
         Set2 #37;; 1T; Excavation Assistant;
         Set2 #38;; 1T; Wandering Wisp;
         Set2 #39;; 2T; Trail Runner;
-        Set2 #40; 2X; 2T; Forgotten Find;
+        Set2 #40; 2XX; 2T; Forgotten Find;
         Set2 #41;; 2T; Oasis Seeker;
         Set2 #42;; 2T,6; Sand Viper;
         Set2 #43;; 2T; Sandstorm;
@@ -1215,6 +1296,7 @@
         Set3 #302;; 6SS; Dizo, Cabal Chairman;
         Set3 #303;; 2FT; Brenn, Chronicler of Ages;
         Set3 #304;; 4JP,8; Svetya, Orene of Kosul;
+        Set3 #305;; 8JJ; Lieutenant Relia;
 
         Set1001 #1;; 3F; Praxis Outlaw;
         Set1001 #2;; 5FF; Bait;
@@ -1297,10 +1379,16 @@
         var graphStyle;
 
         graphStyle = {
-            textColor: "rgb(64, 64, 64)",
-            borderColor: "rgb(0, 0, 0)",
-            backgroundColor: "rgb(240, 240, 224)",
-            interiorLineColor: "rgb(176, 176, 160)"
+            marginLeft: 64,
+            marginRight: 48,
+            marginBottom: 72,
+            fontSize: 18,
+            iconSize: 30,
+            font: "'Open Sans Condensed Bold', sans-serif",
+            textColor: "rgb(231, 228, 230)",
+            borderColor: "rgb(192, 192, 192)",
+            backgroundColor: "rgb(0, 0, 0)",
+            interiorLineColor: "rgb(67, 67, 67)"
         };
 
         buildEpcUI(graphStyle);
