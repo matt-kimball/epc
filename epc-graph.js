@@ -357,20 +357,20 @@ function drawPowerGraph(
         ctx.save();
         /*  Color the curve according to influence type  */
         if (influence.fire > 0) {
-            solidColor = "rgb(163, 12, 14)";
-            translucentColor = "rgba(163, 12, 14, 0.33)";
+            solidColor = graphStyle.fireColorSolid;
+            translucentColor = graphStyle.fireColorTranslucent;
         } else if (influence.time > 0) {
-            solidColor = "rgb(178, 111, 3)";
-            translucentColor = "rgba(178, 111, 3, 0.33)";
+            solidColor = graphStyle.timeColorSolid;
+            translucentColor = graphStyle.timeColorTranslucent;
         } else if (influence.justice > 0) {
-            solidColor = "rgb(58, 103, 39)";
-            translucentColor = "rgba(58, 103, 39, 0.33)";
+            solidColor = graphStyle.justiceColorSolid;
+            translucentColor = graphStyle.justiceColorTranslucent;
         } else if (influence.primal > 0) {
-            solidColor = "rgb(3, 50, 118)";
-            translucentColor = "rgba(3, 50, 118, 0.33)";
+            solidColor = graphStyle.primalColorSolid;
+            translucentColor = graphStyle.primalColorTranslucent;
         } else if (influence.shadow > 0) {
-            solidColor = "rgb(51, 23, 69)";
-            translucentColor = "rgba(51, 23, 69, 0.33)";
+            solidColor = graphStyle.shadowColorSolid;
+            translucentColor = graphStyle.shadowColorTranslucent;
         }
 
         ctx.strokeStyle = solidColor;
