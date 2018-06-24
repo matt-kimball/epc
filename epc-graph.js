@@ -44,49 +44,6 @@ function drawPowerGraph(
         labels;
 
     /*
-        Break down influence requirements into a set of component
-        parts, and return a list of influences, one for each
-        component present in the original influence.
-    */
-    function listComponentInfluences(
-        influence
-    ) {
-        var part, components = [];
-
-        if (influence.fire > 0) {
-            part = makeInfluence("");
-            part.fire = influence.fire;
-            components.push(part);
-        }
-
-        if (influence.justice > 0) {
-            part = makeInfluence("");
-            part.justice = influence.justice;
-            components.push(part);
-        }
-
-        if (influence.primal > 0) {
-            part = makeInfluence("");
-            part.primal = influence.primal;
-            components.push(part);
-        }
-
-        if (influence.shadow > 0) {
-            part = makeInfluence("");
-            part.shadow = influence.shadow;
-            components.push(part);
-        }
-
-        if (influence.time > 0) {
-            part = makeInfluence("");
-            part.time = influence.time;
-            components.push(part);
-        }
-
-        return components;
-    }
-
-    /*
         Examine all cards in the decklist and list all unique influence
         amounts paired with the turns corresponding to the power value
         of their cards
@@ -109,12 +66,14 @@ function drawPowerGraph(
                 turn = 1;
             }
 
-            components = listComponentInfluences(
-                card.influenceRequirements[0]
-            );
+            components = card.influenceRequirements[0].listComponents();
 
             $.each(components, function (index, component) {
                 var componentStr, componentPair, influenceTurn;
+
+                if (component.power > 0) {
+                    return;
+                }
 
                 componentStr = component.toString();
                 componentPair = componentStr + "," + String(turn);
@@ -242,7 +201,7 @@ function drawPowerGraph(
 
             ctx.beginPath();
             ctx.moveTo(midpos, graphCoord.top);
-            ctx.lineTo(midpos, canvasHeight - 2 * graphStyle.fontSize - 6);
+            ctx.lineTo(midpos, canvasHeight - graphStyle.fontSize - 6);
             ctx.stroke();
 
             midline += verticalMidlineStep;
@@ -262,7 +221,7 @@ function drawPowerGraph(
 
     /*  Add the labels for the extents of the graph  */
     function addGraphLabels() {
-        var midline, turnStr, percent, x, y;
+        var midline, percent, x, y;
 
         midline = 1.0;
         while (midline > minValue) {
@@ -280,13 +239,7 @@ function drawPowerGraph(
             x = graphCoord.left +
                 (midline - minDraws) / (maxDraws - minDraws) *
                 (graphCoord.right - graphCoord.left);
-            drawBottomLabel(String(midline - 6), x, -graphStyle.fontSize);
-            if (midline === 7) {
-                turnStr = "Turn";
-            } else {
-                turnStr = "Turns";
-            }
-            drawBottomLabel(turnStr, x, 0);
+            drawBottomLabel(String(midline - 7), x, 0);
 
             midline += verticalMidlineStep;
         }

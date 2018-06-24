@@ -3,3 +3,5 @@ epc.min.js
 package-lock.json
 node_modules
 semantic
+dist
+

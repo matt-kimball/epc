@@ -33,10 +33,106 @@
 function buildEpcUI(
     graphStyle
 ) {
-    var cardlist, cardLibrary, currentDeck, modifyCardCount;
+    var cardlist, cardLibrary, currentDeck, modifyCardCount, oddsWorker;
 
     cardlist = $("#card-list").html();
     cardLibrary = makeEternalCardLibrary(cardlist);
+
+    /*
+        Get the CSS class name for a card in the deck edit list,
+        based on the influence colors it provides.
+    */
+    function getCardNameClass(
+        card
+    ) {
+        var influence;
+
+        if (card.power) {
+            return "card-name";
+        }
+
+        influence = card.influenceGenerated;
+        if (!influence || influence.isEmpty()) {
+            return "card-name";
+        }
+
+        if (influence.fire > 0 &&
+                influence.time === 0 && influence.justice === 0 &&
+                influence.primal === 0 && influence.shadow === 0 &&
+                influence.wild === 0) {
+            return "card-name fire";
+        }
+
+        if (influence.time > 0 &&
+                influence.fire === 0 && influence.justice === 0 &&
+                influence.primal === 0 && influence.shadow === 0 &&
+                influence.wild === 0) {
+            return "card-name time";
+        }
+
+        if (influence.justice > 0 &&
+                influence.time === 0 && influence.fire === 0 &&
+                influence.primal === 0 && influence.shadow === 0 &&
+                influence.wild === 0) {
+            return "card-name justice";
+        }
+
+        if (influence.primal > 0 &&
+                influence.time === 0 && influence.justice === 0 &&
+                influence.fire === 0 && influence.shadow === 0 &&
+                influence.wild === 0) {
+            return "card-name primal";
+        }
+
+        if (influence.shadow > 0 &&
+                influence.time === 0 && influence.justice === 0 &&
+                influence.primal === 0 && influence.fire === 0 &&
+                influence.wild === 0) {
+            return "card-name shadow";
+        }
+
+        return "card-name multi";
+    }
+
+    /*
+        Build a row corresponding to an individual card in the decklist
+        editing panel.
+    */
+    function buildDeckRow(
+        row,
+        deck,
+        card,
+        cardcount
+    ) {
+        var name,
+            nameClass,
+            count,
+            countstr,
+            cardid,
+            addButton,
+            subButton;
+
+        name = cardcount.name;
+        count = cardcount.count;
+        countstr = String(count);
+        cardid = cardcount.id;
+
+        nameClass = getCardNameClass(card);
+
+        $("<div>").addClass(nameClass).text(name).appendTo(row);
+        $("<div>").addClass("card-count").text(countstr).appendTo(row);
+        subButton = $("<button>").addClass("ui compact button")
+            .text("-").appendTo(row);
+        addButton = $("<button>").addClass("ui compact button")
+            .text("+").appendTo(row);
+
+        addButton.bind("click", function () {
+            modifyCardCount(deck, cardid, count + 1);
+        });
+        subButton.bind("click", function () {
+            modifyCardCount(deck, cardid, count - 1);
+        });
+    }
 
     /*
         Add the rows to the editable deck, one for each card,
@@ -45,35 +141,41 @@ function buildEpcUI(
     function buildDeckRows(
         deck
     ) {
-        var deckEditDiv, row;
+        var powerRows, nonpowerRows, row;
 
-        deckEditDiv = $("#deck-edit-rows");
-        deckEditDiv.empty();
+        powerRows = $("#deck-edit-power-rows");
+        powerRows.empty();
+
+        nonpowerRows = $("#deck-edit-nonpower-rows");
+        nonpowerRows.empty();
 
         $.each(deck.cardlist, function (index, cardcount) {
-            var name, cardid, count, countstr, addButton, subButton;
+            var card, cardid;
 
-            name = cardcount.name;
             cardid = cardcount.id;
-            count = cardcount.count;
-            countstr = String(count);
+            card = cardLibrary.cards[cardid];
 
-            row = $("<div>").addClass("card-count-edit")
-                .appendTo(deckEditDiv);
-            $("<div>").addClass("card-name").text(name).appendTo(row);
-            $("<div>").addClass("card-count").text(countstr).appendTo(row);
-            subButton = $("<button>").addClass("ui compact button")
-                .text("-").appendTo(row);
-            addButton = $("<button>").addClass("ui compact button")
-                .text("+").appendTo(row);
+            row = $("<div>").addClass("card-count-edit");
+            if (card && card.power) {
+                row.appendTo(powerRows);
+            } else {
+                row.appendTo(nonpowerRows);
+            }
 
-            addButton.bind("click", function () {
-                modifyCardCount(deck, cardid, count + 1);
-            });
-            subButton.bind("click", function () {
-                modifyCardCount(deck, cardid, count - 1);
-            });
+            buildDeckRow(row, deck, card, cardcount);
         });
+
+        if (powerRows.children().length) {
+            $("#deck-edit-power-title").css("display", "block");
+        } else {
+            $("#deck-edit-power-title").css("display", "none");
+        }
+
+        if (nonpowerRows.children().length) {
+            $("#deck-edit-nonpower-title").css("display", "block");
+        } else {
+            $("#deck-edit-nonpower-title").css("display", "none");
+        }
     }
 
     /*
@@ -167,13 +269,16 @@ function buildEpcUI(
         } catch (ignore) {
         }
 
-        generateOddsTable(
-            $("#power-table-div"),
-            $("#power-table-sources"),
+        if (oddsWorker) {
+            oddsWorker.cancel();
+        }
+        oddsWorker = generateOddsTable(
+            $("#power-table-cost-div"),
+            $("#power-table-odds-div"),
             cardLibrary,
             deck
         );
-        drawPowerGraph($("#power-graph-container"), graphStyle, deck);
+        drawPowerGraph($("#power-graph-div"), graphStyle, deck);
         generateInfluencePanel(deck);
         buildDeckRows(deck);
     }
@@ -253,6 +358,14 @@ function buildEpcUI(
         input.remove();
     }
 
+    /*  Reset the deck to an empty deck  */
+    function onDeckClear() {
+        var deck;
+
+        deck = makeEternalDeckFromString(cardLibrary, "");
+        onDeckChange(deck);
+    }
+
     /*
         Add a new card to the current deck upon confirmation from the
         add card dialog.
@@ -299,11 +412,11 @@ function buildEpcUI(
         if (!currentDeck.cards.length) {
             importPopupActive = true;
             importButton = $("#import-button");
-            importButton.popup("toggle");
+            importButton.popup("show");
 
             $(window).bind("click", function () {
                 if (importPopupActive) {
-                    importButton.popup("toggle");
+                    importButton.popup("hide");
                     importPopupActive = false;
                 }
             });
@@ -319,6 +432,10 @@ function buildEpcUI(
     /*  Bind all buttons to their behavior handlers  */
     function bindButtons() {
         $(window).bind("load", onLoad);
+        $(".menu-help-icon").popup({
+            position: "top right",
+            offset: 6
+        });
 
         $("#import-button").popup({ on: "" });
         $("#import-button").bind("click", function () {
@@ -335,13 +452,19 @@ function buildEpcUI(
             onDeckExport();
         });
 
-        $("#about-button").bind("click", function () {
+        $("#about-heading").bind("click", function () {
             $("#about-modal").modal("show");
         });
 
         $("#add-card-button").bind("click", function () {
             $("#add-card-dropdown").dropdown("clear");
             $("#add-card-modal").modal("show");
+        });
+
+        $("#clear-button").popup({ on: "click" });
+        $("#clear-button").bind("click", function () {
+            onDeckClear();
+            $("#clear-button").popup("reposition");
         });
 
         $("#import-modal-import-button").bind("click", function () {

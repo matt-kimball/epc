@@ -46,7 +46,7 @@ Build support:
 
 # Usage
 
-To use Eternal Power Calculator, see http://matt-kimball.github.io/epc/
+To use Eternal Power Calculator, see https://www.shiftstoned.com/epc/
 
 # License
 

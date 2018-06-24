@@ -319,6 +319,43 @@ function makeInfluence(
     };
 
     /*
+        Compare to another influence object for sort ordering.
+        Returns -1 if influence is first in sort order, 1 if
+        other is first, and 0 if they are equal for sorting purposes.
+    */
+    influence.compare = function (other) {
+        if (influence.power !== other.power) {
+            return influence.power - other.power;
+        }
+
+        if (influence.wild !== other.wild) {
+            return influence.wild - other.wild;
+        }
+
+        if (influence.shadow !== other.shadow) {
+            return influence.shadow - other.shadow;
+        }
+
+        if (influence.primal !== other.primal) {
+            return influence.primal - other.primal;
+        }
+
+        if (influence.justice !== other.justice) {
+            return influence.justice - other.justice;
+        }
+
+        if (influence.time !== other.time) {
+            return influence.time - other.time;
+        }
+
+        if (influence.fire !== other.fire) {
+            return influence.fire - other.fire;
+        }
+
+        return 0;
+    };
+
+    /*
         Returns true if the influence we represent fully satisfies
         the casting cost of the target influence requirements.
     */
@@ -356,6 +393,53 @@ function makeInfluence(
         return true;
     };
 
+    /*
+        Break down influence requirements into a set of component
+        parts, and return a list of influences, one for each
+        component present in the original influence.
+    */
+    influence.listComponents = function () {
+        var part, components = [];
+
+        if (influence.power > 0) {
+            part = makeInfluence("");
+            part.power = influence.power;
+            components.push(part);
+        }
+
+        if (influence.fire > 0) {
+            part = makeInfluence("");
+            part.fire = influence.fire;
+            components.push(part);
+        }
+
+        if (influence.time > 0) {
+            part = makeInfluence("");
+            part.time = influence.time;
+            components.push(part);
+        }
+
+        if (influence.justice > 0) {
+            part = makeInfluence("");
+            part.justice = influence.justice;
+            components.push(part);
+        }
+
+        if (influence.primal > 0) {
+            part = makeInfluence("");
+            part.primal = influence.primal;
+            components.push(part);
+        }
+
+        if (influence.shadow > 0) {
+            part = makeInfluence("");
+            part.shadow = influence.shadow;
+            components.push(part);
+        }
+
+        return components;
+    };
+
     return influence;
 }
 
@@ -374,12 +458,14 @@ function makeEternalCardInfo(
     id,
     name,
     influenceGenerated,
-    influenceRequired
+    influenceRequired,
+    flags
 ) {
     var card = {
         id: id,  //  "SetN #XXX"
         name: name,
-        influenceRequirements: []  // both casting cost and card effects
+        influenceRequirements: [],  // both casting cost and card effects
+        power: false
     };
 
     card.influenceGenerated = makeInfluence(influenceGenerated);
@@ -402,6 +488,12 @@ function makeEternalCardInfo(
             } else if (!influence.isEmpty()) {
                 card.influenceRequirements.push(influence);
             }
+        }
+    });
+
+    $.each(flags, function (index, flag) {
+        if (flag === "power") {
+            card.power = true;
         }
     });
 
@@ -457,7 +549,8 @@ function makeEternalCardLibrary(
             id,
             name,
             influenceGenerated,
-            influenceRequired;
+            influenceRequired,
+            flags;
 
         line = line.trim();
         if (line.length <= 0) {
@@ -476,12 +569,14 @@ function makeEternalCardLibrary(
         influenceGenerated = match[2].trim();
         influenceRequired = match[3].trim();
         name = match[4].trim();
+        flags = match[5].trim().split(",");
 
         card = makeEternalCardInfo(
             id,
             name,
             influenceGenerated,
-            influenceRequired
+            influenceRequired,
+            flags
         );
 
         if (card.makeError) {
@@ -744,10 +839,6 @@ function makeEternalDeck(
 
         cards = deck.cards.slice();
 
-        /*
-            Sort cards by the number of power in their primary
-            influence requirement.
-        */
         cards.sort(function (a, b) {
             var infA, infB, powerDiff;
 
@@ -794,6 +885,33 @@ function makeEternalDeck(
                 influenceList.push(influencePair);
                 influenceDict[influenceStr] = influencePair;
             });
+        });
+
+        influenceList.sort(function (a, b) {
+            var infA, infB, infCompare, lowIdA, lowIdB;
+
+            infA = a[0];
+            infB = b[0];
+
+            infCompare = infA.compare(infB);
+            if (infCompare) {
+                return infCompare;
+            }
+
+            lowIdA = a[1][0].id;
+            lowIdB = b[1][0].id;
+            $.each(a[1], function (index, card) {
+                if (card.id.localeCompare(lowIdA) < 0) {
+                    lowIdA = card.id;
+                }
+            });
+            $.each(b[1], function (index, card) {
+                if (card.id.localeCompare(lowIdB) < 0) {
+                    lowIdB = card.id;
+                }
+            });
+
+            return lowIdA.localeCompare(lowIdB);
         });
 
         return influenceList;
