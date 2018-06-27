@@ -6,6 +6,8 @@ DISTFILES="\
     jquery-1.12.4.min.js \
     semantic.min.css \
     semantic.min.js \
+    merriweather-regular.woff \
+    merriweather-regular.woff2 \
     open-sans-condensed-bold.woff \
     open-sans-condensed-bold.woff2 \
     open-sans-extra-bold.woff \
@@ -17,6 +19,8 @@ DISTFILES="\
     icon-primal.png \
     icon-shadow.png \
     icon-time.png \
+    menu-help-icon.png \
+    navigation-menu.png \
     shiftstoned.png \
     power-calculator.png \
     influence-graph-menu.png \

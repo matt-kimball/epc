@@ -1,5 +1,5 @@
 /*global $, document, window, localStorage*/
-/*global generateOddsTable, drawPowerGraph*/
+/*global generateOddsTable, drawPowerGraph, makeGraphPopupTracker*/
 /*global makeEternalCardLibrary, makeEternalDeck, makeEternalDeckFromString*/
 /*jslint unparam: true*/
 /*
@@ -33,7 +33,12 @@
 function buildEpcUI(
     graphStyle
 ) {
-    var cardlist, cardLibrary, currentDeck, modifyCardCount, oddsWorker;
+    var cardlist,
+        cardLibrary,
+        currentDeck,
+        modifyCardCount,
+        oddsWorker,
+        graphPopupTracker;
 
     cardlist = $("#card-list").html();
     cardLibrary = makeEternalCardLibrary(cardlist);
@@ -260,7 +265,7 @@ function buildEpcUI(
     function onDeckChange(
         deck
     ) {
-        var decklist;
+        var decklist, dots;
         currentDeck = deck;
 
         decklist = currentDeck.generateDecklist(false);
@@ -278,7 +283,10 @@ function buildEpcUI(
             cardLibrary,
             deck
         );
-        drawPowerGraph($("#power-graph-div"), graphStyle, deck);
+
+        dots = drawPowerGraph($("#power-graph-div"), graphStyle, deck);
+        graphPopupTracker.setGraphDots(dots);
+
         generateInfluencePanel(deck);
         buildDeckRows(deck);
     }
@@ -553,6 +561,7 @@ function buildEpcUI(
         }
     }
 
+    graphPopupTracker = makeGraphPopupTracker();
     getDeckFromStorage();
     onDeckChange(currentDeck);
     bindButtons();

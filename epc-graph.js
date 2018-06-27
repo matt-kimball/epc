@@ -1,4 +1,5 @@
-/*global $, makeInfluence*/
+/*global $, window, document*/
+/*global makeInfluence, addInfluenceDisplay*/
 /*jslint unparam: true*/
 /*
 
@@ -24,6 +25,230 @@
 'use strict';
 
 
+/*
+    Make an object to track the mouse position, and show a popup
+    with the influence odds when it hovers near a dot on the graph.
+*/
+function makeGraphPopupTracker() {
+    var tracker,
+        graphPopupAnchor,
+        graphPopup,
+        popupDot,
+        graphDots,
+        maxDistance,
+        mergeDistance;
+
+    tracker = {};
+    maxDistance = 25;
+    mergeDistance = 12;
+
+    /*
+        If a popup is currently active, hide it
+    */
+    function hideGraphPopup(
+        event
+    ) {
+        if (graphPopupAnchor) {
+            graphPopupAnchor.popup("destroy");
+            graphPopupAnchor.remove();
+            graphPopup.remove();
+            popupDot = undefined;
+        }
+    }
+
+    /*
+        Find the graph dots closest to the given position on the
+        graph.  Return a list of dots sorted by distance, with
+        closest first.
+    */
+    function findCloseDots(
+        pos
+    ) {
+        var maxDist2, dots, bestDot, bestDist2;
+
+        function calculateDistance2(
+            dot,
+            point
+        ) {
+            var dx, dy;
+
+            dx = point.x - dot.pos.x;
+            dy = point.y - dot.pos.y;
+
+            return dx * dx + dy * dy;
+        }
+
+        /*  Find the closest dot  */
+        maxDist2 = maxDistance * maxDistance;
+        bestDist2 = maxDist2;
+        $.each(graphDots, function (index, dot) {
+            var dist2;
+
+            dist2 = calculateDistance2(dot, pos);
+            if (dist2 < bestDist2) {
+                bestDist2 = dist2;
+                bestDot = dot;
+            }
+        });
+
+        if (!bestDot) {
+            return [];
+        }
+
+        /*  Find all dots within a fixed distance of the closest dot  */
+        dots = [];
+        $.each(graphDots, function (index, dot) {
+            var dist2;
+
+            dist2 = calculateDistance2(dot, bestDot.pos);
+            if (dist2 < mergeDistance * mergeDistance) {
+                dots.push(dot);
+            }
+        });
+
+        /*  Sort retuned dots by distance  */
+        dots.sort(function (a, b) {
+            if (a.pos.y !== b.pos.y) {
+                return a.pos.y - b.pos.y;
+            }
+
+            return a.pos.x - b.pos.x;
+        });
+
+        return dots;
+    }
+
+    /*
+        Fill out the content of a graph popup with information
+        from a list of dots close to the mouse location
+    */
+    function generatePopupContent(
+        popup,
+        dots
+    ) {
+        var header, oddsStr;
+
+        $.each(dots, function (index, dot) {
+            var names;
+
+            if (index > 0) {
+                $("<div>").addClass("ui divider").appendTo(popup);
+            }
+
+            header = $("<div>")
+                .addClass("power-graph-popup-odds").appendTo(popup);
+
+            addInfluenceDisplay(
+                $("<span>").appendTo(header),
+                dot.influence,
+                20
+            );
+            oddsStr = " - " + String(Math.floor(dot.odds * 100)) + "%";
+            $("<span>").text(oddsStr).appendTo(header);
+
+            names = [];
+            $.each(dot.cards, function (index, card) {
+                names.push(card.name);
+            });
+
+            names.sort();
+            $.each(names, function (index, name) {
+                $("<div>").addClass("power-graph-popup-cards")
+                    .text(name).appendTo(popup);
+            });
+        });
+    }
+
+    /*
+        Show a dot popup on the closest location on the graph
+        to the given position.
+    */
+    function showGraphPopup(
+        container,
+        pos
+    ) {
+        var anchor, popup, dots, firstDot;
+
+        dots = findCloseDots(pos);
+        if (!dots.length) {
+            hideGraphPopup();
+            return;
+        }
+
+        /*
+            If we are already showing the popup for the closest dot,
+            don't regenerate it to avoid flickering.
+        */
+        firstDot = dots[0];
+        if (firstDot === popupDot) {
+            return;
+        }
+
+        container = $("#power-graph-div");
+        anchor = $("<div>")
+            .addClass("power-graph-popup-anchor")
+            .appendTo(container);
+        popup = $("<div>")
+            .addClass("power-graph-popup ui custom popup hidden")
+            .appendTo(container);
+
+        generatePopupContent(popup, dots);
+
+        anchor.css("position", "absolute")
+            .css("left", String(firstDot.pos.x) + "px")
+            .css("top", String(firstDot.pos.y) + "px");
+        anchor.popup({
+            on: "",
+            position: "top center"
+        });
+
+        hideGraphPopup();
+        anchor.popup("show");
+        graphPopupAnchor = anchor;
+        graphPopup = popup;
+        popupDot = firstDot;
+    }
+
+    /*
+        When the mouse moves, translate the mouse position
+        to a position relative to the graph, and then show
+        a popup if close enough to any of the dots on the graph.
+    */
+    function onMouseMove(
+        event
+    ) {
+        var container, graphX, graphY, graphOffset;
+
+        container = $("#power-graph-div");
+        graphOffset = container.offset();
+        graphX = event.clientX + window.pageXOffset - graphOffset.left;
+        graphY = event.clientY + window.pageYOffset - graphOffset.top;
+
+        if (!container.is(":visible")) {
+            hideGraphPopup();
+        } else if (graphX < 0 || graphX >= container.width() ||
+                graphY < 0 || graphY >= container.height()) {
+            hideGraphPopup();
+        } else {
+            showGraphPopup(container, { x: graphX, y: graphY });
+        }
+    }
+
+    /*
+        Store a new set of dots.  To be called when the graph
+        is regenerated.
+    */
+    tracker.setGraphDots = function (
+        dots
+    ) {
+        graphDots = dots;
+    };
+
+    $(document).bind("mousemove", onMouseMove);
+
+    return tracker;
+}
+
 /*  Draw a graph of influence component odds on a canvas element  */
 function drawPowerGraph(
     container,
@@ -34,8 +259,10 @@ function drawPowerGraph(
         canvas,
         canvasWidth,
         canvasHeight,
+        drawnDots,
         graphCoord,
         influenceTurns,
+        allInfluenceTurns,
         minValue,
         minDraws,
         maxDraws,
@@ -80,11 +307,18 @@ function drawPowerGraph(
                 if (!componentPairs.hasOwnProperty(componentPair)) {
                     influenceTurn = {
                         influence: component,
-                        turn: turn
+                        turn: turn,
+                        cards: [card]
                     };
 
                     componentPairs[componentPair] = influenceTurn;
                     ret.push(influenceTurn);
+                } else {
+                    influenceTurn = componentPairs[componentPair];
+
+                    if (influenceTurn.cards.indexOf(card) < 0) {
+                        componentPairs[componentPair].cards.push(card);
+                    }
                 }
             });
         });
@@ -291,23 +525,14 @@ function drawPowerGraph(
         }
     }
 
-    /*  Graph the graph curve for the odds of one influence component  */
-    function drawInfluenceCurve(
-        influence,
-        startDraw
+    function getInfluenceColor(
+        influence
     ) {
-        var odds,
-            oddsY,
-            draws,
-            x,
-            y,
-            startX,
-            startY,
-            fx,
-            solidColor,
-            translucentColor;
+        var solidColor, translucentColor;
 
-        ctx.save();
+        solidColor = "rgb(0, 0, 0)";
+        translucentColor = "rgba(0, 0, 0, 0.3)";
+
         /*  Color the curve according to influence type  */
         if (influence.fire > 0) {
             solidColor = graphStyle.fireColorSolid;
@@ -326,12 +551,91 @@ function drawPowerGraph(
             translucentColor = graphStyle.shadowColorTranslucent;
         }
 
-        ctx.strokeStyle = solidColor;
-        ctx.fillStyle = translucentColor;
+        return {
+            solid: solidColor,
+            translucent: translucentColor
+        };
+    }
+
+    /*
+        Draw a small dot along one of the graph curves to represent
+        a card at with a particular influence and power cost, where
+        the card isn't the lowest power cost with that influence.
+    */
+    function drawInfluenceDot(
+        influence,
+        pos
+    ) {
+        var influenceColor;
+
+        influenceColor = getInfluenceColor(influence);
+
+        ctx.save();
+        ctx.fillStyle = influenceColor.solid;
+        ctx.strokeStyle = "rgb(51, 51, 51)";
+
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, graphStyle.dotSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    /*
+        Given an influence and turn number, return an influenceTurn
+        structure describing the cards with that influence and power
+        cost, if any.
+    */
+    function findInfluenceTurn(
+        influence,
+        turn
+    ) {
+        var ret = null;
+
+        $.each(allInfluenceTurns, function (index, influenceTurn) {
+            if (!influenceTurn.influence.equals(influence)) {
+                return;
+            }
+
+            if (influenceTurn.turn !== turn) {
+                return;
+            }
+
+            ret = influenceTurn;
+        });
+
+        return ret;
+    }
+
+    /*  Graph the graph curve for the odds of one influence component  */
+    function drawInfluenceCurve(
+        influence,
+        startDraw
+    ) {
+        var odds,
+            oddsY,
+            draws,
+            dots,
+            x,
+            y,
+            startX,
+            startY,
+            fx,
+            influenceTurn,
+            colors;
+
+        ctx.save();
+
+        colors = getInfluenceColor(influence);
+
+        ctx.strokeStyle = colors.solid;
+        ctx.fillStyle = colors.translucent;
 
         /*  Draw the curve  */
         ctx.beginPath();
         ctx.lineWidth = 1.5;
+
+        dots = [];
         for (draws = startDraw; draws <= maxDraws; draws += 1) {
             odds = deck.drawOdds(draws, influence);
             oddsY = (odds - minValue) / (1.0 - minValue);
@@ -349,6 +653,17 @@ function drawPowerGraph(
             } else {
                 ctx.lineTo(x, y);
             }
+
+            influenceTurn = findInfluenceTurn(influence, draws - 6);
+            if (influenceTurn) {
+                dots.push({
+                    influence: influence,
+                    pos: { x: x, y: y },
+                    draws: draws - 7,
+                    odds: odds,
+                    cards: influenceTurn.cards
+                });
+            }
         }
         ctx.stroke();
 
@@ -357,6 +672,8 @@ function drawPowerGraph(
         ctx.lineTo(startX, startY);
         ctx.fill();
         ctx.restore();
+
+        return dots;
     }
 
     /*  Draw the icons or text next to the influence curve it represents  */
@@ -431,11 +748,12 @@ function drawPowerGraph(
     /*  Queue an influence label to be drawn later  */
     function addInfluenceLabel(
         influence,
-        pos
+        turn
     ) {
-        var mid, odds, oddsY, fx, x, y;
+        var pos, mid, odds, oddsY, fx, x, y;
 
         /*  Compute the coordinates for the label  */
+        pos = (turn - 1) / (maxDraws - minDraws);
         mid = Math.floor(minDraws + pos * (maxDraws - minDraws));
         odds = deck.drawOdds(mid, influence);
         oddsY = (odds - minValue) / (1.0 - minValue);
@@ -448,27 +766,39 @@ function drawPowerGraph(
             pos: {
                 x: x,
                 y: y
-            }
+            },
         });
     }
 
     /*  Draw all of the influence component curves  */
     function drawComponentCurves() {
+        var dots;
+
+        dots = [];
         $.each(influenceTurns, function (index, influenceTurn) {
-            drawInfluenceCurve(
+            var newDots;
+
+            newDots = drawInfluenceCurve(
                 influenceTurn.influence,
                 minDraws + influenceTurn.turn - 1
             );
+
+            dots = dots.concat(newDots);
         });
+
+        $.each(dots, function (index, dot) {
+            drawInfluenceDot(dot.influence, dot.pos);
+        });
+        drawnDots = dots;
 
         $.each(influenceTurns, function (index, influenceTurn) {
-            var pos;
-
-            pos = (influenceTurn.turn - 1) / (maxDraws - minDraws);
-
-            addInfluenceLabel(influenceTurn.influence, pos);
+            addInfluenceLabel(
+                influenceTurn.influence,
+                influenceTurn.turn
+            );
         });
     }
+
 
     /*
         Find the minimum probability of any of the component influences,
@@ -539,6 +869,7 @@ function drawPowerGraph(
         ctx.font = String(graphStyle.fontSize) + "px " + graphStyle.font;
         ctx.lineWidth = 1;
 
+        allInfluenceTurns = listAllInfluenceTurns();
         influenceTurns = listInfluenceTurns();
         findGraphExtents();
         drawOutline();
@@ -571,4 +902,6 @@ function drawPowerGraph(
     }
 
     makeCanvas();
+
+    return drawnDots;
 }

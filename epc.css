@@ -540,6 +540,7 @@ body {
 }
 
 #power-graph-div {
+    position: relative;
     width: 942px;
     height: 450px;
 }
@@ -579,6 +580,28 @@ body {
     letter-spacing: 5px;
     margin-top: 6px;
 }
+
+.power-graph-popup-anchor {
+    height: 1px;
+    width: 1px;
+}
+
+.power-graph-popup.ui.popup {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+}
+
+.power-graph-popup-odds {
+    margin-bottom: 15px;
+}
+
+.power-graph-popup-cards {
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 
 /*
@@ -669,6 +692,16 @@ tr:nth-child(odd) .power-table-odds-shaded {
     width: 150px;
     font-family: 'Open Sans', sans-serif;
     font-size: 15px;
+}
+
+.table-cost-popup-content {
+    width: 150px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 

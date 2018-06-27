@@ -150,6 +150,54 @@ function makeOddsWorker(
 
 
 /*
+    Add the text and icons representing an influence requirement
+    to a table cell
+*/
+function addInfluenceDisplay(
+    cell,
+    influence,
+    iconSize
+) {
+    var i;
+
+    /*  Append an influence icon to the influence cell of the table  */
+    function appendInfluenceImage(
+        cell,
+        imageFile
+    ) {
+        $("<img>").addClass("power-table-influence-icon")
+            .attr("src", imageFile)
+            .attr("width", iconSize)
+            .attr("height", iconSize)
+            .appendTo(cell);
+    }
+
+    if (influence.power > 0) {
+        cell.text(String(influence.power));
+    }
+
+    for (i = 0; i < influence.fire; i += 1) {
+        appendInfluenceImage(cell, "icon-fire.png");
+    }
+
+    for (i = 0; i < influence.time; i += 1) {
+        appendInfluenceImage(cell, "icon-time.png");
+    }
+
+    for (i = 0; i < influence.justice; i += 1) {
+        appendInfluenceImage(cell, "icon-justice.png");
+    }
+
+    for (i = 0; i < influence.primal; i += 1) {
+        appendInfluenceImage(cell, "icon-primal.png");
+    }
+
+    for (i = 0; i < influence.shadow; i += 1) {
+        appendInfluenceImage(cell, "icon-shadow.png");
+    }
+}
+
+/*
     Construct an object which can generate HTML tables with odds of
     drawing cards from a deck.
 
@@ -167,53 +215,6 @@ function generateOddsTable(
     maxDraws = 27;
     iconSize = 20;
 
-    /*  Append an influence icon to the influence cell of the table  */
-    function appendInfluenceImage(
-        cell,
-        imageFile
-    ) {
-        $("<img>").addClass("power-table-influence-icon")
-            .attr("src", imageFile)
-            .attr("width", iconSize)
-            .attr("height", iconSize)
-            .appendTo(cell);
-    }
-
-    /*
-        Add the text and icons representing an influence requirement
-        to a table cell
-    */
-    function addInfluenceDisplay(
-        cell,
-        influence
-    ) {
-        var i;
-
-        if (influence.power > 0) {
-            cell.text(String(influence.power));
-        }
-
-        for (i = 0; i < influence.fire; i += 1) {
-            appendInfluenceImage(cell, "icon-fire.png");
-        }
-
-        for (i = 0; i < influence.time; i += 1) {
-            appendInfluenceImage(cell, "icon-time.png");
-        }
-
-        for (i = 0; i < influence.justice; i += 1) {
-            appendInfluenceImage(cell, "icon-justice.png");
-        }
-
-        for (i = 0; i < influence.primal; i += 1) {
-            appendInfluenceImage(cell, "icon-primal.png");
-        }
-
-        for (i = 0; i < influence.shadow; i += 1) {
-            appendInfluenceImage(cell, "icon-shadow.png");
-        }
-    }
-
     /*
         Generate the cost label table describing the rows of
         the power odds table.
@@ -230,13 +231,35 @@ function generateOddsTable(
 
         influenceCards = deck.listInfluenceRequirements();
         $.each(influenceCards, function (index, influenceCard) {
-            var influence, th;
+            var influence, th, popup, content, cards, lastName;
 
             influence = influenceCard[0];
+            cards = influenceCard[1].slice();
 
             row = $("<tr>").addClass("power-table-row-body").appendTo(table);
             th = $("<th>").addClass("power-table-influence").appendTo(row);
-            addInfluenceDisplay(th, influence);
+            content = $("<div>").appendTo(th);
+            addInfluenceDisplay(content, influence, iconSize);
+
+            popup = $("<div>")
+                .addClass("ui popup center")
+                .appendTo(th);
+            content.popup({
+                position: "top center"
+            });
+
+            cards.sort(function (a, b) {
+                return a.name.localeCompare(b.name);
+            });
+            $.each(cards, function (index, card) {
+                if (card.name === lastName) {
+                    return;
+                }
+
+                $("<div>").addClass("table-cost-popup-content")
+                    .text(card.name).appendTo(popup);
+                lastName = card.name;
+            });
         });
     }
 
@@ -255,10 +278,20 @@ function generateOddsTable(
 
             component = componentOdds.component;
             oddsText = String(Math.floor(componentOdds.odds * 100));
-            text = " - " + oddsText + "%";
+
+            if (component.power > 0) {
+                text = " Power";
+            } else {
+                text = "";
+            }
+            text += " - " + oddsText + "%";
 
             div = $("<div>").appendTo(popup);
-            addInfluenceDisplay($("<span>").appendTo(div), component);
+            addInfluenceDisplay(
+                $("<span>").appendTo(div),
+                component,
+                iconSize
+            );
             $("<span>").text(text).appendTo(div);
         });
     }
