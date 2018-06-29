@@ -52,7 +52,7 @@ function buildEpcUI(
     ) {
         var influence;
 
-        if (card.power) {
+        if (card.flags.power) {
             return "card-name";
         }
 
@@ -161,7 +161,7 @@ function buildEpcUI(
             card = cardLibrary.cards[cardid];
 
             row = $("<div>").addClass("card-count-edit");
-            if (card && card.power) {
+            if (card && card.flags.power) {
                 row.appendTo(powerRows);
             } else {
                 row.appendTo(nonpowerRows);
@@ -258,6 +258,28 @@ function buildEpcUI(
     }
 
     /*
+        Fill in card type counts for each element of class
+        "power-type-count" in the document.
+    */
+    function generatePowerTypeCounts(
+        deck
+    ) {
+        $(".power-type-count").each(function (index, div) {
+            var flag, count;
+
+            count = 0;
+            flag = $(div).attr("tag");
+            $.each(deck.cards, function (cardIndex, card) {
+                if (card.flags[flag]) {
+                    count += 1;
+                }
+            });
+
+            $(div).text(String(count));
+        });
+    }
+
+    /*
         When the deck changes, store the new deck in local storage
         and regenerate the user interface components which depend
         on the contents of the deck.
@@ -288,6 +310,7 @@ function buildEpcUI(
         graphPopupTracker.setGraphDots(dots);
 
         generateInfluencePanel(deck);
+        generatePowerTypeCounts(deck);
         buildDeckRows(deck);
     }
 

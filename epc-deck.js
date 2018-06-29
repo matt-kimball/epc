@@ -465,7 +465,7 @@ function makeEternalCardInfo(
         id: id,  //  "SetN #XXX"
         name: name,
         influenceRequirements: [],  // both casting cost and card effects
-        power: false
+        flags: {}
     };
 
     card.influenceGenerated = makeInfluence(influenceGenerated);
@@ -492,9 +492,7 @@ function makeEternalCardInfo(
     });
 
     $.each(flags, function (index, flag) {
-        if (flag === "power") {
-            card.power = true;
-        }
+        card.flags[flag] = true;
     });
 
     return card;
@@ -569,7 +567,9 @@ function makeEternalCardLibrary(
         influenceGenerated = match[2].trim();
         influenceRequired = match[3].trim();
         name = match[4].trim();
-        flags = match[5].trim().split(",");
+        flags = match[5].split(",").map(function (str) {
+            return str.trim();
+        });
 
         card = makeEternalCardInfo(
             id,

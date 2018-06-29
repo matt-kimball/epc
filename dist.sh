@@ -25,7 +25,14 @@ DISTFILES="\
     power-calculator.png \
     influence-graph-menu.png \
     power-odds-table-menu.png \
-    EternalThroneBackground.jpeg"
+    EternalThroneBackground.jpeg \
+    conditional.svg \
+    crest.svg \
+    depleted.svg \
+    monument.svg \
+    standard.svg \
+    undepleted.svg \
+    waystone.svg"
 
 ./generate.sh
 
