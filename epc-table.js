@@ -227,7 +227,7 @@ function generateOddsTable(
 
         row = $("<tr>").addClass("power-table-row-head").appendTo(table);
         $("<th>").addClass("power-table-head-draws").
-            text("Draws").appendTo(row);
+            text("Turns").appendTo(row);
 
         influenceCards = deck.listInfluenceRequirements();
         $.each(influenceCards, function (index, influenceCard) {
@@ -379,7 +379,7 @@ function generateOddsTable(
                 drawCount <= maxDraws;
                 drawCount += 1) {
 
-            text = String(drawCount - minDraws);
+            text = String(drawCount - minDraws + 1);
 
             $("<th>").addClass("power-table-head-draw-count").
                 text(text).appendTo(row);

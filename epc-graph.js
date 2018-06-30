@@ -473,7 +473,7 @@ function drawPowerGraph(
             x = graphCoord.left +
                 (midline - minDraws) / (maxDraws - minDraws) *
                 (graphCoord.right - graphCoord.left);
-            drawBottomLabel(String(midline - 7), x, 0);
+            drawBottomLabel(String(midline - 6), x, 0);
 
             midline += verticalMidlineStep;
         }
