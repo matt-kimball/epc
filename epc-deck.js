@@ -1184,9 +1184,12 @@ function makeEternalDeckFromString(
     library,
     deckstr
 ) {
-    var deck, cardcounts, makeError;
+    var deck, cardcounts, makeError, regex, marketRegex, inMarket;
 
     cardcounts = [];
+
+    regex = /^([0-9]+) (.+) \((Set[0-9]+ #[0-9]+)\)$/;
+    marketRegex = /^-+MARKET-+$/;
 
     /*  For each line in the decklist input, decode the card and count  */
     $.each(deckstr.split("\n"), function (index, line) {
@@ -1197,8 +1200,14 @@ function makeEternalDeckFromString(
             return;
         }
 
-        re = /^([0-9]+) (.+) \((Set[0-9]+ #[0-9]+)\)$/;
-        match = line.match(re);
+        if (line.match(marketRegex)) {
+            inMarket = true;
+        }
+        if (inMarket) {
+            return;
+        }
+
+        match = line.match(regex);
 
         if (!match) {
             makeError = 'malformed line: "' + line + '"';
