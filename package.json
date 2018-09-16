@@ -1,0 +1,22 @@
+{
+  "name": "eternal-power-calc",
+  "version": "1.0.0",
+  "description": "A deckbuilding tool for the eternal card game",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexmiddeleer/epc.git"
+  },
+  "keywords": [
+    "eternal"
+  ],
+  "author": "Matt Kimball, Alex Middeleer",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/alexmiddeleer/epc/issues"
+  },
+  "homepage": "https://github.com/alexmiddeleer/epc#readme"
+}
