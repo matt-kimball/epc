@@ -1,9 +1,9 @@
-describe('Google', () => {
+describe('Puppeteer works', () => {
   beforeAll(async () => {
-    await page.goto('https://google.com');
+    await page.goto('http://localhost:8080');
   });
 
-  it('should display "google" text on page', async () => {
-    await expect(page).toMatch('google');
+  it('should display "eternal" text on page', async () => {
+    await expect(page).toMatch('cards');
   });
 });
