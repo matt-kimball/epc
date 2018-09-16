@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/alexmiddeleer/epc/issues"
   },
-  "homepage": "https://github.com/alexmiddeleer/epc#readme"
+  "homepage": "https://github.com/alexmiddeleer/epc#readme",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
 }
