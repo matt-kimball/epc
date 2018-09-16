@@ -4,7 +4,7 @@
   "description": "A deckbuilding tool for the eternal card game",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/alexmiddeleer/epc#readme",
   "devDependencies": {
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "puppeteer": "^1.8.0"
+  },
+  "dependencies": {
+    "jest-puppeteer": "^3.3.1"
   }
 }
