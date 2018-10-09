@@ -2,13 +2,17 @@
 
 <!--
 
+    Shiftstoned.com concept, graphics and original content
+    Copyright (C) 2018  Shiftstoned.com
+
     Eternal Power Calculator
     Copyright (C) 2018  Matt Kimball
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    The Eternal Power Calculator source code is free software; 
+	you can redistribute it and/or modify it under the terms of the 
+	GNU General Public License as published by the Free Software 
+	Foundation; either version 2 of the License, or (at your option) 
+	any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,10 +25,23 @@
 
 -->
 
-<html>
+<html lang="en">
+  <head>
 
-<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <meta name="description" content="Fan-built deck-building tool for Eternal, A Strategy Card Game." />
+
+    <!-- Open Graph Properties -->
+    <meta property="og:title" content="Shiftstoned | Eternal Power Calculator" />
+    <meta property="og:site_name" content="Shiftstoned" />
+    <meta property="og:description" content="Fan-built deck-building tool for Eternal, A Strategy Card Game." />
+    <meta property="og:url" content="https://shiftstoned.com/epc" />
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="https://www.shiftstoned.com/images/shiftstoned-og.png" />
+    <meta property="og:image:type" content="image/png" />
+      
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <!-- DIST:INCLUDE
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120926504-1"></script>
@@ -36,7 +53,7 @@
     </script>
 /DIST:INCLUDE -->
 
-    <title>Shiftstoned - Power Calculator</title>
+    <title>Shiftstoned - Eternal Power Calculator</title>
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -63,49 +80,37 @@
         <div class="header">About Shiftstoned Power Calculator</div>
 
         <div id="about-text" class="modal-body">
-            <!-- <p>
-            The Eternal Power Calculator is a tool for probability analysis of
-            decks for <a href="https://www.direwolfdigital.com/eternal/">
-            Eternal Card Game</a>.  It is designed to help understand
-            the odds of drawing resources to play specific cards by
-            a specific turn.
 
             <p>
-            The probabilities represent only the odds of drawing power and
-            influence sources, without a mulligan.  Note that the requirements
-            for playing those sources isn't considered for the purposes of
-            computing odds.
+            You will gain a competitive edge in <b>Eternal</b> by maximizing the chances of playing your cards on curve.
 
             <p>
-            For example, Vara's Favor is considered to be a source of both
-            one power and one shadow influence for the purposes of the
-            probability table, but the prerequisite of two power and one shadow
-            influence, in order to play Vara's Favor, isn't a factor in the
-            calculation. -->
-
-            <p>
-            You will gain a competitive edge in <b>Eternal</b> by maximizing the chances of playing your cards on curve. Getting under the hood and optimizing your deck's power base is the best way to ensure that you can play the cards you want, when you want to play them.
+            Getting under the hood and optimizing your deck's power base is the best way to ensure that you can play the cards you want, when you want to play them.
 
             <p>
             The <b>Eternal Power Calculator</b> is a deck-building tool that visualizes your odds of drawing enough <b>Influence</b> and <b>Power</b> based specifically on the cards found in your deck.
 
             <p>
-            Select the <b>Import</b> button and paste a deck from <b>Eternal</b> to get started.
+            Select the <b>Import</b> button and paste a deck from <b>Eternal</b> to get started. Or start from scratch by adding a card.
 
             <p>
-            Or choose a topic to learn more:
+            Want to learn more?
             <ul>
               <li><a href="guide/index.html" target="_blank">How it works</a>
               <li><a href="guide/index.html#chart" target="_blank">Charting Influence</a>
               <li><a href="guide/index.html#draws" target="_blank">Draws vs. Turns</a>
               <li><a href="guide/index.html#table" target="_blank">Power Odds Table</a>
               <li><a href="guide/index.html#not" target="_blank">What is NOT accounted for?</a>
+              <li><a href="guide/index.html#next" target="_blank">What's next?</a>
 
             </ul>
 
             <p>
+            For more on the math behind the <strong>Eternal Power Calculator</strong>, check out the <a href="guide/expanded.html" target="_blank">in-depth guide to calculations</a>.
+
+            <p>
             The original source code for Eternal Power Calculator is
-            <a href="https://github.com/matt-kimball/epc">available
+            <a href="https://github.com/matt-kimball/epc" target="_blank">available
             on GitHub</a>.
         </div>
 
@@ -185,7 +190,7 @@
 
         <div id="shiftstoned-heading">
             <div id="heading-top">
-                <a href="https://www.shiftstoned.com/">
+                <a href="../">
                     <img id="shiftstoned-img" src="shiftstoned.png">
                 </a>
                 <img id="power-calculator-img" src="power-calculator.png">
@@ -195,29 +200,46 @@
                 </div>
                 <div id="navigation-separator">
                 </div>
+
                 <div id="navigation-menu" class="ui dropdown">
                     <img src="navigation-menu.png">
                     <div class="menu">
                         <div class="item">
-                            <a href="https://www.shiftstoned.com/epc/">
-                                Power Calculator
+                            <a href="../epc/">
+                                POWER CALCULATOR
                             </a>
                         </div>
                         <div class="item">
-                            <a href="https://www.shiftstoned.com/epc/guide/">
+                            <a href="../epc/guide/">
                                 <div class="navigation-menu-indent">
-                                    &mdash;
+                                    &bull;
                                 </div>
                                 Guide
                             </a>
                         </div>
                         <div class="item">
-                            <a href="https://www.shiftstoned.com/calendar/">
-                                Community Calendar
+                            <a href="../calendar/">
+                                COMMUNITY CALENDAR
+                            </a>
+                        </div>
+                        <div class="item">
+                            <a href="../articles/">
+                                ARTICLES
+                            </a>
+                        </div>
+                        <div class="item">
+                            <a href="../contact">
+                                CONTACT
+                            </a>
+                        </div>
+                        <div class="item">
+                            <a href="..">
+                                HOME
                             </a>
                         </div>
                     </div>
                 </div>
+
             </div>
             <div id="heading-page-top"></div>
         </div>
@@ -284,7 +306,7 @@
                     <div
                             class="ui custom popup transition hidden">
                         <h1>Greetings Huckleberry!</h1>
-                        Import a deck to get started
+                        Import or add a deck to get started
                     </div>
 
                     <button
@@ -389,7 +411,7 @@
                         PROBABILITY
                     </div>
                     <div id="graph-x-label">
-                        TURNS (ONE DRAW PER TURN)
+                        TURNS (<a href="guide/index.html#draws" target="_blank">ONE DRAW PER TURN*</a>)
                     </div>
 
                     <div id="power-type-panel">
@@ -585,7 +607,7 @@
         Set1 #83;; 2T; Sauropod Wrangler;
         Set1 #84;; 2T; Ephemeral Wisp;
         Set1 #85;; 2T; Accelerate;
-        Set1 #86;; 3TT; Dawnwalker;
+        Set1 #86;; 3TT,TTTT; Dawnwalker;
         Set1 #88;; 2T; Synchronized Strike;
         Set1 #89;; 3T; Dune Phantom;
         Set1 #90;; 3T; Ageless Mentor;
@@ -598,7 +620,7 @@
         Set1 #97;; 4T; Steward of Prophecy;
         Set1 #98;; 4T; Healer's Cloak;
         Set1 #99;; 4TT; Sandstorm Titan;
-        Set1 #100;; 4TT; Praxis Displacer;
+        Set1 #100;; 5TT; Praxis Displacer;
         Set1 #101;; 4T; Towertop Patrol;
         Set1 #102;; 4T; Xenan Guardian;
         Set1 #103;; 4T; Xenan Obelisk;
@@ -615,7 +637,7 @@
         Set1 #115;; 5T; Lumen Defender;
         Set1 #116;; 6T; Mystic Ascendant;
         Set1 #117;; 6T; Lumen Shepherd;
-        Set1 #118;; 6TTT; Predatory Carnosaur;
+        Set1 #118;; 7TTT; Predatory Carnosaur;
         Set1 #119;; 7TTT; Ancient Terrazon;
         Set1 #120;; 7TT; Dormant Sentinel;
         Set1 #121;; 7TT; Hall of Lost Kings;
@@ -684,7 +706,7 @@
         Set1 #187; 1P;; Primal Sigil; power, undepleted
         Set1 #188;; F; Trail Stories;
         Set1 #189;; 1P; Unstable Form;
-        Set1 #190;; 1P; Levitate;
+        Set1 #190;; 2P; Levitate;
         Set1 #191;; 1P; Yeti Spy;
         Set1 #192;; 1P; Blind Storyteller;
         Set1 #193;; 1P; Permafrost;
@@ -737,7 +759,7 @@
         Set1 #241;; 6PP; Celestial Omen;
         Set1 #242;; 7P; Mistveil Drake;
         Set1 #243;; 6PPP; Thunderstrike Dragon;
-        Set1 #244;; 8PPPP; Channel the Tempest;
+        Set1 #244;; 9PPPP; Channel the Tempest;
         Set1 #245;; 8PPP; Eilyn, Queen of the Wilds;
         Set1 #246;; 7PP; Rimescale Draconus;
         Set1 #247;; 5PP; Skycrag Wyvarch;
@@ -818,8 +840,8 @@
         Set1 #326;; 3FFJ; Ijin, Imperial Armorer;
         Set1 #327;; 6FJ; Ferocious Stranger;
         Set1 #328;; 6FFJJ; Starsteel Daisho;
-        Set1 #329;; 7FFFJJJ; Icaria, the Liberator;
-        Set1 #330;; 1TJ; Safe Return;
+        Set1 #329;; 8FFFJJJ; Icaria, the Liberator;
+        Set1 #330;; 2TJ; Safe Return;
         Set1 #331;; 2TJ; Awakened Student;
         Set1 #332;; 2TJ; Desert Marshal;
         Set1 #333;; 3TJ; Combrei Healer;
@@ -837,7 +859,7 @@
         Set1 #347;; 7TTTJJJ; Vodakhan, Temple Speaker;
         Set1 #348;; 10TJ; A New Tomorrow;
         Set1 #350;; 1TP; Call the Ancients;
-        Set1 #351;; 2TP; Accelerated Evolution;
+        Set1 #351;; 3TP; Accelerated Evolution;
         Set1 #353;; 2TP; Storm Lynx;
         Set1 #354;; 3TP; Pteriax Hatchling;
         Set1 #355;; 3TP; Crown of Possibilities;
@@ -966,7 +988,7 @@
         Set2 #35;; 1T; Cult Aspirant;
         Set2 #36;; 1T; Envelop;
         Set2 #37;; 1T; Excavation Assistant;
-        Set2 #38;; 1T; Wandering Wisp;
+        Set2 #38;; 1T,TTTTT; Wandering Wisp;
         Set2 #39;; 2T; Trail Runner;
         Set2 #40; 2XX; 2T; Forgotten Find;
         Set2 #41;; 2T; Oasis Seeker;
@@ -988,7 +1010,7 @@
         Set2 #57;; 5T; Awakened Sentinel;
         Set2 #58;; 5T; Battle-Tested Stranger;
         Set2 #59;; 4TT; Beckoning Lumen;
-        Set2 #60;; 5TT; Humbug Swarm;
+        Set2 #60;; 6TT; Humbug Swarm;
         Set2 #61;; 6T; Pack Hunt;
         Set2 #62;; 5TT; Time Weaver;
         Set2 #63;; 5TT; Waystone Infuser;
@@ -1140,7 +1162,7 @@
         Set2 #209;; 4TS; Xenan Augury;
         Set2 #210;; 4TS; Xenan Cupbearer;
         Set2 #211;; 5TS; Bloodcall Invoker;
-        Set2 #212;; 4TS; Mask of Torment;
+        Set2 #212;  1; 4TS; Mask of Torment;
         Set2 #213;; 6TS,TTTTTT,SSSSSS; Champion of Mystery;
         Set2 #214;; 7TS; Prophetic Stranger;
         Set2 #215;; 9TTTSSS; Worldjoiner;
@@ -1440,7 +1462,7 @@
         Set3 #252;; 3FT; Mysterium Orb;
         Set3 #253;; 4FT; Monolith Guardian;
         Set3 #254;; 3FJ; Whirling Duo;
-        Set3 #255;; 4FFPP; Kaleb's Intervention;
+        Set3 #255;; 1F; Kaleb's Intervention;
         Set3 #256;; 4FFJJ; Tinker Dronedropper;
         Set3 #257;; 5FP; Iceberg Warchief;
         Set3 #258;; 3TJ; Auric Record Keeper;
@@ -1519,7 +1541,7 @@
         Set1003 #4; 1FTJPS; 4T; Memento Mori;
         Set1003 #5;; 4TT,5; Venom Rider;
         Set1003 #6;; 6TTT; Bury the Past;
-        Set1003 #7;; 2JJ,JJJJJJ; Icaria, Valkyrie Captain;
+        Set1003 #7;1J; 2JJ,JJJJJJ; Icaria, Valkyrie Captain;
         Set1003 #8;; 4JJ; Honor the Fallen;
         Set1003 #9;; 4JJ; Inquisitor's Blade;
         Set1003 #10;; 2P; Wardwielder;
@@ -1538,6 +1560,321 @@
         Set1003 #23;; 3JJP; Hooru Pacifier;
         Set1003 #24;; 2JS; Anointer of the Faithful;
         Set1003 #25;; 4PS; Lethrai Skystrider;
+
+        Set4 #1; 1F;; Shugo Standard; power, depleted, standard
+        Set4 #2;; 1F; Drifter;
+        Set4 #3;; 1FF; Feed the Flames;
+        Set4 #4;; 1F; Light 'em Up;
+        Set4 #5;; 1FF,3; Longbarrel;
+        Set4 #6;; 1F; Mindfire;
+        Set4 #7;; 1F; Rambot;
+        Set4 #8;; 2F; Ankle Cutter;
+        Set4 #9;; 2F; Consuming Flames;
+        Set4 #10;; 2FF; Flamebelcher;
+        Set4 #11;; 2F; Grenarender;
+        Set4 #12;; 2F; Hotblood Barbarian;
+        Set4 #13;; 2F; Quicktrigger Outlaw;
+        Set4 #14;; 2F,3; Ruination Sledge;
+        Set4 #15;; 2F; Scale Seeker;
+        Set4 #16;; 2F; Trick Shot;
+        Set4 #17;; 3F; Factory Quota;
+        Set4 #18;; 2FF; Flamefang Charmer;
+        Set4 #19;; 3F; Frontier Bard;
+        Set4 #20;; 3FF; Honor the Ancestors;
+        Set4 #21;; 3F; Ixtun Merchant;
+        Set4 #22;; 3F; Manufacture;
+        Set4 #23;; 3F; Oni Eulogist;
+        Set4 #24;; 3F; Refracted Sentinel;
+        Set4 #25;; 3F; Rika, Desert Navigator;
+        Set4 #26;; 3F; Rusty Grenamotive;
+        Set4 #27;; 3F; Warpainter;
+        Set4 #28;; 3F; Won't Be Pretty;
+        Set4 #29;; 4F; Clan Wallbreaker;
+        Set4 #30;; 4FF; Criva, the Crimson Scythe;
+        Set4 #31;; 4FF; Dramatist's Mask;
+        Set4 #32;; 4F; Iceberg Scattershot;
+        Set4 #33;; 4FF; Jawbone Greatsword;
+        Set4 #34;; 4F; Overheat;
+        Set4 #35;; 4F; Scalechannel Sorceror;
+        Set4 #36;; 4F; Welding Torch;
+        Set4 #37;; 4FF; Zuberi, Outlands Warlord;
+        Set4 #38;; 5F; Fiery Fissure;
+        Set4 #39;; 4F; Gravemarker Oni;
+        Set4 #40;; 5F; Robobuddy;
+        Set4 #42;; 6F; Birthright;
+        Set4 #41;; 5FF; Wildfire Censari;
+        Set4 #43;; 6FF; Dashing Rapscallion;
+        Set4 #45;; 6F; Pyre Elemental;
+        Set4 #46;; 6F; Core Scavenger;
+        Set4 #44;; 6FF; End of the Barrel;
+        Set4 #47;; 7F; Final Shot;
+        Set4 #48;; 11F; First Flame;
+        Set4 #49; 1T;; Temple Standard; power, depleted, standard;
+        Set4 #50;; 1T; Sandstorm Scarf;
+        Set4 #51;; 1T; Entrancer;
+        Set4 #52;; 1T; Jibbering Jackal;
+        Set4 #53;; 1T; Journey Guide;
+        Set4 #54;; 1T; Meditation;
+        Set4 #55;; 1T; Pathlighter;
+        Set4 #56;; 1T; Randori;
+        Set4 #57;; 1T,3; Staff of Speed;
+        Set4 #58; 2; 1T; Time Flies;
+        Set4 #59;; 1T; Training Ground;
+        Set4 #60;; 2T; Amaran Armadillo;
+        Set4 #61;; 2T; Illumination Wisp;
+        Set4 #62;; 2T; Last Rites;
+        Set4 #63;; 2T; Learned Herbalist;
+        Set4 #64;; 2TT; Living Example;
+        Set4 #65;; 2T; Living Offering;
+        Set4 #66; 1; 2T,3; Sandglass Parma;
+        Set4 #67;; 2TT; Teacher of Humility;
+        Set4 #68;; 3T; Amaran Stinger;
+        Set4 #69;; 3T; Arcanum Hourglass;
+        Set4 #70; 1; 3T; Auralian Merchant;
+        Set4 #71;; 3T; Deft Strike;
+        Set4 #72;; 3T; Gravetender;
+        Set4 #73;; 3T; Initiation Bell;
+        Set4 #74;; 3T; Sirocco Elementalist;
+        Set4 #75;; 3T; Watchful Amanera;
+        Set4 #76;; 3TT; Wurmcalling;
+        Set4 #77;; 4T; Fierce Mosaraptor;
+        Set4 #78;; 4T; Gathering Lights;
+        Set4 #79;; 4TT; Gnash, Pridemaster;
+        Set4 #80;; 4T; Insatiable Serasaur;
+        Set4 #81;; 4TT; Lumen Attendant;
+        Set4 #82;; 4T; Primeval Plover;
+        Set4 #83;; 4T; Sandspout Mirage;
+        Set4 #84;; 3T; Spiteful Lumen;
+        Set4 #85;; 4T; Stinging Wind;
+        Set4 #86;; 4T; Wurmstone;
+        Set4 #87;; 5TT,4; Alhed, Mount Breaker;
+        Set4 #88;; 5TT; Pensive Lumen;
+        Set4 #89;; 5TT; Vital Arcana;
+        Set4 #90;; 5TT; Wurmic Chanter;
+        Set4 #91; 5FTJPS; 6TT; End of Days;
+        Set4 #92;; 5TT; Mistress of Light;
+        Set4 #93;; 6TTTT; Thundering Kerasaur;
+        Set4 #94;; 7T; Reality Shift;
+        Set4 #95;; 7T; Subterranean Sentry;
+        Set4 #96;; 10TTT; Royal Guardian;
+
+        Set4 #97; 1J;; Crownwatch Standard; power, depleted, standard
+        Set4 #98;; 0J; Harmless Question;
+        Set4 #99;; 1J; Ironfist Faithful;
+        Set4 #100; 1J; 1J; Lingering Influence;
+        Set4 #101;; 1J,4; Peacekeeper's Helm;
+        Set4 #102;; 1J; Sharpened Reflex;
+        Set4 #103;; 1J; Spire Spellsword;
+        Set4 #104;; 2J; Arcane Defense;
+        Set4 #105;; 2J; Bar the Gates;
+        Set4 #106;; 2J; Barricade;
+        Set4 #107;; 2J; Encouragement;
+        Set4 #108;; 2J,5; Ironfist Chancellor;
+        Set4 #109;; 3J; Miner's Canary;
+        Set4 #110;; 2J; Rilgon's Disciple;
+        Set4 #111;; 2J; Shamebearer;
+        Set4 #112;; 2JJ; Vanquisher's Blade;
+        Set4 #113;; 2J; Workshop Tinker;
+        Set4 #114;; 3J; Auric Herdward;
+        Set4 #115;; 3JJ; Copperhall Bracers;
+        Set4 #116;; 3J; Grit;
+        Set4 #117;; 3J; Guard Dog;
+        Set4 #118;; 3JJ,4; Herald of the Parliament;
+        Set4 #119;; 3JJ; Kosul Battlemage;
+        Set4 #120;; 3J; Longhorn Treasurer;
+        Set4 #121;; 2JJ; Master-at-Arms;
+        Set4 #122;; 3JJ; Reinforced Baton;
+        Set4 #123;; 3JJ; Rolant's Memorial;
+        Set4 #124;; 3J; Saddle Up;
+        Set4 #125;; 3J; Warrant Officer;
+        Set4 #126;; 3J; Winchest Merchant;
+        Set4 #127;; 4J; Citywide Ban;
+        Set4 #128;; 4JJ; Geomar, the Steel Tempest;
+        Set4 #129;; 4J; Graceful Calligrapher;
+        Set4 #130;; 4J; Resolute Paladin;
+        Set4 #131;; 4JJ; Sheriff Marley;
+        Set4 #132;; 4J; Sheriff's Hat;
+        Set4 #133;; 4J,8; Sky Crew;
+        Set4 #134;; 5J; Crownwatch Recruiter;
+        Set4 #135;; 5J; Downfall;
+        Set4 #136;; 5JJ; Rampart Arbalest;
+        Set4 #137;; 7JJ; Answer the Call;
+        Set4 #138;; 6JJ; End of the Story;
+        Set4 #139;; 6JJ; Heirloom Blade;
+        Set4 #140;; 6JJ; Ironfist Archon;
+        Set4 #141;; 6JJ; Silverwing Purgeleader;
+        Set4 #142;; 7JJ; Silverwing Augmentor;
+        Set4 #143;; 8JJ; Unbreakable Alliance;
+        Set4 #144;; 11JJ; Sigvard, the Last Bastion;
+
+        Set4 #145; 1P;; Clan Standard; power, depleted, standard
+        Set4 #146;; 1P; Gift of Battle;
+        Set4 #147;; 1P; Savage Denial;
+        Set4 #148;; 1P; Shiver;
+        Set4 #149;; 1P; Snowrager;
+        Set4 #150;; 1P; Substitute;
+        Set4 #151;; 2P; Campfire Watchman;
+        Set4 #152;; 2P; Changeestik;
+        Set4 #153;; 2P; Dusk Raider;
+        Set4 #154;; 2P; Gruanform;
+        Set4 #155;; 2PP; Honored Skyguard;
+        Set4 #156;; 2P; Huddle Together;
+        Set4 #157;; 2P; Iceberg Hailshrieker;
+        Set4 #158;; 2P; Lida's Apprentice;
+        Set4 #159;; 2P; Portent Reader;
+        Set4 #160;; 2P; Read the Stars;
+        Set4 #161;; 2PP; Snowfort Trumpeter;
+        Set4 #162;; 2P; Tend the Flock;
+        Set4 #163;; 2P; Torrential Downpour;
+        Set4 #164;; 3PP; Acquisitive Crow;
+        Set4 #165;; 3P; Advance Scout;
+        Set4 #166;; 3PP; Aerial Battle;
+        Set4 #167;; 2P; Entangling Vines;
+        Set4 #168;; 3P; Horde Plunderer;
+        Set4 #169;; 3P; Jennev Merchant;
+        Set4 #170;; 3P; Lethrai Darkstalker;
+        Set4 #171;; 3PP,4; Lethrai Secretweaver;
+        Set4 #172;; 3PP; Rabid Yeti;
+        Set4 #173;; 3PP; Temple Shihan;
+        Set4 #174;; 4PP; Breeze Dancer;
+        Set4 #175;; 4P; Galeprowler;
+        Set4 #176;; 4P; Icespear Chucker;
+        Set4 #177;; 4PP; Resurface;
+        Set4 #178;; 4P; Resurface;
+        Set4 #179;; 4PP; Spiritward Shaman;
+        Set4 #180;; 5PP; Aeva, Eilyn's Elite;
+        Set4 #181;; 5P; Big Brother;
+        Set4 #182;; 5P; First-Frost Shaman;
+        Set4 #183;; 5P; Gleaming Shield;
+        Set4 #184;; 5PP; Sack the City;
+        Set4 #185;; 6P; Speardiver;
+        Set4 #186;; 5P; Cliffside Caretaker;
+        Set4 #187;; 6PP; End of Hostilities;
+        Set4 #188;; 6PP; Moonlight Huntress;
+        Set4 #189;; 6PP; Shamanic Blast;
+        Set4 #190;; 7PP; Enraged Araktodon;
+        Set4 #191;; 7PPP; Kenna, Shaman of the Scale;
+        Set4 #192;; 8P; Thunder Giant;
+
+        Set4 #193; 1S;; Cabal Standard; power, depleted, standard
+
+        Set4 #194;; 1S; Harbinger's Bite;
+        Set4 #195;; 1S; Horrifying Helm;
+        Set4 #196;; 1S; Sewer Sludge;
+        Set4 #197;; 1S; Spitefeeder;
+        Set4 #198;; 1S,4; Xenan Lifespeaker;
+        Set4 #199;; 2S; Abduct;
+        Set4 #200;; 2S; Back-Alley Delinquent;
+        Set4 #201;; 2S; Blackhall Warleader;
+        Set4 #202;; 2S; Cull the Deck;
+        Set4 #203;; 2S,4; Fearbinder;
+        Set4 #204;; 2S,3; Fenris Nightshade;
+        Set4 #205;; 1S; Feral Spiteling;
+        Set4 #206;; 2SS; Lethrai Target Caller;
+        Set4 #207;; 1S; Lock Horns;
+        Set4 #208;; 2S; Lunging Wisp;
+        Set4 #209;; 2S; Magenta Wisp;
+        Set4 #210;; 2S; Territorial Elf;
+        Set4 #211;; 2SS; Thief's Pick;
+        Set4 #212;; 2S; Afterimage;
+        Set4 #213;; 3S,5; Banished Umbren;
+        Set4 #214;; 3S; Coronal Umbren;
+        Set4 #215;; 3S; Daggerclaw Howler;
+        Set4 #216;; 3SS; Hair-Trigger Pistol;
+        Set4 #217;; 3S; Kerendon Merchant;
+        Set4 #218;; 3SSS; Marionette Cross;
+        Set4 #219;; 3S; Sporebreath;
+        Set4 #220;; 3S; Surgeon's Saw;
+        Set4 #221;; 3SS; Umbren Deathwatcher;
+        Set4 #222;; 3SS; Void Drummer;
+        Set4 #223;; 3S; Wingbrewer;
+        Set4 #224;; 4SS; Burglarize;
+        Set4 #225;; 4SS; Corrupted Umbren;
+        Set4 #226;; 4S; Holdup;
+        Set4 #227;; 4SS; Kyrex Coach Driver;
+        Set4 #228;; 4SS; Lethrai Provocateur;
+        Set4 #229;; 4SSS,6; Mazag, the Waking Terror;
+        Set4 #230;; 3SS; Shadowstalker;
+        Set4 #231;; 4SS; Soulbringer;
+        Set4 #232;; 4S; Transmogrifier;
+        Set4 #233;; 4S; Vile Varmint;
+        Set4 #234;; 4SSS; Betray the Cause;
+        Set4 #235;; 5S; Grimy Alp-luachra;
+        Set4 #236;; 5S; Lethrai Bladewhirl;
+        Set4 #237;; 5S; The End is Near;
+        Set4 #238;; 6S; Cut Ties;
+        Set4 #239;; 6SS; End of the Line;
+        Set4 #240;; 8SS; Umbren Occluder;
+
+        Set4 #241;; 3FT; Magus of Celerity;
+        Set4 #242;; 4FT; Recombobulate;
+        Set4 #243; 1FJ; ; Crest of Glory; power, depleted, crest
+        Set4 #244; FJ; 2FJ; Bulletshaper;
+        Set4 #245;; 2FJ; Ijin's Choice;
+        Set4 #246;; 6FFJJ; Rizahn, Greatbow Master;
+        Set4 #247; 1TJ; ; Crest of Progress; power, depleted, crest
+        Set4 #248;; 1TJ; Alessi, Combrei Archmage;
+        Set4 #249;; 4TTJJ; Sword of Unity;
+        Set4 #250;; 8TJ; Siraf's Choice;
+        Set4 #251;; 2TP,3; Derry Cathain, Ripclaw Rider;
+        Set4 #252;; 4TP; Cirso's Choice;
+        Set4 #253; 1JP; ; Crest of Order; power, depleted, crest
+        Set4 #254;; 2JP; Linebreaker's Shield;
+        Set4 #255;; 4JP; Long Live the Queen;
+        Set4 #256;; 3JS; Unfinished Business;
+        Set4 #257;; 5JS; Knight of Sorrow;
+        Set4 #258;; 3FP; Crunch, the Hoarder;
+        Set4 #259;; 5FP; Bloodthirsty Brawler;
+        Set4 #260;; 7FFPP; Crill, Merciless Pillager;
+        Set4 #261;; 2PS; Rindra's Choice;
+        Set4 #262;; 4PPSS,8; Ancient of the Ice Caves;
+        Set4 #264;; 5FS; Jekk's Choice;
+        Set4 #263;; 4FS; Stonescar Pickaxe;
+        Set4 #265;; 6FFSS; Jekk, Lone Gun;
+        Set4 #266; 1TS; ; Crest of Mystery; power, depleted, crest
+        Set4 #267;; 4TS; Preserver of Dualities;
+        Set4 #268;; 6TS; Siphon Vitality;
+        Set4 #269;; 7TTSS; Unraveler of Destinies;
+        Set4 #270;; 5TPS; Cirso's Cleaver;
+
+        Set4 #271; 1; ; Chairman's Contract;
+        Set4 #272;; 1; Alchemist's Concoction;
+        Set4 #273; 1X; 1,2; Veteran Strategist;
+        Set4 #274; 1X; 2; Petition;
+        Set4 #275;; 2,3; Recon Tower;
+        Set4 #276;; 3; Disrupt;
+        Set4 #277;; 4; Mask Maker;
+        Set4 #278;; 4; Momentum Builder;
+        Set4 #279;; 4; Rotorcycle;
+
+        Set4 #306;; 4FS; Wyatt, Junk Collector;		
+		Set4 #307;; 4TTJJ; Genetrix Irel IV;
+
+		Set1004 #1;; 1F; Signal Flare;
+		Set1004 #2;; 2FF; Cauldron Cookbook; 
+		Set1004 #3;; 4F; Arms Enthusiast;
+		Set1004 #4;; 6FFF; Waystone Titan;
+		Set1004 #5;; 1T; Auralian Restorationist;
+		Set1004 #6;; 2T; Tome of Repetition; 		
+		Set1004 #7;; 5TT; Gravewatch Guardian;
+		Set1004 #8;; 7TT; Sea of Teeth;
+		Set1004 #9;; 2J; Unwavering Exorcist;
+		Set1004 #10;; 4JJ; Xulta Convoy;
+		Set1004 #11;; 5JJ; Dead or Alive;
+		Set1004 #12;; 7JJ;  Telut, Queen's Hand;
+		Set1004 #13;; 1P; Messenger Hawk;
+		Set1004 #14;;  3P; Trumpeting Warhowler; 
+		Set1004 #15;; 4PP; Poaching Drake; 
+		Set1004 #16;; 6P; Maul; 
+		Set1004 #17;; 0S; Last Chance; 
+		Set1004 #18;; 1S; Shakedown; 
+		Set1004 #19;; 4SS; Vara, Vengeance-Seeker; 
+		Set1004 #20;; 6SS; Eremot, the Gathering Dark;
+		Set1004 #21;; 8TTSS; Azindel, Revealed;
+		Set1004 #22;; 8FJP; Enemy of My Enemy; 
+		Set1004 #23; 1X;; Sealed Writ; power, undepleted
+
+
     </script>
 
     <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
