@@ -1,10 +1,11 @@
 {
-  "name": "eternal-power-calc",
+  "name": "eternal-power-calculator",
   "version": "1.0.0",
   "description": "A deckbuilding tool for the eternal card game",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watchAll"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,9 @@
     "jest": "^23.6.0",
     "puppeteer": "^1.8.0"
   },
+  "keywords": [
+    "eternal-card-game"
+  ],
   "dependencies": {
     "jest-puppeteer": "^3.3.1"
   }
