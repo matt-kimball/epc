@@ -1,4 +1,5 @@
 /*global $*/
+/*global encodeValues, decodeValues*/
 /*jslint unparam: true, regexp: true*/
 /*
 
@@ -1158,6 +1159,29 @@ function makeEternalDeck(
         return decklist;
     };
 
+    /*  Generate a deck code for embedding the deck in a URL  */
+    deck.generateDeckCode = function () {
+        var values, idRegex, match;
+
+        idRegex = /^Set([0-9]+) #([0-9]+)/;
+
+        values = [];
+        $.each(deck.cardlist, function (index, cardcount) {
+            match = cardcount.id.match(idRegex);
+
+            if (!match) {
+                return null;
+            }
+
+            /*  Append a [ count, set-number, card-number ] triple  */
+            values.push(cardcount.count);
+            values.push(Number(match[1]));
+            values.push(Number(match[2]));
+        });
+
+        return encodeValues(values);
+    };
+
     $.each(cardlist, function (index, cardcount) {
         addCardCount(cardcount);
     });
@@ -1193,7 +1217,7 @@ function makeEternalDeckFromString(
 
     /*  For each line in the decklist input, decode the card and count  */
     $.each(deckstr.split("\n"), function (index, line) {
-        var re, match, count, name, cardid;
+        var match, count, name, cardid;
 
         line = line.trim();
         if (line.length <= 0) {
@@ -1229,6 +1253,75 @@ function makeEternalDeckFromString(
             count: count
         });
     });
+
+    deck = makeEternalDeck(library, cardcounts);
+    if (makeError) {
+        deck.makeError = makeError;
+    }
+
+    return deck;
+}
+
+/*  Generate a deck from a URL-embedded code  */
+function makeEternalDeckFromCode(
+    library,
+    code
+) {
+    var deck,
+        cardcounts,
+        values,
+        makeError,
+        index,
+        count,
+        set,
+        card,
+        cardid,
+        marker,
+        name;
+
+    cardcounts = [];
+    values = decodeValues(code);
+    if (!values) {
+        makeError = "malformed deck code";
+    } else {
+        index = 0;
+
+        /*  Loop over [ card-count, set-id, card-id ] triples  */
+        while (index + 2 < values.length) {
+            count = values[index];
+            set = values[index + 1];
+            card = values[index + 2];
+            index += 3;
+
+            /*  Ignore Set0 #0, which is a code reserved for future use  */
+            if (set === 0 && card === 0) {
+                marker = count;
+            } else {
+                marker = -1;
+            }
+
+            if (marker < 0) {
+                cardid = "Set" + String(set) + " #" + String(card);
+                if (!library.cards[cardid]) {
+                    makeError =
+                        'unknown card id in deck code: "' + cardid + '"';
+                    break;
+                }
+                name = library.cards[cardid].name;
+
+                cardcounts.push({
+                    id: cardid,
+                    name: name,
+                    count: count
+                });
+            }
+        }
+
+        /*  If the list length isn't a multiple of three, it is invalid  */
+        if (!makeError && index !== values.length) {
+            makeError = "malformed deck code " + String(index);
+        }
+    }
 
     deck = makeEternalDeck(library, cardcounts);
     if (makeError) {

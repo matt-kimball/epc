@@ -172,10 +172,10 @@
     </div>
 
     <!--  A dialog used to report syntax errors in the card list  -->
-    <div id="card-list-error-modal" class="ui small modal">
-        <div class="header">Card list error</div>
+    <div id="error-modal" class="ui small modal">
+        <div id="error-title" class="header">Error</div>
 
-        <div id="card-list-error-text" class="modal-body">
+        <div id="error-text" class="modal-body">
         </div>
 
         <div class="actions">
@@ -310,10 +310,17 @@
                     </div>
 
                     <button
-                            id="export-button" class="ui button"
+                            id="export-button" class="ui button pad-right"
                             data-position="top center"
                             data-content="Deck copied to clipboard">
                         EXPORT
+                    </button>
+
+                    <button
+                            id="link-button" class="ui button"
+                            data-position="top center"
+                            data-content="Link copied to clipboard">
+                        <img src="link.svg">
                     </button>
                 </div>
 
@@ -1880,7 +1887,9 @@
     <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="semantic.min.js"></script>
 <!-- DIST:REMOVE -->
+    <script type="text/javascript" src="url-search-params.js"></script>
     <script type="text/javascript" src="epc-polyfill.js"></script>
+    <script type="text/javascript" src="epc-code.js"></script>
     <script type="text/javascript" src="epc-deck.js"></script>
     <script type="text/javascript" src="epc-graph.js"></script>
     <script type="text/javascript" src="epc-table.js"></script>

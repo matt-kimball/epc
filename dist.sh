@@ -29,6 +29,7 @@ DISTFILES="\
     conditional.svg \
     crest.svg \
     depleted.svg \
+    link.svg \
     monument.svg \
     standard.svg \
     undepleted.svg \

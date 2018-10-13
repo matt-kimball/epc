@@ -411,18 +411,33 @@ body {
 #deck-edit-footer {
     width: 245px;
     margin: 30px;
+    display: flex;
+    justify-content: space-between;
 }
 
 #deck-edit-header .button,
 #deck-edit-footer .button {
     clear: both;
     margin: 0px 0px 6px 0px;
-    width: 118px;
+    padding: 0px;
     height: 38px;
 }
 
-#deck-edit-panel .button.pad-right {
-    margin-right: 4px;
+#deck-edit-header .button {
+    width: 96px;
+}
+
+#deck-edit-header #link-button {
+    width: 38px;
+}
+
+#deck-edit-footer .button {
+    width: 118px;
+}
+
+#link-button img {
+    width: 18px;
+    height: 18px;
 }
 
 #deck-edit {

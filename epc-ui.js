@@ -1,6 +1,7 @@
-/*global $, document, window, localStorage*/
+/*global $, document, window, localStorage, URL, URLSearchParams*/
 /*global generateOddsTable, drawPowerGraph, makeGraphPopupTracker*/
-/*global makeEternalCardLibrary, makeEternalDeck, makeEternalDeckFromString*/
+/*global makeEternalCardLibrary, makeEternalDeck*/
+/*global makeEternalDeckFromString, makeEternalDeckFromCode*/
 /*jslint unparam: true*/
 /*
 
@@ -38,7 +39,8 @@ function buildEpcUI(
         currentDeck,
         modifyCardCount,
         oddsWorker,
-        graphPopupTracker;
+        graphPopupTracker,
+        deckFromURL;
 
     cardlist = $("#card-list").html();
     cardLibrary = makeEternalCardLibrary(cardlist);
@@ -292,7 +294,14 @@ function buildEpcUI(
 
         decklist = currentDeck.generateDecklist(false);
         try {
-            localStorage.setItem("decklist", decklist);
+            /*
+                If the deck has been loaded from a URL, we'll
+                assume changes are temporary and shouldn't be
+                saved as the most recent deck.
+            */
+            if (!deckFromURL) {
+                localStorage.setItem("decklist", decklist);
+            }
         } catch (ignore) {
         }
 
@@ -379,14 +388,44 @@ function buildEpcUI(
         onDeckChange(deck);
     }
 
-    /*  Copy the current decklist to the clipboard  */
-    function onDeckExport() {
-        var decklist, input;
+    /*  Copy text to the system clipboard  */
+    function copyToClipboard(content) {
+        var input, scrollLeft, scrollTop;
 
-        decklist = currentDeck.generateDecklist(true);
-        input = $("<textarea>").appendTo($("body")).val(decklist).select();
+        scrollLeft = document.body.scrollLeft;
+        scrollTop = document.body.scrollTop;
+
+        input = $("<textarea>").appendTo($("body")).val(content).select();
         document.execCommand("copy");
         input.remove();
+
+        document.body.scrollLeft = scrollLeft;
+        document.body.scrollTop = scrollTop;
+    }
+
+    /*  Copy the current decklist to the clipboard  */
+    function onDeckExport() {
+        var decklist;
+
+        decklist = currentDeck.generateDecklist(true);
+        copyToClipboard(decklist);
+    }
+
+    /*  Generate a link to the current deck  */
+    function onGenerateLink() {
+        var code, link, index;
+
+        code = currentDeck.generateDeckCode();
+
+        link = String(document.location);
+
+        index = link.indexOf('?');
+        if (index >= 0) {
+            link = link.substring(0, index);
+        }
+
+        link = link + "?d=" + code;
+        copyToClipboard(link);
     }
 
     /*  Reset the deck to an empty deck  */
@@ -422,6 +461,16 @@ function buildEpcUI(
         onDeckChange(deck);
     }
 
+    /*  Report an error with a modal dialog  */
+    function showError(
+        title,
+        content
+    ) {
+        $("#error-title").text(title);
+        $("#error-text").text(content);
+        $("#error-modal").modal("show");
+    }
+
     /*  Perform final UI steps after the entire page loads  */
     function onLoad() {
         var importButton, importPopupActive;
@@ -431,8 +480,7 @@ function buildEpcUI(
             card library by showing an error dialog.
         */
         if (cardLibrary.makeError) {
-            $("#card-list-error-text").text(cardLibrary.makeError);
-            $("#card-list-error-modal").modal("show");
+            showError("Card list error", cardLibrary.makeError);
             return;
         }
 
@@ -481,6 +529,11 @@ function buildEpcUI(
         $("#export-button").popup({ on: "click" });
         $("#export-button").bind("click", function () {
             onDeckExport();
+        });
+
+        $("#link-button").popup({ on: "click" });
+        $("#link-button").bind("click", function () {
+            onGenerateLink();
         });
 
         $("#about-heading").bind("click", function () {
@@ -554,6 +607,30 @@ function buildEpcUI(
     }
 
     /*
+        Load a deck from the code in the URL.
+        Returns true if a valid deck code is present, false otherwise.
+    */
+    function getDeckFromURL() {
+        var params;
+
+        params = new URLSearchParams(document.location.search);
+
+        if (!params.has("d")) {
+            return false;
+        }
+
+        currentDeck = makeEternalDeckFromCode(cardLibrary, params.get("d"));
+        if (currentDeck.makeError) {
+            showError("Deck code error", currentDeck.makeError);
+
+            currentDeck = null;
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
         Check browser local storage for a decklist saved from a 
         previous visit to the page.  If one is found, load that
         decklist as the active deck.
@@ -585,7 +662,12 @@ function buildEpcUI(
     }
 
     graphPopupTracker = makeGraphPopupTracker();
-    getDeckFromStorage();
+
+    deckFromURL = getDeckFromURL();
+    if (!deckFromURL) {
+        getDeckFromStorage();
+    }
+
     onDeckChange(currentDeck);
     bindButtons();
     gatherCards();
