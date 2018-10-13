@@ -17,7 +17,7 @@ See the following for more information:
 * jQuery -- https://jquery.com/
 * Semantic-UI -- https://semantic-ui.com/
 
-# Contents
+# Development
 
 Eternal Power Calculator contains the following Javascript code:
 
@@ -38,11 +38,16 @@ Additional content:
 
 Build support:
 
-* `lint.sh` - Shell script for linting Javascript source
-* `generate.sh` - Shell script to generate `epc.min.js` (minified Javascript)
-* `build-semantic.sh` - Build a `semantic.min.css` and `semantic.min.js`
+* `npm run build:epc` - Shell script to generate `epc.min.js` (minified Javascript)
+* `npm run build:semantic` - Build a `semantic.min.css` and `semantic.min.js`
+* `npm run build` - Shortcut for running all build scripts
+* `npm run lint` - Lint the epc scripts
 * `semantic.json` - Configuration for Semantic-UI 
 * `semantic-site.variables` - Build variables for Semantic-UI
+
+You will need to install node to run the npm scripts. If you don't want
+to install node, you can run the bash scripts manually (generate.sh and
+build-semantic.sh).
 
 # Usage
 

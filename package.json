@@ -5,14 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "build:epc": "bash generate.sh ",
+    "build:semantic": "bash build-semantic.sh",
+    "build": "bash generate.sh && bash build-semantic.sh",
+    "lint": "eslint epc-deck.js epc-graph.js epc-polyfill.js epc-table.js epc-test.js epc-ui.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alexmiddeleer/epc.git"
   },
   "keywords": [
-    "eternal"
+    "eternal-card-game"
   ],
   "author": "Matt Kimball, Alex Middeleer",
   "license": "GPL-2.0",
@@ -21,13 +25,13 @@
   },
   "homepage": "https://github.com/alexmiddeleer/epc#readme",
   "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-plugin-jest": "^21.24.1",
+    "gulp": "^3.9.1",
     "jest": "^23.6.0",
-    "puppeteer": "^1.8.0"
-  },
-  "keywords": [
-    "eternal-card-game"
-  ],
-  "dependencies": {
-    "jest-puppeteer": "^3.3.1"
+    "jest-puppeteer": "^3.3.1",
+    "puppeteer": "^1.8.0",
+    "semantic-ui": "^2.3.1",
+    "uglifyjs": "^2.4.11"
   }
 }
