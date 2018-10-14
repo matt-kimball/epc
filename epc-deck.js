@@ -31,9 +31,7 @@
     We'll implement a cache below to speed up the results when needing
     to compute factorials many thousand times.
 */
-function factorialSlow(
-    n
-) {
+function factorialSlow(n) {
     var i, r;
 
     r = 1;
@@ -1204,10 +1202,7 @@ function makeEternalDeck(
     The string is converted to a list of cardcount objects, and then
     constructed using those cardcounts.
 */
-function makeEternalDeckFromString(
-    library,
-    deckstr
-) {
+function makeEternalDeckFromString(library, deckstr) {
     var deck, cardcounts, makeError, regex, marketRegex, inMarket;
 
     cardcounts = [];
@@ -1234,7 +1229,7 @@ function makeEternalDeckFromString(
         match = line.match(regex);
 
         if (!match) {
-            makeError = 'malformed line: "' + line + '"';
+            makeError = `malformed line: "${line}"`;
             return;
         }
 
@@ -1243,7 +1238,7 @@ function makeEternalDeckFromString(
         cardid = match[3];
 
         if (count > 100) {
-            makeError = 'too many cards: "' + line + '"';
+            makeError = `too many cards: "${line}"`;
             return;
         }
 
@@ -1263,10 +1258,7 @@ function makeEternalDeckFromString(
 }
 
 /*  Generate a deck from a URL-embedded code  */
-function makeEternalDeckFromCode(
-    library,
-    code
-) {
+function makeEternalDeckFromCode(library, code) {
     var deck,
         cardcounts,
         values,
@@ -1304,7 +1296,7 @@ function makeEternalDeckFromCode(
                 cardid = "Set" + String(set) + " #" + String(card);
                 if (!library.cards[cardid]) {
                     makeError =
-                        'unknown card id in deck code: "' + cardid + '"';
+                        `unknown card id in deck code: "${cardid}"`;
                     break;
                 }
                 name = library.cards[cardid].name;
