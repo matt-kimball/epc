@@ -746,35 +746,31 @@ function makeDrawCombinationIterator(
     return iter;
 }
 
+
 /*
     Construct a deck from a list of cardcount objects.  Each object
     in `inCardlist` is expected to have three fields: id, name, and
     count.  id is the card identifier.  (i.e. 'Set1 #32')
 */
-function makeEternalDeck(
-    cardlibrary,
-    inCardlist
-) {
-    var deck, cardlist;
+function makeEternalDeck(cardlibrary, inCardlist, market) {
+    var deck, cardlist, marketlist;
 
     /*
         Given a list of cardcount objects, merge cardcounts which
         reference the same card id into a single cardcount.
         Return the list of merged cardcounts.
     */
-    function mergeCardlist(
-        inCardlist
-    ) {
+    function mergeCardlist(inCardlist) {
         var ret, cardcountId;
-
+    
         ret = [];
         cardcountId = {};
-
+    
         $.each(inCardlist, function (index, cardcount) {
             var dupCardcount;
-
+    
             dupCardcount = cardcountId[cardcount.id];
-
+    
             if (dupCardcount) {
                 dupCardcount.count += cardcount.count;
             } else {
@@ -783,19 +779,21 @@ function makeEternalDeck(
                     name: cardcount.name,
                     count: cardcount.count
                 };
-
+    
                 ret.push(dupCardcount);
                 cardcountId[cardcount.id] = dupCardcount;
             }
         });
-
+    
         return ret;
     }
 
     cardlist = mergeCardlist(inCardlist);
+    marketlist = mergeCardlist(market);
     deck = {
         cardlibrary: cardlibrary,
         cardlist: cardlist,  // a list of cardcount items (name, id, count)
+        marketlist: marketlist,  // a list of cardcount items (name, id, count)
         cards: [],  // all distinct cards in the deck
         cardNames: {},  // indexed by card.id
         cardCount: {}  // indexed by card.id
@@ -810,7 +808,7 @@ function makeEternalDeck(
         cardid = cardcount.id;
         card = cardlibrary.cards[cardid];
         if (!card) {
-            deck.makeError = 'unknown card: "' + cardid + '"';
+            deck.makeError = "unknown card: \"" + cardid + "\"";
             return;
         }
 
@@ -1079,6 +1077,7 @@ function makeEternalDeck(
             probability of drawing each.
         */
         odds = 0;
+        // eslint-disable-next-line no-constant-condition
         while (true) {
             combinationIter = drawCombinations.next();
             if (combinationIter.done) {
@@ -1133,6 +1132,7 @@ function makeEternalDeck(
         var decklist;
 
         decklist = "";
+        //TODO market (deck.marketlist)
         $.each(deck.cardlist, function (index, cardcount) {
             var cardline;
 
@@ -1164,6 +1164,7 @@ function makeEternalDeck(
         idRegex = /^Set([0-9]+) #([0-9]+)/;
 
         values = [];
+        //TODO market (deck.marketlist)
         $.each(deck.cardlist, function (index, cardcount) {
             match = cardcount.id.match(idRegex);
 
@@ -1202,8 +1203,9 @@ function makeEternalDeck(
     The string is converted to a list of cardcount objects, and then
     constructed using those cardcounts.
 */
+// eslint-disable-next-line no-unused-vars
 function makeEternalDeckFromString(library, deckstr) {
-    var deck, cardcounts, makeError, regex, marketRegex, inMarket;
+    var deck, cardcounts, makeError, regex, marketRegex;
 
     cardcounts = [];
 
@@ -1211,6 +1213,8 @@ function makeEternalDeckFromString(library, deckstr) {
     marketRegex = /^-+MARKET-+$/;
 
     /*  For each line in the decklist input, decode the card and count  */
+    var market = [];
+    var inMarket = false;
     $.each(deckstr.split("\n"), function (index, line) {
         var match, count, name, cardid;
 
@@ -1221,15 +1225,12 @@ function makeEternalDeckFromString(library, deckstr) {
 
         if (line.match(marketRegex)) {
             inMarket = true;
+            return; // skip to next line
         }
-        if (inMarket) {
-            return;
-        }
-
         match = line.match(regex);
 
         if (!match) {
-            makeError = `malformed line: "${line}"`;
+            makeError = "malformed line: \"" + line + "\"";
             return;
         }
 
@@ -1238,18 +1239,26 @@ function makeEternalDeckFromString(library, deckstr) {
         cardid = match[3];
 
         if (count > 100) {
-            makeError = `too many cards: "${line}"`;
+            makeError = "too many cards: \"" + line + "\"";
             return;
         }
 
-        cardcounts.push({
-            id: cardid,
-            name: name,
-            count: count
-        });
+        if (inMarket) {
+            market.push({
+                id: cardid,
+                name: name,
+                count: count
+            });
+        } else {
+            cardcounts.push({
+                id: cardid,
+                name: name,
+                count: count
+            });
+        }
     });
 
-    deck = makeEternalDeck(library, cardcounts);
+    deck = makeEternalDeck(library, cardcounts, market);
     if (makeError) {
         deck.makeError = makeError;
     }
@@ -1258,6 +1267,7 @@ function makeEternalDeckFromString(library, deckstr) {
 }
 
 /*  Generate a deck from a URL-embedded code  */
+// eslint-disable-next-line no-unused-vars
 function makeEternalDeckFromCode(library, code) {
     var deck,
         cardcounts,
@@ -1296,7 +1306,7 @@ function makeEternalDeckFromCode(library, code) {
                 cardid = "Set" + String(set) + " #" + String(card);
                 if (!library.cards[cardid]) {
                     makeError =
-                        `unknown card id in deck code: "${cardid}"`;
+                        "unknown card id in deck code: \"" + cardid + "\"";
                     break;
                 }
                 name = library.cards[cardid].name;

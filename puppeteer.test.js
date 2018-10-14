@@ -22,22 +22,48 @@ const argenport = `2 Finest Hour (Set1 #130)
 4 Seat of Vengeance (Set0 #55)
 `;
 
-describe('Deck import', () => {
-  beforeEach(async () => {
-    await page.goto('http://localhost:8081');
-  });
+const market = `
 
-  it('import deck button should open modal', async () => {
-    await page.click('#import-button');
-    await page.waitForSelector('#import-modal', { visible: true });
-  });
+--------------MARKET---------------
 
-  it('should be possible to import a deck', async () => {
-    await expect((await page.$$('.card-count-edit'))).toHaveLength(0);
-    await page.click('#import-button');
-    await page.waitForSelector('#import-modal textarea', { visible: true });
-    await expect(page).toFill('#import-modal textarea', argenport);
-    await page.click('#import-modal-import-button');
-    await expect((await page.$$('.card-count-edit'))).toHaveLength(22);
-  });
+1 Slay (Set2 #236)
+1 Valkyrie Enforcer (Set1 #151)
+1 Vanquisher's Blade (Set4 #112)
+1 Inquisitor Makto (Set2 #242)
+1 Argenport Banner (Set2 #231)
+`;
+
+describe("Deck import", () => {
+    beforeEach(async () => {
+        await page.goto("http://localhost:8081");
+    });
+
+    it("import deck button should open modal", async () => {
+        await page.click("#import-button");
+        await page.waitForSelector("#import-modal", { visible: true });
+    });
+
+    it("should be possible to import a deck", async () => {
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(0);
+        await page.click("#import-button");
+        await page.waitForSelector("#import-modal textarea", { visible: true });
+        await expect(page).toFill("#import-modal textarea", argenport);
+        await page.click("#import-modal-import-button");
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(22);
+    });
+});
+
+describe("Markets", () => {
+    beforeEach(async () => {
+        await page.goto("http://localhost:8081");
+        await page.click("#clear-button");
+    });
+    it("market cards should appear in deck list", async () => {
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(0);
+        await page.click("#import-button");
+        await page.waitForSelector("#import-modal textarea", { visible: true });
+        await expect(page).toFill("#import-modal textarea", `${argenport}${market}`);
+        await page.click("#import-modal-import-button");
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(27);
+    });
 });

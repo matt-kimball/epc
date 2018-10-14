@@ -145,16 +145,17 @@ function buildEpcUI(
         Add the rows to the editable deck, one for each card,
         with -/+ buttons for modifying the card count.
     */
-    function buildDeckRows(
-        deck
-    ) {
-        var powerRows, nonpowerRows, row;
+    function buildDeckRows(deck) {
+        var powerRows, nonpowerRows, row, marketRows;
 
         powerRows = $("#deck-edit-power-rows");
         powerRows.empty();
 
         nonpowerRows = $("#deck-edit-nonpower-rows");
         nonpowerRows.empty();
+
+        marketRows = $("#deck-edit-market-rows");
+        marketRows.empty();
 
         $.each(deck.cardlist, function (index, cardcount) {
             var card, cardid;
@@ -172,6 +173,18 @@ function buildEpcUI(
             buildDeckRow(row, deck, card, cardcount);
         });
 
+        $.each(deck.marketlist, function (index, cardcount) {
+            var card, cardid;
+
+            cardid = cardcount.id;
+            card = cardLibrary.cards[cardid];
+
+            row = $("<div>").addClass("card-count-edit");
+            row.appendTo(marketRows);
+
+            buildDeckRow(row, deck, card, cardcount);
+        });
+
         if (powerRows.children().length) {
             $("#deck-edit-power-title").css("display", "block");
         } else {
@@ -182,6 +195,12 @@ function buildEpcUI(
             $("#deck-edit-nonpower-title").css("display", "block");
         } else {
             $("#deck-edit-nonpower-title").css("display", "none");
+        }
+
+        if (marketRows.children().length) {
+            $("#deck-edit-market-title").css("display", "block");
+        } else {
+            $("#deck-edit-market-title").css("display", "none");
         }
     }
 
@@ -286,9 +305,7 @@ function buildEpcUI(
         and regenerate the user interface components which depend
         on the contents of the deck.
     */
-    function onDeckChange(
-        deck
-    ) {
+    function onDeckChange(deck) {
         var decklist, dots;
         currentDeck = deck;
 
@@ -303,6 +320,7 @@ function buildEpcUI(
                 localStorage.setItem("decklist", decklist);
             }
         } catch (ignore) {
+            // do nothing
         }
 
         if (oddsWorker) {
