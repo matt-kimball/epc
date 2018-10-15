@@ -369,7 +369,7 @@ function buildEpcUI(
             }
         });
 
-        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList);
+        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList, deck.marketlist.slice());
         onDeckChange(modifiedDeck);
     };
 

@@ -1132,7 +1132,6 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
         var decklist;
 
         decklist = "";
-        //TODO market (deck.marketlist)
         $.each(deck.cardlist, function (index, cardcount) {
             var cardline;
 
@@ -1153,6 +1152,29 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
                 cardcount.id + ")";
             decklist += cardline + "\n";
         });
+        if (deck.marketlist) {
+            decklist += "\n--------------MARKET---------------\n\n";
+            $.each(deck.marketlist, function (index, cardcount) {
+                var cardline;
+    
+                /*
+                    If we are exporting to the clipboard, leave out
+                    zero card count entries, because that is unusual
+                    and may confuse other tools which manipulate decklists.
+                    (We want to leave the zero card count cards in if 
+                    we are saving to local storage, though, to keep them
+                    in the list.)
+                */
+                if (!cardcount.count && forExport) {
+                    return;
+                }
+    
+                cardline = String(cardcount.count) + " " +
+                    cardcount.name + " (" +
+                    cardcount.id + ")";
+                decklist += cardline + "\n";
+            });
+        }
 
         return decklist;
     };
