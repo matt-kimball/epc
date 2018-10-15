@@ -458,9 +458,7 @@ function buildEpcUI(
         Add a new card to the current deck upon confirmation from the
         add card dialog.
     */
-    function onAddCard(
-        dropdownOption
-    ) {
+    function onAddCard(dropdownOption) {
         var cards, deck, cardid;
 
         cardid = dropdownOption.val();
@@ -475,7 +473,7 @@ function buildEpcUI(
             count: 1
         });
 
-        deck = makeEternalDeck(cardLibrary, cards);
+        deck = makeEternalDeck(cardLibrary, cards, currentDeck.marketlist.slice());
         onDeckChange(deck);
     }
 

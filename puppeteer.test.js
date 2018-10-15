@@ -68,14 +68,4 @@ describe("Markets", () => {
         await page.click("#import-modal-import-button");
         await expect((await page.$$(".card-count-edit"))).toHaveLength(27);
     });
-
-    it("should keep the market after using 'add a card'", async () => {
-        await page.click("#add-card-button");
-        await page.waitForSelector("#card-select", { visible: true });
-        await page.click("#card-select i");
-        await page.waitForSelector("#card-select div.item:first-child", { visible: true });
-        await page.click("#card-select div.item:first-child");
-        await page.click("#add-card-modal-add-button");
-        await expect((await page.$$(".card-count-edit"))).toHaveLength(28);
-    });
 });
