@@ -157,33 +157,28 @@ function buildEpcUI(
         marketRows = $("#deck-edit-market-rows");
         marketRows.empty();
 
-        $.each(deck.cardlist, function (index, cardcount) {
-            var card, cardid;
+        var addCardsToDecklistSection = function(cardlist, sectionMapper) {
+            $.each(cardlist, function (index, cardcount) {
+                var card, cardid;
 
-            cardid = cardcount.id;
-            card = cardLibrary.cards[cardid];
+                cardid = cardcount.id;
+                card = cardLibrary.cards[cardid];
 
-            row = $("<div>").addClass("card-count-edit");
+                row = $("<div>").addClass("card-count-edit");
+                row.appendTo(sectionMapper(card));
+                buildDeckRow(row, deck, card, cardcount);
+            });
+        };
+
+        addCardsToDecklistSection(deck.cardlist, function(card) {
             if (card && card.flags.power) {
-                row.appendTo(powerRows);
+                return powerRows;
             } else {
-                row.appendTo(nonpowerRows);
+                return nonpowerRows;
             }
-
-            buildDeckRow(row, deck, card, cardcount);
         });
 
-        $.each(deck.marketlist, function (index, cardcount) {
-            var card, cardid;
-
-            cardid = cardcount.id;
-            card = cardLibrary.cards[cardid];
-
-            row = $("<div>").addClass("card-count-edit");
-            row.appendTo(marketRows);
-
-            buildDeckRow(row, deck, card, cardcount);
-        });
+        addCardsToDecklistSection(deck.marketlist, function() { return marketRows; });
 
         if (powerRows.children().length) {
             $("#deck-edit-power-title").css("display", "block");
