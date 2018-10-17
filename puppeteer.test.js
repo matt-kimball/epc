@@ -1,8 +1,6 @@
 const oneCard = "2 Finest Hour (Set1 #130)";
 const oneCardOneMarket = `${oneCard}
-
 --------------MARKET---------------
-
 1 Slay (Set2 #236)`;
 
 describe("Deck import", () => {

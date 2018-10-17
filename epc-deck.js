@@ -23,7 +23,14 @@
 */
 
 'use strict';
-
+var MARKET_MARKER = 2;
+var MARKET_URL_DIVIDER_TOKEN = [MARKET_MARKER,0,0];
+if (typeof $ === "undefined") {
+    var $ = require("min-jquery");
+}
+if (typeof encodeValues === "undefined") {
+    var encodeValues = require("./epc-code").encodeValues;
+}
 
 /*
     A straightforward implementation of factorial.
@@ -526,9 +533,7 @@ function makeEternalCardInfo(
     unused.)
 
 */
-function makeEternalCardLibrary(
-    cards
-) {
+function makeEternalCardLibrary(cards) {
     var library = {
         cards: {}  // indexed by card id
     };
@@ -1168,8 +1173,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
         idRegex = /^Set([0-9]+) #([0-9]+)/;
 
         values = [];
-        //TODO market (deck.marketlist)
-        $.each(deck.cardlist, function (index, cardcount) {
+        var processCard = function (index, cardcount) {
             match = cardcount.id.match(idRegex);
 
             if (!match) {
@@ -1180,7 +1184,12 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
             values.push(cardcount.count);
             values.push(Number(match[1]));
             values.push(Number(match[2]));
-        });
+        };
+        $.each(deck.cardlist, processCard);
+        if (deck.marketlist && deck.marketlist.length) {
+            values.concat(MARKET_URL_DIVIDER_TOKEN);
+            $.each(deck.marketlist, processCard);
+        }
 
         return encodeValues(values);
     };
@@ -1275,6 +1284,7 @@ function makeEternalDeckFromString(library, deckstr) {
 function makeEternalDeckFromCode(library, code) {
     var deck,
         cardcounts,
+        marketcounts,
         values,
         makeError,
         index,
@@ -1283,7 +1293,8 @@ function makeEternalDeckFromCode(library, code) {
         card,
         cardid,
         marker,
-        name;
+        name,
+        inMarket;
 
     cardcounts = [];
     values = decodeValues(code);
@@ -1314,12 +1325,20 @@ function makeEternalDeckFromCode(library, code) {
                     break;
                 }
                 name = library.cards[cardid].name;
-
-                cardcounts.push({
+                var cardListCard = {
                     id: cardid,
                     name: name,
                     count: count
-                });
+                };
+
+                if (inMarket) {
+                    marketcounts.push(cardListCard);
+                } else {
+                    cardcounts.push(cardListCard);
+                }
+
+            } else if (marker === MARKET_MARKER) {
+                inMarket = true;
             }
         }
 
@@ -1329,10 +1348,18 @@ function makeEternalDeckFromCode(library, code) {
         }
     }
 
-    deck = makeEternalDeck(library, cardcounts);
+    deck = makeEternalDeck(library, cardcounts, marketcounts);
     if (makeError) {
         deck.makeError = makeError;
     }
 
     return deck;
 }
+
+// eslint-disable-next-line no-undef
+module.exports = {
+    makeEternalDeck: makeEternalDeck,
+    makeEternalDeckFromCode: makeEternalDeckFromCode,
+    makeEternalCardLibrary: makeEternalCardLibrary,
+    makeEternalDeckFromString: makeEternalDeckFromString
+}; 
