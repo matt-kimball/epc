@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test:watch": "jest --watchAll --notify",
     "build:epc": "bash generate.sh ",
     "build:semantic": "bash build-semantic.sh",
-    "build": "bash generate.sh && bash build-semantic.sh",
+    "build": "bash generate.sh && bash build-semantic.sh && bash dist.sh",
     "lint": "eslint epc-deck.js epc-graph.js epc-polyfill.js epc-table.js epc-test.js epc-ui.js"
   },
   "repository": {
