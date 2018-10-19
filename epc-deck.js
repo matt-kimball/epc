@@ -31,6 +31,9 @@ if (typeof $ === "undefined") {
 if (typeof encodeValues === "undefined") {
     var encodeValues = require("./epc-code").encodeValues;
 }
+if (typeof decodeValues === "undefined") {
+    var decodeValues = require("./epc-code").decodeValues;
+}
 
 /*
     A straightforward implementation of factorial.
@@ -1187,7 +1190,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
         };
         $.each(deck.cardlist, processCard);
         if (deck.marketlist && deck.marketlist.length) {
-            values.concat(MARKET_URL_DIVIDER_TOKEN);
+            values = values.concat(MARKET_URL_DIVIDER_TOKEN);
             $.each(deck.marketlist, processCard);
         }
 
@@ -1297,6 +1300,7 @@ function makeEternalDeckFromCode(library, code) {
         inMarket;
 
     cardcounts = [];
+    marketcounts = [];
     values = decodeValues(code);
     if (!values) {
         makeError = "malformed deck code";

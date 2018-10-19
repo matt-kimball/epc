@@ -125,9 +125,7 @@ function encodeValues(
 
 
 /*  Decode a URL-safe code into a list of values.  */
-function decodeValues(
-    code
-) {
+function decodeValues(code) {
     var values, ix, i, m, r, c, charCode;
 
     values = [];
@@ -202,5 +200,6 @@ function testEncode() {
 }
 
 module.exports = {
-    encodeValues: encodeValues
+    encodeValues: encodeValues,
+    decodeValues: decodeValues
 };
