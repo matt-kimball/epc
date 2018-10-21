@@ -32,13 +32,12 @@ var MAX_MARKET_SIZE = 5;
     Hook up all user interface behavior.  The parameter is used 
     to determine the visual appearance of the graph.
 */
-function buildEpcUI(
-    graphStyle
-) {
+function buildEpcUI(graphStyle) {
     var cardlist,
         cardLibrary,
         currentDeck,
         modifyCardCount,
+        modifyMarketCardCount,
         oddsWorker,
         graphPopupTracker,
         deckFromURL;
@@ -151,12 +150,12 @@ function buildEpcUI(
         addButton = $("<button>").addClass("ui compact button add-button")
             .text("+").appendTo(row);
 
-        // addButton.bind("click", function () {
-        //     modifyCardCount(deck, cardid, count + 1);
-        // });
-        // subButton.bind("click", function () {
-        //     modifyCardCount(deck, cardid, count - 1);
-        // });
+        addButton.bind("click", function () {
+            modifyMarketCardCount(deck, cardid, count + 1);
+        });
+        subButton.bind("click", function () {
+            modifyMarketCardCount(deck, cardid, count - 1);
+        });
     }
 
     /*
@@ -215,8 +214,12 @@ function buildEpcUI(
 
         if (marketRows.children().length) {
             $("#deck-edit-market-title").css("display", "block");
-            if (deck.marketlist.length === MAX_MARKET_SIZE) {
+            if (deck.marketlist.reduce(function(acc, c) {
+                return acc + c.count;
+            }, 0) === MAX_MARKET_SIZE) {
                 marketRows.addClass("add-disabled");
+            } else {
+                marketRows.removeClass("add-disabled");
             }
         } else {
             $("#deck-edit-market-title").css("display", "none");
@@ -385,6 +388,35 @@ function buildEpcUI(
         });
 
         modifiedDeck = makeEternalDeck(cardLibrary, modifiedList, deck.marketlist.slice());
+        onDeckChange(modifiedDeck);
+    };
+
+
+    /*
+        Given a list of cardcount objects, change the count associated
+        with a particular card id.  Return the full list, including
+        the modified cardcount. (Markets only)
+    */
+    modifyMarketCardCount = function (deck, cardid, count) {
+        var modifiedList, modifiedDeck;
+
+        modifiedList = [];
+
+        $.each(deck.marketlist, function (index, cardcount) {
+            if (cardcount.id === cardid) {
+                if (count >= 0) {
+                    modifiedList.push({
+                        id: cardcount.id,
+                        name: cardcount.name,
+                        count: count
+                    });
+                }
+            } else {
+                modifiedList.push(cardcount);
+            }
+        });
+
+        modifiedDeck = makeEternalDeck(cardLibrary, deck.cardlist.slice(), modifiedList);
         onDeckChange(modifiedDeck);
     };
 
