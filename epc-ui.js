@@ -131,6 +131,34 @@ function buildEpcUI(
     }
 
     /*
+     Same as buildDeckRow but for markets
+    */
+    function buildDeckMarketRow(row, deck, card, cardcount) {
+        var name, nameClass, count, countstr, cardid, addButton, subButton;
+
+        name = cardcount.name;
+        count = cardcount.count;
+        countstr = String(count);
+        cardid = cardcount.id;
+
+        nameClass = getCardNameClass(card);
+
+        $("<div>").addClass(nameClass).text(name).appendTo(row);
+        $("<div>").addClass("card-count").text(countstr).appendTo(row);
+        subButton = $("<button>").addClass("ui compact button")
+            .text("-").appendTo(row);
+        addButton = $("<button>").addClass("ui compact button")
+            .text("+").appendTo(row);
+
+        addButton.bind("click", function () {
+            modifyCardCount(deck, cardid, count + 1);
+        });
+        subButton.bind("click", function () {
+            modifyCardCount(deck, cardid, count - 1);
+        });
+    }
+
+    /*
         Add the rows to the editable deck, one for each card,
         with -/+ buttons for modifying the card count.
     */
@@ -146,28 +174,32 @@ function buildEpcUI(
         marketRows = $("#deck-edit-market-rows");
         marketRows.empty();
 
-        var addCardsToDecklistSection = function(cardlist, sectionMapper) {
-            $.each(cardlist, function (index, cardcount) {
-                var card, cardid;
+        $.each(deck.cardlist, function (index, cardcount) {
+            var card, cardid;
 
-                cardid = cardcount.id;
-                card = cardLibrary.cards[cardid];
+            cardid = cardcount.id;
+            card = cardLibrary.cards[cardid];
 
-                row = $("<div>").addClass("card-count-edit");
-                row.appendTo(sectionMapper(card));
-                buildDeckRow(row, deck, card, cardcount);
-            });
-        };
-
-        addCardsToDecklistSection(deck.cardlist, function(card) {
+            row = $("<div>").addClass("card-count-edit");
             if (card && card.flags.power) {
-                return powerRows;
+                row.appendTo(powerRows);
             } else {
-                return nonpowerRows;
+                row.appendTo(nonpowerRows);
             }
+            buildDeckRow(row, deck, card, cardcount);
         });
 
-        addCardsToDecklistSection(deck.marketlist, function() { return marketRows; });
+        // addCardsToDecklistSection(deck.marketlist, function() { return marketRows; });
+        $.each(deck.marketlist, function (index, cardcount) {
+            var card, cardid;
+
+            cardid = cardcount.id;
+            card = cardLibrary.cards[cardid];
+
+            row = $("<div>").addClass("card-count-edit");
+            row.appendTo(marketRows);
+            buildDeckMarketRow(row, deck, card, cardcount);
+        });
 
         if (powerRows.children().length) {
             $("#deck-edit-power-title").css("display", "block");
