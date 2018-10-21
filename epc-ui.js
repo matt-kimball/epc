@@ -26,6 +26,7 @@
 
 "use strict";
 
+var MAX_MARKET_SIZE = 5;
 
 /*
     Hook up all user interface behavior.  The parameter is used 
@@ -147,20 +148,19 @@ function buildEpcUI(
         $("<div>").addClass("card-count").text(countstr).appendTo(row);
         subButton = $("<button>").addClass("ui compact button")
             .text("-").appendTo(row);
-        addButton = $("<button>").addClass("ui compact button")
+        addButton = $("<button>").addClass("ui compact button add-button")
             .text("+").appendTo(row);
 
-        addButton.bind("click", function () {
-            modifyCardCount(deck, cardid, count + 1);
-        });
-        subButton.bind("click", function () {
-            modifyCardCount(deck, cardid, count - 1);
-        });
+        // addButton.bind("click", function () {
+        //     modifyCardCount(deck, cardid, count + 1);
+        // });
+        // subButton.bind("click", function () {
+        //     modifyCardCount(deck, cardid, count - 1);
+        // });
     }
 
     /*
         Add the rows to the editable deck, one for each card,
-        with -/+ buttons for modifying the card count.
     */
     function buildDeckRows(deck) {
         var powerRows, nonpowerRows, row, marketRows;
@@ -215,6 +215,9 @@ function buildEpcUI(
 
         if (marketRows.children().length) {
             $("#deck-edit-market-title").css("display", "block");
+            if (deck.marketlist.length === MAX_MARKET_SIZE) {
+                marketRows.addClass("add-disabled");
+            }
         } else {
             $("#deck-edit-market-title").css("display", "none");
         }
@@ -362,11 +365,7 @@ function buildEpcUI(
         with a particular card id.  Return the full list, including
         the modified cardcount.
     */
-    modifyCardCount = function (
-        deck,
-        cardid,
-        count
-    ) {
+    modifyCardCount = function (deck, cardid, count) {
         var modifiedList, modifiedDeck;
 
         modifiedList = [];
