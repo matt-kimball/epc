@@ -1,4 +1,4 @@
-const { makeEternalCardLibrary, makeEternalDeck, makeEternalDeckFromCode, makeEternalDeckFromString } = require("./epc-deck");
+const { makeEternalCardLibrary, makeEternalDeckFromCode, makeEternalDeckFromString } = require("./epc-deck");
 
 const cardLibrary = makeEternalCardLibrary(`
 Set1 #130;; 1J; Finest Hour;
