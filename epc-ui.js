@@ -24,7 +24,7 @@
 
 */
 
-'use strict';
+"use strict";
 
 
 /*
@@ -105,19 +105,8 @@ function buildEpcUI(
         Build a row corresponding to an individual card in the decklist
         editing panel.
     */
-    function buildDeckRow(
-        row,
-        deck,
-        card,
-        cardcount
-    ) {
-        var name,
-            nameClass,
-            count,
-            countstr,
-            cardid,
-            addButton,
-            subButton;
+    function buildDeckRow(row, deck, card, cardcount) {
+        var name, nameClass, count, countstr, cardid, addButton, subButton;
 
         name = cardcount.name;
         count = cardcount.count;
@@ -432,7 +421,7 @@ function buildEpcUI(
 
         link = String(document.location);
 
-        index = link.indexOf('?');
+        index = link.indexOf("?");
         if (index >= 0) {
             link = link.substring(0, index);
         }
