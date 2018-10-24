@@ -402,6 +402,10 @@ function buildEpcUI(graphStyle) {
 
         modifiedList = [];
 
+        if (count > 1) {
+            return;
+        }
+
         $.each(deck.marketlist, function (index, cardcount) {
             if (cardcount.id === cardid) {
                 if (count >= 0) {
