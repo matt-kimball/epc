@@ -298,7 +298,7 @@
             </div>
 
             <div id="deck-edit-panel">
-                <div id="deck-edit-header" class="actions">
+                <div id="deck-edit-header" class="deck-edit-header" class="actions">
                     <button
                             id="import-button" class="ui button pad-right">
                         IMPORT
@@ -324,7 +324,7 @@
                     </button>
                 </div>
 
-                <div id="deck-edit">
+                <div id="deck-edit" class="deck-edit">
                     <div id="deck-edit-power-title"
                          class="deck-edit-section">
                         POWER CARDS
@@ -341,7 +341,21 @@
                     </div>
                     <div id="deck-edit-nonpower-rows">
                     </div>
+                </div>
 
+                <div id="deck-edit-footer" class="deck-edit-footer">
+                    <button id="add-card-button" class="ui button pad-right">
+                        ADD CARD
+                    </button>
+
+                    <button id="clear-button" class="ui button"
+                            data-position="top center"
+                            data-content="Deck cleared">
+                        CLEAR
+                    </button>
+                </div>
+
+                <div id="market-edit" class="deck-edit">
                     <div id="deck-edit-market-title"
                          class="deck-edit-section">
                         MARKET
@@ -350,12 +364,12 @@
                     </div>
                 </div>
 
-                <div id="deck-edit-footer">
-                    <button id="add-card-button" class="ui button pad-right">
+                <div id="market-edit-footer" class="deck-edit-footer">
+                    <button id="add-market-card-button" class="ui button pad-right">
                         ADD CARD
                     </button>
 
-                    <button id="clear-button" class="ui button"
+                    <button id="clear-market-button" class="ui button"
                             data-position="top center"
                             data-content="Deck cleared">
                         CLEAR

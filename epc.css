@@ -407,31 +407,31 @@ body {
     Decklist editing panel
 */
 
-#deck-edit-header,
-#deck-edit-footer {
+.deck-edit-header,
+.deck-edit-footer {
     width: 245px;
     margin: 30px;
     display: flex;
     justify-content: space-between;
 }
 
-#deck-edit-header .button,
-#deck-edit-footer .button {
+.deck-edit-header .button,
+.deck-edit-footer .button {
     clear: both;
     margin: 0px 0px 6px 0px;
     padding: 0px;
     height: 38px;
 }
 
-#deck-edit-header .button {
+.deck-edit-header .button {
     width: 96px;
 }
 
-#deck-edit-header #link-button {
+.deck-edit-header #link-button {
     width: 38px;
 }
 
-#deck-edit-footer .button {
+.deck-edit-footer .button {
     width: 118px;
 }
 
@@ -440,7 +440,7 @@ body {
     height: 18px;
 }
 
-#deck-edit {
+#deck-edit-panel .deck-edit {
     width: 305px;
 }
 
@@ -510,7 +510,7 @@ body {
     font-style: italic;
 }
 
-#deck-edit button {
+#deck-edit-panel .deck-edit button {
     float: left;
     width: 30px;
     height: 22px;
