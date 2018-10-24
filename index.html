@@ -171,6 +171,31 @@
         </div>
     </div>
 
+    <!--  Dialog for adding a market card  -->
+    <div id="add-market-card-modal" class="ui mini modal">
+        <div class="header">
+            Select a card
+        </div>
+
+        <div id="market-card-select" class="modal-body">
+            <!--  All card names are added by gatherCards in epc-ui.js  -->
+            <select
+                    id="add-market-card-dropdown"
+                    class="ui fluid search selection dropdown">
+                <option value="">Card</option>
+            </select>
+        </div>
+
+        <div class="actions">
+            <button
+                    id="add-market-card-modal-add-button"
+                    class="ui positive right button">
+                ADD
+            </button>
+        </div>
+    </div>
+
+
     <!--  A dialog used to report syntax errors in the card list  -->
     <div id="error-modal" class="ui small modal">
         <div id="error-title" class="header">Error</div>

@@ -520,8 +520,8 @@ function buildEpcUI(graphStyle) {
         Add a new card to the current deck upon confirmation from the
         add card dialog.
     */
-    function onAddCard(dropdownOption) {
-        var cards, deck, cardid;
+    function onAddCard(dropdownOption, toMarket) {
+        var cards, market, deck, cardid;
 
         cardid = dropdownOption.val();
         if (!cardid.length) {
@@ -529,13 +529,19 @@ function buildEpcUI(graphStyle) {
         }
 
         cards = currentDeck.cardlist.slice();
-        cards.push({
+        market = currentDeck.marketlist.slice();
+        var card = {
             id: cardid,
             name: dropdownOption.text(),
             count: 1
-        });
+        };
+        if (toMarket) {
+            market.push(card);
+        } else {
+            cards.push(card);
+        }
 
-        deck = makeEternalDeck(cardLibrary, cards, currentDeck.marketlist.slice());
+        deck = makeEternalDeck(cardLibrary, cards, market);
         onDeckChange(deck);
     }
 
@@ -623,6 +629,11 @@ function buildEpcUI(graphStyle) {
             $("#add-card-modal").modal("show");
         });
 
+        $("#add-market-card-button").bind("click", function () {
+            $("#add-market-card-dropdown").dropdown("clear");
+            $("#add-market-card-modal").modal("show");
+        });
+
         $("#clear-button").popup({ on: "click" });
         $("#clear-button").bind("click", function () {
             onDeckClear();
@@ -641,6 +652,10 @@ function buildEpcUI(graphStyle) {
 
         $("#add-card-modal-add-button").bind("click", function () {
             onAddCard($("#add-card-dropdown option:selected"));
+        });
+
+        $("#add-market-card-modal-add-button").bind("click", function () {
+            onAddCard($("#add-market-card-dropdown option:selected"), true);
         });
 
         $("#power-table-container").css("display", "none");
@@ -667,11 +682,12 @@ function buildEpcUI(graphStyle) {
         selector in the add card dialog.
     */
     function gatherCards() {
-        var dropdown, cardnames, cardids;
+        var dropdown, cardnames, cardids, marketDropdown;
 
         $(".ui.dropdown").dropdown();
 
         dropdown = $("#add-card-dropdown");
+        marketDropdown = $("#add-market-card-dropdown");
 
         cardnames = [];
         cardids = {};
@@ -687,6 +703,7 @@ function buildEpcUI(graphStyle) {
 
             cardid = cardids[name];
             $("<option>").val(cardid).text(name).appendTo(dropdown);
+            $("<option>").val(cardid).text(name).appendTo(marketDropdown);
         });
     }
 

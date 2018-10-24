@@ -26,11 +26,22 @@ describe("Deck import", () => {
 describe("Deck add card", () => {
     beforeEach(async () => {
         await page.goto("http://localhost:8081");
+        await page.click("#clear-button");
     });
 
     it("add card button should open modal", async () => {
         await page.click("#add-card-button");
         await page.waitForSelector("#add-card-modal", { visible: true });
+    });
+
+    it("should be possible to add a card", async () => {
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(0);
+        await page.click("#add-card-button");
+        await page.waitForSelector("#add-card-modal .item:first-child", { visible: true });
+        await page.click("#add-card-modal .item:first-child");
+        await new Promise((resolve) => setTimeout(resolve, 100)); // animation confusing puppeteer?
+        await page.click("#add-card-modal-add-button");
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(1);
     });
 });
 
@@ -59,7 +70,7 @@ describe("Markets", () => {
         await page.click("#add-card-button");
         await page.waitForSelector("#add-card-modal .item:first-child", { visible: true });
         await page.click("#add-card-modal .item:first-child");
-        await new Promise((resolve) => setTimeout(resolve, 100)); // animation confusing puppeteer?
+        await new Promise((resolve) => setTimeout(resolve, 100)); // animation confusing puppeteer?  
         await page.click("#add-card-modal-add-button");
         await expect((await page.$$(".card-count-edit"))).toHaveLength(3);
     });
@@ -75,14 +86,13 @@ describe("Markets", () => {
         await expect((await page.$$(".card-count-edit"))).toHaveLength(1);
     });
 
-    // it("should add a card to the market when market add card button is clicked", async () => {
-    //     await page.click("#add-market-card-button");
-    //     await page.waitForSelector("#import-modal textarea", { visible: true });
-    //     await expect(page).toFill("#import-modal textarea", oneCardOneMarket);
-    //     await page.click("#import-modal-import-button");
-    //     await expect((await page.$$(".card-count-edit"))).toHaveLength(2);
-    //     await new Promise((resolve) => setTimeout(resolve, 500)); // animation confusing puppeteer?
-    //     await page.click("#clear-market-button");
-    //     await expect((await page.$$(".card-count-edit"))).toHaveLength(1);
-    // });
+    it("should add a card to the market when market add card button is clicked", async () => {
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(0);
+        await page.click("#add-market-card-button");
+        await page.waitForSelector("#add-market-card-modal .item:first-child", { visible: true });
+        await page.click("#add-market-card-modal .item:first-child");
+        await new Promise((resolve) => setTimeout(resolve, 100)); // animation confusing puppeteer?
+        await page.click("#add-market-card-modal-add-button");
+        await expect((await page.$$("#market-edit .card-count-edit"))).toHaveLength(1);
+    });
 });
