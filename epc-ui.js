@@ -499,9 +499,20 @@ function buildEpcUI(graphStyle) {
 
     /*  Reset the deck to an empty deck  */
     function onDeckClear() {
-        var deck;
+        var deck, market;
 
-        deck = makeEternalDeckFromString(cardLibrary, "");
+        market = currentDeck.marketlist.slice();
+        deck = makeEternalDeck(cardLibrary, [], market);
+        onDeckChange(deck);
+    }
+
+
+    /*  Reset the deck to an empty deck  */
+    function onMarketClear() {
+        var deck, cards;
+
+        cards = currentDeck.cardlist.slice();
+        deck = makeEternalDeck(cardLibrary, cards, []);
         onDeckChange(deck);
     }
 
@@ -616,6 +627,12 @@ function buildEpcUI(graphStyle) {
         $("#clear-button").bind("click", function () {
             onDeckClear();
             $("#clear-button").popup("reposition");
+        });
+
+        $("#clear-market-button").popup({ on: "click" });
+        $("#clear-market-button").bind("click", function () {
+            onMarketClear();
+            $("#clear-market-button").popup("reposition");
         });
 
         $("#import-modal-import-button").bind("click", function () {

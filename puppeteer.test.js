@@ -26,11 +26,10 @@ describe("Deck import", () => {
 describe("Markets", () => {
     beforeEach(async () => {
         await page.goto("http://localhost:8081");
-    });
-    it("market cards should appear in deck list after import", async () => {
         // clear import from previous test
         await page.click("#clear-button");
-
+    });
+    it("market cards should appear in deck list after import", async () => {
         await expect((await page.$$(".card-count-edit"))).toHaveLength(0);
         await page.click("#import-button");
         await page.waitForSelector("#import-modal textarea", { visible: true });
@@ -40,9 +39,6 @@ describe("Markets", () => {
     });
 
     it("add card should not remove market", async () => {
-        // clear import from previous test
-        await page.click("#clear-button");
-
         await page.click("#import-button");
         await page.waitForSelector("#import-modal textarea", { visible: true });
         await expect(page).toFill("#import-modal textarea", oneCardOneMarket);
@@ -55,5 +51,16 @@ describe("Markets", () => {
         await new Promise((resolve) => setTimeout(resolve, 100)); // animation confusing puppeteer?
         await page.click("#add-card-modal-add-button");
         await expect((await page.$$(".card-count-edit"))).toHaveLength(3);
+    });
+
+    it("should clear the market when market clear button is clicked", async () => {
+        await page.click("#import-button");
+        await page.waitForSelector("#import-modal textarea", { visible: true });
+        await expect(page).toFill("#import-modal textarea", oneCardOneMarket);
+        await page.click("#import-modal-import-button");
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(2);
+        await new Promise((resolve) => setTimeout(resolve, 500)); // animation confusing puppeteer?
+        await page.click("#clear-market-button");
+        await expect((await page.$$(".card-count-edit"))).toHaveLength(1);
     });
 });
