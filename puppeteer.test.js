@@ -97,23 +97,17 @@ describe("Markets", () => {
         await page.click("#add-market-card-modal-add-button");
         await expect((await page.$$("#market-edit .card-count-edit"))).toHaveLength(1);
     });
-  
+});
+
+describe("Misc", () => {
+    beforeEach(async () => {
+        await page.click("#clear-button");
+        await page.click("#clear-market-button");
+    });
     it("should disable the add market button when 5 market cards", async () => {
-        const marketFive = `--------------MARKET---------------
-          1 Disjunction (Set3 #63)
-          1 Xenan Initiation (Set2 #44)
-          1 Sword of Unity (Set4 #249)
-          1 Xenan Obelisk (Set1 #103)
-          1 Abduct (Set4 #199)`;
-        await expect((await page.$$(".card-count-edit"))).toHaveLength(0);
-        await page.click("#import-button");
-        await page.waitForSelector("#import-modal textarea", { visible: true });
-        await expect(page).toFill("#import-modal textarea", marketFive);
-        await page.click("#import-modal-import-button");
-        await expect((await page.$$(".card-count-edit"))).toHaveLength(5);
-        // await expect((await page.$$("#add-market-card-button"))).toBeDisabled();
+        await page.goto("http://localhost:8081/?d=CAABD_BBCsBBBuKBE5HBBnD");
+        await expect((await page.$$("#market-edit .card-count-edit"))).toHaveLength(5);
         const isDisabled = await page.$eval("#add-market-card-button", el => el.disabled );
-        // Make assertion
         expect( isDisabled ).toBeTruthy();
     });
 });
