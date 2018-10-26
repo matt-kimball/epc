@@ -134,7 +134,7 @@ function buildEpcUI(graphStyle) {
      Same as buildDeckRow but for markets
     */
     function buildDeckMarketRow(row, deck, card, cardcount) {
-        var name, nameClass, count, countstr, cardid, addButton, subButton;
+        var name, nameClass, count, countstr, cardid, subButton;
 
         name = cardcount.name;
         count = cardcount.count;
@@ -147,12 +147,7 @@ function buildEpcUI(graphStyle) {
         $("<div>").addClass("card-count").text(countstr).appendTo(row);
         subButton = $("<button>").addClass("ui compact button")
             .text("-").appendTo(row);
-        addButton = $("<button>").addClass("ui compact button add-button")
-            .text("+").appendTo(row);
 
-        addButton.bind("click", function () {
-            modifyMarketCardCount(deck, cardid, count + 1);
-        });
         subButton.bind("click", function () {
             modifyMarketCardCount(deck, cardid, count - 1);
         });
@@ -217,9 +212,9 @@ function buildEpcUI(graphStyle) {
             if (deck.marketlist.reduce(function(acc, c) {
                 return acc + c.count;
             }, 0) === MAX_MARKET_SIZE) {
-                marketRows.addClass("add-disabled");
+                $("#add-market-card-button").prop("disabled", true);
             } else {
-                marketRows.removeClass("add-disabled");
+                $("#add-market-card-button").prop("disabled", false);
             }
         } else {
             $("#deck-edit-market-title").css("display", "none");
