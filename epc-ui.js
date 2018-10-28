@@ -201,14 +201,7 @@ function buildEpcUI(graphStyle) {
             $("#deck-edit-power-title").css("display", "none");
         }
 
-        if (nonpowerRows.children().length) {
-            $("#deck-edit-nonpower-title").css("display", "block");
-        } else {
-            $("#deck-edit-nonpower-title").css("display", "none");
-        }
-
         if (marketRows.children().length) {
-            $("#deck-edit-market-title").css("display", "block");
             if (deck.marketlist.reduce(function(acc, c) {
                 return acc + c.count;
             }, 0) === MAX_MARKET_SIZE) {
@@ -216,8 +209,6 @@ function buildEpcUI(graphStyle) {
             } else {
                 $("#add-market-card-button").prop("disabled", false);
             }
-        } else {
-            $("#deck-edit-market-title").css("display", "none");
         }
     }
 
