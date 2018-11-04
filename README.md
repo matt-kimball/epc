@@ -38,10 +38,9 @@ Additional content:
 
 Build support:
 
-* `npm run build:epc` - Shell script to generate `epc.min.js` (minified Javascript)
+* `npm run build` - Shell script to build project and put it in /dist
 * `npm run build:semantic` - Build a `semantic.min.css` and `semantic.min.js`. 
    You will not need to run this often/ever (it generates the minified dependency).
-* `npm run build` - Shortcut for running all build scripts
 * `npm run lint` - Lint the epc scripts
 * `semantic.json` - Configuration for Semantic-UI 
 * `semantic-site.variables` - Build variables for Semantic-UI
