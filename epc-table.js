@@ -203,12 +203,7 @@ function addInfluenceDisplay(
 
     We need a text list of all possible cards to get started.
 */
-function generateOddsTable(
-    tableCostDiv,
-    tableOddsDiv,
-    cardLibrary,
-    deck
-) {
+function generateOddsTable(tableCostDiv, tableOddsDiv, cardLibrary, deck) {
     var minDraws, maxDraws, iconSize;
 
     minDraws = 7;
@@ -219,10 +214,7 @@ function generateOddsTable(
         Generate the cost label table describing the rows of
         the power odds table.
     */
-    function generateCostRows(
-        table,
-        deck
-    ) {
+    function generateCostRows(table, deck) {
         var influenceCards, row;
 
         row = $("<tr>").addClass("power-table-row-head").appendTo(table);

@@ -803,14 +803,15 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
         cardlist: cardlist,  // a list of cardcount items (name, id, count)
         marketlist: marketlist,  // a list of cardcount items (name, id, count)
         cards: [],  // all distinct cards in the deck
+        market: [],  // all distinct cards in the deck
         cardNames: {},  // indexed by card.id
-        cardCount: {}  // indexed by card.id
+        marketNames: {},  // indexed by card.id
+        cardCount: {},  // indexed by card.id
+        marketCount: {}  // indexed by card.id
     };
 
     /*  Add a card with a count to the deck  */
-    function addCardCount(
-        cardcount
-    ) {
+    function addCardCount(cardcount, toMarket=false) {
         var cardid, card, count, i;
 
         cardid = cardcount.id;
@@ -820,17 +821,21 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
             return;
         }
 
+        var indexKey = toMarket ? "market" : "cards";
         for (i = 0; i < cardcount.count; i += 1) {
-            deck.cards.push(card);
+            deck[indexKey].push(card);
         }
 
-        deck.cardNames[cardid] = cardcount.name;
+        var names = toMarket ? "marketNames" : "cardNames";
+        deck[names][cardid] = cardcount.name;
 
         count = cardcount.count;
-        if (deck.cardCount[cardid]) {
-            count += deck.cardCount[cardid];
+
+        var counts = toMarket ? "marketCount" : "cardCount";
+        if (deck[counts][cardid]) {
+            count += deck[counts][cardid];
         }
-        deck.cardCount[cardid] = count;
+        deck[counts][cardid] = count;
     }
 
     /*
@@ -842,7 +847,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
     deck.listInfluenceRequirements = function () {
         var influenceDict, influenceList, cards;
 
-        cards = deck.cards.slice();
+        cards = deck.cards.slice().concat(deck.market.slice());
 
         cards.sort(function (a, b) {
             var infA, infB, powerDiff;
@@ -1199,6 +1204,10 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
 
     $.each(cardlist, function (index, cardcount) {
         addCardCount(cardcount);
+    });
+
+    $.each(deck.marketlist, function (index, cardcount) {
+        addCardCount(cardcount, true);
     });
 
     return deck;
