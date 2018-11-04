@@ -250,11 +250,7 @@ function makeGraphPopupTracker() {
 }
 
 /*  Draw a graph of influence component odds on a canvas element  */
-function drawPowerGraph(
-    container,
-    graphStyle,
-    deck
-) {
+function drawPowerGraph(container, graphStyle, deck) {
     var ctx,
         canvas,
         canvasWidth,
@@ -281,7 +277,7 @@ function drawPowerGraph(
         componentPairs = {};
         ret = [];
 
-        $.each(deck.cards, function (index, card) {
+        $.each(deck.cards.slice().concat(deck.market.slice()), function (index, card) {
             var components, turn;
 
             if (card.influenceRequirements.length < 1) {
