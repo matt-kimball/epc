@@ -811,7 +811,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
     };
 
     /*  Add a card with a count to the deck  */
-    function addCardCount(cardcount, toMarket=false) {
+    function addCardCount(cardcount, toMarket) {
         var cardid, card, count, i;
 
         cardid = cardcount.id;
