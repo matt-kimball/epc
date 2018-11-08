@@ -581,7 +581,7 @@ function buildEpcUI(graphStyle) {
     /*  Bind all buttons to their behavior handlers  */
     function bindButtons() {
         $(window).bind("load", onLoad);
-        $(".menu-help-icon").popup({
+        $(".help-icon").popup({
             position: "top right",
             offset: 6
         });
