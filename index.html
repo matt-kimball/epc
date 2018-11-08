@@ -171,6 +171,31 @@
         </div>
     </div>
 
+    <!--  Dialog for adding a market card  -->
+    <div id="add-market-card-modal" class="ui mini modal">
+        <div class="header">
+            Select a card
+        </div>
+
+        <div id="market-card-select" class="modal-body">
+            <!--  All card names are added by gatherCards in epc-ui.js  -->
+            <select
+                    id="add-market-card-dropdown"
+                    class="ui fluid search selection dropdown">
+                <option value="">Card</option>
+            </select>
+        </div>
+
+        <div class="actions">
+            <button
+                    id="add-market-card-modal-add-button"
+                    class="ui positive right button">
+                ADD
+            </button>
+        </div>
+    </div>
+
+
     <!--  A dialog used to report syntax errors in the card list  -->
     <div id="error-modal" class="ui small modal">
         <div id="error-title" class="header">Error</div>
@@ -298,7 +323,7 @@
             </div>
 
             <div id="deck-edit-panel">
-                <div id="deck-edit-header" class="actions">
+                <div id="deck-edit-header" class="deck-edit-header" class="actions">
                     <button
                             id="import-button" class="ui button pad-right">
                         IMPORT
@@ -322,23 +347,25 @@
                             data-content="Link copied to clipboard">
                         <img src="link.svg">
                     </button>
+
+                    <img class="help-icon"
+                        src="menu-help-icon.png" float="left">
+                    <div class="ui popup menu-help">
+                        IMPORT or EXPORT your deck here. Use  <img src="link.svg" width="19" border="1"style="border-radius: 4px; background-color: #27252D; border: solid .75px #FFFFFF; padding: 4px;"> to SHARE your deck with a unique URL.
+                    </div>
                 </div>
 
-                <div id="deck-edit">
-                    <div
-                            id="deck-edit-power-title"
-                            class="deck-edit-section">
-                        POWER CARDS
-
+                <div id="deck-edit" class="deck-edit">
+                    <div id="deck-edit-power-title"
+                         class="deck-edit-section">
+                        POWER BASE
                     </div>
                     <div id="deck-edit-power-rows">
                     </div>
 
-                    <div
-                            id="deck-edit-nonpower-title"
-                            class="deck-edit-section">
-                        CARDS
-
+                    <div id="deck-edit-nonpower-title"
+                         class="deck-edit-section">
+                        MAIN DECK
                         <div class="deck-edit-section-description">
                             Additional power sources highlighted
                         </div>
@@ -347,15 +374,35 @@
                     </div>
                 </div>
 
-                <div id="deck-edit-footer">
+                <div id="deck-edit-footer" class="deck-edit-footer">
                     <button id="add-card-button" class="ui button pad-right">
                         ADD CARD
                     </button>
 
-                    <button
-                            id="clear-button" class="ui button"
+                    <button id="clear-button" class="ui button"
                             data-position="top center"
                             data-content="Deck cleared">
+                        CLEAR
+                    </button>
+                </div>
+
+                <div id="market-edit" class="deck-edit">
+                    <div id="deck-edit-market-title"
+                         class="deck-edit-section">
+                        MARKET
+                    </div>
+                    <div id="deck-edit-market-rows">
+                    </div>
+                </div>
+
+                <div id="market-edit-footer" class="deck-edit-footer">
+                    <button id="add-market-card-button" class="ui button pad-right">
+                        ADD CARD
+                    </button>
+
+                    <button id="clear-market-button" class="ui button"
+                            data-position="top center"
+                            data-content="Market cleared">
                         CLEAR
                     </button>
                 </div>
@@ -368,7 +415,7 @@
                         <img id="influence-graph-menu-title"
                             class="menu-title"
                             src="influence-graph-menu.png">
-                        <img class="menu-help-icon"
+                        <img class="output-tab-help-icon help-icon"
                             src="menu-help-icon.png">
                         <div class="ui popup menu-help">
                             Charts the odds (0-100%) of meeting
@@ -380,7 +427,7 @@
                         <img id="power-odds-table-menu-title"
                             class="menu-title"
                             src="power-odds-table-menu.png">
-                        <img class="menu-help-icon"
+                        <img class="output-tab-help-icon help-icon"
                             src="menu-help-icon.png">
                         <div class="ui popup menu-help">
                             Tabulates the odds (0-100%) of meeting
@@ -1844,7 +1891,7 @@
         Set4 #269;; 7TTSS; Unraveler of Destinies;
         Set4 #270;; 5TPS; Cirso's Cleaver;
 
-        Set4 #271; 1; ; Chairman's Contract;
+        Set4 #271; 1;; Chairman's Contract; power, undepleted
         Set4 #272;; 1; Alchemist's Concoction;
         Set4 #273; 1X; 1,2; Veteran Strategist;
         Set4 #274; 1X; 2; Petition;
@@ -1881,9 +1928,13 @@
 		Set1004 #22;; 8FJP; Enemy of My Enemy; 
 		Set1004 #23; 1X;; Sealed Writ; power, undepleted
 		
+		Set4 #308;;  5FP; Tamarys, the Geomancer;
 		Set4 #309;; 6; Caiphus, Wandering King;
 
     </script>
+
+    <!-- hack to allow us to create node modules for tests -->
+    <script type="text/javascript">window.module = {};</script>
 
     <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="semantic.min.js"></script>
