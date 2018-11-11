@@ -1,5 +1,6 @@
 /*global window*/
 /*global makeEternalCardLibrary, makeEternalDeckFromString*/
+/* eslint-disable no-console */
 /*jslint unparam: true*/
 /*
 
@@ -22,10 +23,11 @@
 
 */
 
-'use strict';
+"use strict";
 
 
 /*  A test of basic functionality provided by this module  */
+// eslint-disable-next-line no-unused-vars
 function testEPC() {
     var cardsstr, deckstr, library, deck, influence, odds, start, stop, i;
 
@@ -61,7 +63,6 @@ function testEPC() {
 
     odds = deck.drawOdds(7, influence);
     console.assert(odds > 0.749 && odds < 0.750);
-
 
     /*  Check that we can handle multiple equivalent influence sources  */
     deckstr = "\
@@ -102,7 +103,7 @@ function testEPC() {
         start = window.performance.now();
         odds = deck.drawOdds(20, influence);
         stop = window.performance.now();
-        console.log('odds time: ' + (stop - start));
+        console.log("odds time: " + (stop - start));
     }
 
 
