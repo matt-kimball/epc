@@ -807,7 +807,7 @@ function drawPowerGraph(
     function findGraphExtents() {
         var odds, maxHorizMidLines, maxVertMidLines;
 
-        minValue = 0;
+        minValue = 0.75;
         minDraws = 7;
         maxDraws = 15;
         maxHorizMidLines = 10;
@@ -818,10 +818,19 @@ function drawPowerGraph(
 
             odds = deck.drawOdds(draws, influenceTurn.influence);
 
+            if (odds < minValue) {
+                minValue = odds;
+            }
+
             if (draws + 4 > maxDraws) {
                 maxDraws = draws + 4;
             }
         });
+
+        minValue = (Math.floor(minValue * 10) - 3) / 10;
+        if (minValue < 0) {
+            minValue = 0;
+        }
 
         verticalMidlineStep = Math.ceil(
             (maxDraws - minDraws) / maxVertMidLines
