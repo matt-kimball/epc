@@ -64,6 +64,16 @@ function testEPC() {
     odds = deck.drawOdds(7, influence);
     console.assert(odds > 0.749 && odds < 0.750);
 
+
+    /* Check that markets do not affect these probabilities */
+    deckstr+=`-MARKET-
+        5 Creature (Set0 #1)
+    `;
+    deck = makeEternalDeckFromString(library, deckstr);
+    var oddsWithMarket = deck.drawOdds(7, influence);
+    console.assert(oddsWithMarket === odds);
+
+
     /*  Check that we can handle multiple equivalent influence sources  */
     deckstr = "\
         50 Creature (Set0 #1)\n\
@@ -75,6 +85,15 @@ function testEPC() {
 
     odds = deck.drawOdds(7, influence);
     console.assert(odds > 0.749 && odds < 0.750);
+
+
+    /* Check that markets do not affect these probabilities */
+    deckstr+=`-MARKET-
+        5 Creature (Set0 #1)
+    `;
+    deck = makeEternalDeckFromString(library, deckstr);
+    oddsWithMarket = deck.drawOdds(7, influence);
+    console.assert(oddsWithMarket === odds);
 
 
     /*  Check the performance when there are many equivalent sources  */
