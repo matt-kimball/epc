@@ -407,31 +407,36 @@ body {
     Decklist editing panel
 */
 
-#deck-edit-header,
-#deck-edit-footer {
-    width: 245px;
-    margin: 30px;
+.deck-edit-header,
+.deck-edit-footer {
+    margin: 30px 15px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
-#deck-edit-header .button,
-#deck-edit-footer .button {
+.help-icon {
+    height: 18px;
+    width: 18px;
+}
+
+.deck-edit-header .button,
+.deck-edit-footer .button {
     clear: both;
     margin: 0px 0px 6px 0px;
     padding: 0px;
     height: 38px;
 }
 
-#deck-edit-header .button {
+.deck-edit-header .button {
     width: 96px;
 }
 
-#deck-edit-header #link-button {
+.deck-edit-header #link-button {
     width: 38px;
 }
 
-#deck-edit-footer .button {
+.deck-edit-footer .button {
     width: 118px;
 }
 
@@ -440,7 +445,7 @@ body {
     height: 18px;
 }
 
-#deck-edit {
+#deck-edit-panel .deck-edit {
     width: 305px;
 }
 
@@ -496,7 +501,6 @@ body {
 }
 
 .deck-edit-section {
-    display: none;
     width: 245px;
     margin: 25px;
 
@@ -510,7 +514,7 @@ body {
     font-style: italic;
 }
 
-#deck-edit button {
+#deck-edit-panel .deck-edit button {
     float: left;
     width: 30px;
     height: 22px;
@@ -519,6 +523,11 @@ body {
     font-size: 16px;
 }
 
+#deck-edit-market-rows.add-disabled .add-button {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: default;
+}
 
 /*
     Charts panel menu
@@ -550,7 +559,7 @@ body {
     margin: 40px 0px 0px 40px;
 }
 
-.menu-help-icon {
+.output-tab-help-icon {
     float: right;
     margin: 40px 40px 0px 0px;
 }

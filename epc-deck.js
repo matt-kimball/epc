@@ -23,7 +23,17 @@
 */
 
 'use strict';
-
+var MARKET_MARKER = 2;
+var MARKET_URL_DIVIDER_TOKEN = [MARKET_MARKER,0,0];
+if (typeof $ === "undefined") {
+    var $ = require("min-jquery");
+}
+if (typeof encodeValues === "undefined") {
+    var encodeValues = require("./epc-code").encodeValues;
+}
+if (typeof decodeValues === "undefined") {
+    var decodeValues = require("./epc-code").decodeValues;
+}
 
 /*
     A straightforward implementation of factorial.
@@ -31,9 +41,7 @@
     We'll implement a cache below to speed up the results when needing
     to compute factorials many thousand times.
 */
-function factorialSlow(
-    n
-) {
+function factorialSlow(n) {
     var i, r;
 
     r = 1;
@@ -528,9 +536,7 @@ function makeEternalCardInfo(
     unused.)
 
 */
-function makeEternalCardLibrary(
-    cards
-) {
+function makeEternalCardLibrary(cards) {
     var library = {
         cards: {}  // indexed by card id
     };
@@ -748,35 +754,31 @@ function makeDrawCombinationIterator(
     return iter;
 }
 
+
 /*
     Construct a deck from a list of cardcount objects.  Each object
     in `inCardlist` is expected to have three fields: id, name, and
     count.  id is the card identifier.  (i.e. 'Set1 #32')
 */
-function makeEternalDeck(
-    cardlibrary,
-    inCardlist
-) {
-    var deck, cardlist;
+function makeEternalDeck(cardlibrary, inCardlist, market) {
+    var deck, cardlist, marketlist;
 
     /*
         Given a list of cardcount objects, merge cardcounts which
         reference the same card id into a single cardcount.
         Return the list of merged cardcounts.
     */
-    function mergeCardlist(
-        inCardlist
-    ) {
+    function mergeCardlist(inCardlist) {
         var ret, cardcountId;
-
+    
         ret = [];
         cardcountId = {};
-
+    
         $.each(inCardlist, function (index, cardcount) {
             var dupCardcount;
-
+    
             dupCardcount = cardcountId[cardcount.id];
-
+    
             if (dupCardcount) {
                 dupCardcount.count += cardcount.count;
             } else {
@@ -785,48 +787,55 @@ function makeEternalDeck(
                     name: cardcount.name,
                     count: cardcount.count
                 };
-
+    
                 ret.push(dupCardcount);
                 cardcountId[cardcount.id] = dupCardcount;
             }
         });
-
+    
         return ret;
     }
 
     cardlist = mergeCardlist(inCardlist);
+    marketlist = mergeCardlist(market);
     deck = {
         cardlibrary: cardlibrary,
         cardlist: cardlist,  // a list of cardcount items (name, id, count)
+        marketlist: marketlist,  // a list of cardcount items (name, id, count)
         cards: [],  // all distinct cards in the deck
+        market: [],  // all distinct cards in the deck
         cardNames: {},  // indexed by card.id
-        cardCount: {}  // indexed by card.id
+        marketNames: {},  // indexed by card.id
+        cardCount: {},  // indexed by card.id
+        marketCount: {}  // indexed by card.id
     };
 
     /*  Add a card with a count to the deck  */
-    function addCardCount(
-        cardcount
-    ) {
+    function addCardCount(cardcount, toMarket) {
         var cardid, card, count, i;
 
         cardid = cardcount.id;
         card = cardlibrary.cards[cardid];
         if (!card) {
-            deck.makeError = 'unknown card: "' + cardid + '"';
+            deck.makeError = "unknown card: \"" + cardid + "\"";
             return;
         }
 
+        var indexKey = toMarket ? "market" : "cards";
         for (i = 0; i < cardcount.count; i += 1) {
-            deck.cards.push(card);
+            deck[indexKey].push(card);
         }
 
-        deck.cardNames[cardid] = cardcount.name;
+        var names = toMarket ? "marketNames" : "cardNames";
+        deck[names][cardid] = cardcount.name;
 
         count = cardcount.count;
-        if (deck.cardCount[cardid]) {
-            count += deck.cardCount[cardid];
+
+        var counts = toMarket ? "marketCount" : "cardCount";
+        if (deck[counts][cardid]) {
+            count += deck[counts][cardid];
         }
-        deck.cardCount[cardid] = count;
+        deck[counts][cardid] = count;
     }
 
     /*
@@ -838,7 +847,7 @@ function makeEternalDeck(
     deck.listInfluenceRequirements = function () {
         var influenceDict, influenceList, cards;
 
-        cards = deck.cards.slice();
+        cards = deck.cards.slice().concat(deck.market.slice());
 
         cards.sort(function (a, b) {
             var infA, infB, powerDiff;
@@ -1081,6 +1090,7 @@ function makeEternalDeck(
             probability of drawing each.
         */
         odds = 0;
+        // eslint-disable-next-line no-constant-condition
         while (true) {
             combinationIter = drawCombinations.next();
             if (combinationIter.done) {
@@ -1135,7 +1145,7 @@ function makeEternalDeck(
         var decklist;
 
         decklist = "";
-        $.each(deck.cardlist, function (index, cardcount) {
+        var appendCardlistToDecklist = function (index, cardcount) {
             var cardline;
 
             /*
@@ -1154,7 +1164,12 @@ function makeEternalDeck(
                 cardcount.name + " (" +
                 cardcount.id + ")";
             decklist += cardline + "\n";
-        });
+        };        
+        $.each(deck.cardlist, appendCardlistToDecklist);
+        if (deck.marketlist) {
+            decklist += "\n--------------MARKET---------------\n\n";
+            $.each(deck.marketlist, appendCardlistToDecklist);
+        }
 
         return decklist;
     };
@@ -1166,7 +1181,7 @@ function makeEternalDeck(
         idRegex = /^Set([0-9]+) #([0-9]+)/;
 
         values = [];
-        $.each(deck.cardlist, function (index, cardcount) {
+        var processCard = function (index, cardcount) {
             match = cardcount.id.match(idRegex);
 
             if (!match) {
@@ -1177,13 +1192,22 @@ function makeEternalDeck(
             values.push(cardcount.count);
             values.push(Number(match[1]));
             values.push(Number(match[2]));
-        });
+        };
+        $.each(deck.cardlist, processCard);
+        if (deck.marketlist && deck.marketlist.length) {
+            values = values.concat(MARKET_URL_DIVIDER_TOKEN);
+            $.each(deck.marketlist, processCard);
+        }
 
         return encodeValues(values);
     };
 
     $.each(cardlist, function (index, cardcount) {
         addCardCount(cardcount);
+    });
+
+    $.each(deck.marketlist, function (index, cardcount) {
+        addCardCount(cardcount, true);
     });
 
     return deck;
@@ -1204,11 +1228,9 @@ function makeEternalDeck(
     The string is converted to a list of cardcount objects, and then
     constructed using those cardcounts.
 */
-function makeEternalDeckFromString(
-    library,
-    deckstr
-) {
-    var deck, cardcounts, makeError, regex, marketRegex, inMarket;
+// eslint-disable-next-line no-unused-vars
+function makeEternalDeckFromString(library, deckstr) {
+    var deck, cardcounts, makeError, regex, marketRegex;
 
     cardcounts = [];
 
@@ -1216,6 +1238,8 @@ function makeEternalDeckFromString(
     marketRegex = /^-+MARKET-+$/;
 
     /*  For each line in the decklist input, decode the card and count  */
+    var market = [];
+    var inMarket = false;
     $.each(deckstr.split("\n"), function (index, line) {
         var match, count, name, cardid;
 
@@ -1226,15 +1250,12 @@ function makeEternalDeckFromString(
 
         if (line.match(marketRegex)) {
             inMarket = true;
+            return; // skip to next line
         }
-        if (inMarket) {
-            return;
-        }
-
         match = line.match(regex);
 
         if (!match) {
-            makeError = 'malformed line: "' + line + '"';
+            makeError = "malformed line: \"" + line + "\"";
             return;
         }
 
@@ -1243,18 +1264,26 @@ function makeEternalDeckFromString(
         cardid = match[3];
 
         if (count > 100) {
-            makeError = 'too many cards: "' + line + '"';
+            makeError = "too many cards: \"" + line + "\"";
             return;
         }
 
-        cardcounts.push({
-            id: cardid,
-            name: name,
-            count: count
-        });
+        if (inMarket) {
+            market.push({
+                id: cardid,
+                name: name,
+                count: count
+            });
+        } else {
+            cardcounts.push({
+                id: cardid,
+                name: name,
+                count: count
+            });
+        }
     });
 
-    deck = makeEternalDeck(library, cardcounts);
+    deck = makeEternalDeck(library, cardcounts, market);
     if (makeError) {
         deck.makeError = makeError;
     }
@@ -1263,12 +1292,11 @@ function makeEternalDeckFromString(
 }
 
 /*  Generate a deck from a URL-embedded code  */
-function makeEternalDeckFromCode(
-    library,
-    code
-) {
+// eslint-disable-next-line no-unused-vars
+function makeEternalDeckFromCode(library, code) {
     var deck,
         cardcounts,
+        marketcounts,
         values,
         makeError,
         index,
@@ -1277,9 +1305,11 @@ function makeEternalDeckFromCode(
         card,
         cardid,
         marker,
-        name;
+        name,
+        inMarket;
 
     cardcounts = [];
+    marketcounts = [];
     values = decodeValues(code);
     if (!values) {
         makeError = "malformed deck code";
@@ -1304,16 +1334,24 @@ function makeEternalDeckFromCode(
                 cardid = "Set" + String(set) + " #" + String(card);
                 if (!library.cards[cardid]) {
                     makeError =
-                        'unknown card id in deck code: "' + cardid + '"';
+                        "unknown card id in deck code: \"" + cardid + "\"";
                     break;
                 }
                 name = library.cards[cardid].name;
-
-                cardcounts.push({
+                var cardListCard = {
                     id: cardid,
                     name: name,
                     count: count
-                });
+                };
+
+                if (inMarket) {
+                    marketcounts.push(cardListCard);
+                } else {
+                    cardcounts.push(cardListCard);
+                }
+
+            } else if (marker === MARKET_MARKER) {
+                inMarket = true;
             }
         }
 
@@ -1323,10 +1361,18 @@ function makeEternalDeckFromCode(
         }
     }
 
-    deck = makeEternalDeck(library, cardcounts);
+    deck = makeEternalDeck(library, cardcounts, marketcounts);
     if (makeError) {
         deck.makeError = makeError;
     }
 
     return deck;
 }
+
+// eslint-disable-next-line no-undef
+module.exports = {
+    makeEternalDeck: makeEternalDeck,
+    makeEternalDeckFromCode: makeEternalDeckFromCode,
+    makeEternalCardLibrary: makeEternalCardLibrary,
+    makeEternalDeckFromString: makeEternalDeckFromString
+}; 

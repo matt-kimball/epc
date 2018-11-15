@@ -24,20 +24,20 @@
 
 */
 
-'use strict';
+"use strict";
 
+var MAX_MARKET_SIZE = 5;
 
 /*
     Hook up all user interface behavior.  The parameter is used 
     to determine the visual appearance of the graph.
 */
-function buildEpcUI(
-    graphStyle
-) {
+function buildEpcUI(graphStyle) {
     var cardlist,
         cardLibrary,
         currentDeck,
         modifyCardCount,
+        modifyMarketCardCount,
         oddsWorker,
         graphPopupTracker,
         deckFromURL;
@@ -105,19 +105,8 @@ function buildEpcUI(
         Build a row corresponding to an individual card in the decklist
         editing panel.
     */
-    function buildDeckRow(
-        row,
-        deck,
-        card,
-        cardcount
-    ) {
-        var name,
-            nameClass,
-            count,
-            countstr,
-            cardid,
-            addButton,
-            subButton;
+    function buildDeckRow(row, deck, card, cardcount) {
+        var name, nameClass, count, countstr, cardid, addButton, subButton;
 
         name = cardcount.name;
         count = cardcount.count;
@@ -142,19 +131,42 @@ function buildEpcUI(
     }
 
     /*
-        Add the rows to the editable deck, one for each card,
-        with -/+ buttons for modifying the card count.
+     Same as buildDeckRow but for markets
     */
-    function buildDeckRows(
-        deck
-    ) {
-        var powerRows, nonpowerRows, row;
+    function buildDeckMarketRow(row, deck, card, cardcount) {
+        var name, nameClass, count, countstr, cardid, subButton;
+
+        name = cardcount.name;
+        count = cardcount.count;
+        countstr = String(count);
+        cardid = cardcount.id;
+
+        nameClass = getCardNameClass(card);
+
+        $("<div>").addClass(nameClass).text(name).appendTo(row);
+        $("<div>").addClass("card-count").text(countstr).appendTo(row);
+        subButton = $("<button>").addClass("ui compact button")
+            .text("-").appendTo(row);
+
+        subButton.bind("click", function () {
+            modifyMarketCardCount(deck, cardid, count - 1);
+        });
+    }
+
+    /*
+        Add the rows to the editable deck, one for each card,
+    */
+    function buildDeckRows(deck) {
+        var powerRows, nonpowerRows, row, marketRows;
 
         powerRows = $("#deck-edit-power-rows");
         powerRows.empty();
 
         nonpowerRows = $("#deck-edit-nonpower-rows");
         nonpowerRows.empty();
+
+        marketRows = $("#deck-edit-market-rows");
+        marketRows.empty();
 
         $.each(deck.cardlist, function (index, cardcount) {
             var card, cardid;
@@ -168,8 +180,19 @@ function buildEpcUI(
             } else {
                 row.appendTo(nonpowerRows);
             }
-
             buildDeckRow(row, deck, card, cardcount);
+        });
+
+        // addCardsToDecklistSection(deck.marketlist, function() { return marketRows; });
+        $.each(deck.marketlist, function (index, cardcount) {
+            var card, cardid;
+
+            cardid = cardcount.id;
+            card = cardLibrary.cards[cardid];
+
+            row = $("<div>").addClass("card-count-edit");
+            row.appendTo(marketRows);
+            buildDeckMarketRow(row, deck, card, cardcount);
         });
 
         if (powerRows.children().length) {
@@ -178,10 +201,14 @@ function buildEpcUI(
             $("#deck-edit-power-title").css("display", "none");
         }
 
-        if (nonpowerRows.children().length) {
-            $("#deck-edit-nonpower-title").css("display", "block");
-        } else {
-            $("#deck-edit-nonpower-title").css("display", "none");
+        if (marketRows.children().length) {
+            if (deck.marketlist.reduce(function(acc, c) {
+                return acc + c.count;
+            }, 0) === MAX_MARKET_SIZE) {
+                $("#add-market-card-button").prop("disabled", true);
+            } else {
+                $("#add-market-card-button").prop("disabled", false);
+            }
         }
     }
 
@@ -286,9 +313,7 @@ function buildEpcUI(
         and regenerate the user interface components which depend
         on the contents of the deck.
     */
-    function onDeckChange(
-        deck
-    ) {
+    function onDeckChange(deck) {
         var decklist, dots;
         currentDeck = deck;
 
@@ -303,6 +328,7 @@ function buildEpcUI(
                 localStorage.setItem("decklist", decklist);
             }
         } catch (ignore) {
+            // do nothing
         }
 
         if (oddsWorker) {
@@ -328,11 +354,7 @@ function buildEpcUI(
         with a particular card id.  Return the full list, including
         the modified cardcount.
     */
-    modifyCardCount = function (
-        deck,
-        cardid,
-        count
-    ) {
+    modifyCardCount = function (deck, cardid, count) {
         var modifiedList, modifiedDeck;
 
         modifiedList = [];
@@ -351,7 +373,40 @@ function buildEpcUI(
             }
         });
 
-        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList);
+        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList, deck.marketlist.slice());
+        onDeckChange(modifiedDeck);
+    };
+
+
+    /*
+        Given a list of cardcount objects, change the count associated
+        with a particular card id.  Return the full list, including
+        the modified cardcount. (Markets only)
+    */
+    modifyMarketCardCount = function (deck, cardid, count) {
+        var modifiedList, modifiedDeck;
+
+        modifiedList = [];
+
+        if (count > 1) {
+            return;
+        }
+
+        $.each(deck.marketlist, function (index, cardcount) {
+            if (cardcount.id === cardid) {
+                if (count >= 0) {
+                    modifiedList.push({
+                        id: cardcount.id,
+                        name: cardcount.name,
+                        count: count
+                    });
+                }
+            } else {
+                modifiedList.push(cardcount);
+            }
+        });
+
+        modifiedDeck = makeEternalDeck(cardLibrary, deck.cardlist.slice(), modifiedList);
         onDeckChange(modifiedDeck);
     };
 
@@ -419,7 +474,7 @@ function buildEpcUI(
 
         link = String(document.location);
 
-        index = link.indexOf('?');
+        index = link.indexOf("?");
         if (index >= 0) {
             link = link.substring(0, index);
         }
@@ -430,9 +485,20 @@ function buildEpcUI(
 
     /*  Reset the deck to an empty deck  */
     function onDeckClear() {
-        var deck;
+        var deck, market;
 
-        deck = makeEternalDeckFromString(cardLibrary, "");
+        market = currentDeck.marketlist.slice();
+        deck = makeEternalDeck(cardLibrary, [], market);
+        onDeckChange(deck);
+    }
+
+
+    /*  Reset the deck to an empty deck  */
+    function onMarketClear() {
+        var deck, cards;
+
+        cards = currentDeck.cardlist.slice();
+        deck = makeEternalDeck(cardLibrary, cards, []);
         onDeckChange(deck);
     }
 
@@ -440,10 +506,8 @@ function buildEpcUI(
         Add a new card to the current deck upon confirmation from the
         add card dialog.
     */
-    function onAddCard(
-        dropdownOption
-    ) {
-        var cards, deck, cardid;
+    function onAddCard(dropdownOption, toMarket) {
+        var cards, market, deck, cardid;
 
         cardid = dropdownOption.val();
         if (!cardid.length) {
@@ -451,13 +515,19 @@ function buildEpcUI(
         }
 
         cards = currentDeck.cardlist.slice();
-        cards.push({
+        market = currentDeck.marketlist.slice();
+        var card = {
             id: cardid,
             name: dropdownOption.text(),
             count: 1
-        });
+        };
+        if (toMarket) {
+            market.push(card);
+        } else {
+            cards.push(card);
+        }
 
-        deck = makeEternalDeck(cardLibrary, cards);
+        deck = makeEternalDeck(cardLibrary, cards, market);
         onDeckChange(deck);
     }
 
@@ -511,7 +581,7 @@ function buildEpcUI(
     /*  Bind all buttons to their behavior handlers  */
     function bindButtons() {
         $(window).bind("load", onLoad);
-        $(".menu-help-icon").popup({
+        $(".help-icon").popup({
             position: "top right",
             offset: 6
         });
@@ -545,10 +615,21 @@ function buildEpcUI(
             $("#add-card-modal").modal("show");
         });
 
+        $("#add-market-card-button").bind("click", function () {
+            $("#add-market-card-dropdown").dropdown("clear");
+            $("#add-market-card-modal").modal("show");
+        });
+
         $("#clear-button").popup({ on: "click" });
         $("#clear-button").bind("click", function () {
             onDeckClear();
             $("#clear-button").popup("reposition");
+        });
+
+        $("#clear-market-button").popup({ on: "click" });
+        $("#clear-market-button").bind("click", function () {
+            onMarketClear();
+            $("#clear-market-button").popup("reposition");
         });
 
         $("#import-modal-import-button").bind("click", function () {
@@ -557,6 +638,10 @@ function buildEpcUI(
 
         $("#add-card-modal-add-button").bind("click", function () {
             onAddCard($("#add-card-dropdown option:selected"));
+        });
+
+        $("#add-market-card-modal-add-button").bind("click", function () {
+            onAddCard($("#add-market-card-dropdown option:selected"), true);
         });
 
         $("#power-table-container").css("display", "none");
@@ -583,11 +668,12 @@ function buildEpcUI(
         selector in the add card dialog.
     */
     function gatherCards() {
-        var dropdown, cardnames, cardids;
+        var dropdown, cardnames, cardids, marketDropdown;
 
         $(".ui.dropdown").dropdown();
 
         dropdown = $("#add-card-dropdown");
+        marketDropdown = $("#add-market-card-dropdown");
 
         cardnames = [];
         cardids = {};
@@ -603,6 +689,7 @@ function buildEpcUI(
 
             cardid = cardids[name];
             $("<option>").val(cardid).text(name).appendTo(dropdown);
+            $("<option>").val(cardid).text(name).appendTo(marketDropdown);
         });
     }
 
