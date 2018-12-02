@@ -223,6 +223,12 @@ function buildEpcUI(graphStyle) {
         deckTitleNode.appendChild(titleTextNode);
     }
 
+    function gatherOptions() {
+        deckTitleNode = deckTitleNode || document.getElementById("deck-title");
+        const title = deckTitleNode.innerText;
+        return { title };
+    }
+
     /*
         Set the influence count for a type in the influence panel
         Add the 'zero' class if the value is zeroed.
@@ -325,22 +331,10 @@ function buildEpcUI(graphStyle) {
         on the contents of the deck.
     */
     function onDeckChange(deck) {
-        var decklist, dots;
+        var dots;
         currentDeck = deck;
 
-        decklist = currentDeck.generateDecklist(false);
-        try {
-            /*
-                If the deck has been loaded from a URL, we'll
-                assume changes are temporary and shouldn't be
-                saved as the most recent deck.
-            */
-            if (!deckFromURL) {
-                localStorage.setItem("decklist", decklist);
-            }
-        } catch (ignore) {
-            // do nothing
-        }
+        saveDeck();
 
         if (oddsWorker) {
             oddsWorker.cancel();
@@ -359,6 +353,24 @@ function buildEpcUI(graphStyle) {
         generatePowerTypeCounts(deck);
         buildDeckRows(deck);
         addDeckTitle(deck);
+    }
+
+    function saveDeck() {
+        var decklist = currentDeck.generateDecklist(false);
+
+        try {
+            /*
+                If the deck has been loaded from a URL, we'll
+                assume changes are temporary and shouldn't be
+                saved as the most recent deck.
+            */
+            if (!deckFromURL) {
+                localStorage.setItem("decklist", decklist);
+                localStorage.setItem("decktitle", currentDeck.title);
+            }
+        } catch (ignore) {
+            // do nothing
+        }
     }
 
     /*
@@ -385,7 +397,8 @@ function buildEpcUI(graphStyle) {
             }
         });
 
-        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList, deck.marketlist.slice());
+        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList, deck.marketlist.slice(), 
+            gatherOptions());
         onDeckChange(modifiedDeck);
     };
 
@@ -418,7 +431,8 @@ function buildEpcUI(graphStyle) {
             }
         });
 
-        modifiedDeck = makeEternalDeck(cardLibrary, deck.cardlist.slice(), modifiedList);
+        modifiedDeck = makeEternalDeck(cardLibrary, deck.cardlist.slice(), modifiedList, 
+            gatherOptions());
         onDeckChange(modifiedDeck);
     };
 
@@ -539,7 +553,7 @@ function buildEpcUI(graphStyle) {
             cards.push(card);
         }
 
-        deck = makeEternalDeck(cardLibrary, cards, market);
+        deck = makeEternalDeck(cardLibrary, cards, market, gatherOptions());
         onDeckChange(deck);
     }
 
@@ -675,6 +689,13 @@ function buildEpcUI(graphStyle) {
         });
     }
 
+    function bindOther() {
+        document.getElementById("deck-title").addEventListener("input", function(e) {
+            currentDeck.title = e.target.innerText;
+            saveDeck();
+        });
+    }
+
     /*
         Add all the cards from the card library to the dropdown
         selector in the add card dialog.
@@ -718,7 +739,7 @@ function buildEpcUI(graphStyle) {
             return false;
         }
 
-        const title = params.get('t');
+        const title = params.get("t");
 
         currentDeck = makeEternalDeckFromCode(cardLibrary, params.get("d"), { title });
         if (currentDeck.makeError) {
@@ -737,7 +758,7 @@ function buildEpcUI(graphStyle) {
         decklist as the active deck.
     */
     function getDeckFromStorage() {
-        var decklist;
+        var decklist, options = {};
 
         decklist = "";
         /*
@@ -748,6 +769,7 @@ function buildEpcUI(graphStyle) {
         try {
             if (localStorage) {
                 decklist = localStorage.getItem("decklist");
+                options.title = localStorage.getItem("decktitle");
             }
         } catch (ignore) {
         }
@@ -756,7 +778,7 @@ function buildEpcUI(graphStyle) {
             decklist = "";
         }
 
-        currentDeck = makeEternalDeckFromString(cardLibrary, decklist);
+        currentDeck = makeEternalDeckFromString(cardLibrary, decklist, options);
         if (currentDeck.makeError) {
             currentDeck = makeEternalDeckFromString(cardLibrary, "");
         }
@@ -771,5 +793,6 @@ function buildEpcUI(graphStyle) {
 
     onDeckChange(currentDeck);
     bindButtons();
+    bindOther();
     gatherCards();
 }

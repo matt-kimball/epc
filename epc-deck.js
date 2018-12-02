@@ -1230,7 +1230,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options = {}) {
     constructed using those cardcounts.
 */
 // eslint-disable-next-line no-unused-vars
-function makeEternalDeckFromString(library, deckstr) {
+function makeEternalDeckFromString(library, deckstr, options = {}) {
     var deck, cardcounts, makeError, regex, marketRegex;
 
     cardcounts = [];
@@ -1284,7 +1284,7 @@ function makeEternalDeckFromString(library, deckstr) {
         }
     });
 
-    deck = makeEternalDeck(library, cardcounts, market);
+    deck = makeEternalDeck(library, cardcounts, market, options);
     if (makeError) {
         deck.makeError = makeError;
     }
