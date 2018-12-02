@@ -111,3 +111,11 @@ describe("Misc", () => {
         expect( isDisabled ).toBeTruthy();
     });
 });
+
+describe("Deck title", () => {
+    it("should start out untitled", async () => {
+        await page.goto("http://localhost:8081");
+        await page.waitForSelector("#deck-title");
+        await expect(page).toMatchElement("#deck-title", { text: "Untitled" });
+    });
+});
