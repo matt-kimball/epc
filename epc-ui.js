@@ -29,7 +29,7 @@
 var MAX_MARKET_SIZE = 5;
 
 /*
-    Hook up all user interface behavior.  The parameter is used 
+    Hook up all user interface behavior.  The parameter is used
     to determine the visual appearance of the graph.
 */
 function buildEpcUI(graphStyle) {
@@ -397,7 +397,7 @@ function buildEpcUI(graphStyle) {
             }
         });
 
-        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList, deck.marketlist.slice(), 
+        modifiedDeck = makeEternalDeck(cardLibrary, modifiedList, deck.marketlist.slice(),
             gatherOptions());
         onDeckChange(modifiedDeck);
     };
@@ -431,7 +431,7 @@ function buildEpcUI(graphStyle) {
             }
         });
 
-        modifiedDeck = makeEternalDeck(cardLibrary, deck.cardlist.slice(), modifiedList, 
+        modifiedDeck = makeEternalDeck(cardLibrary, deck.cardlist.slice(), modifiedList,
             gatherOptions());
         onDeckChange(modifiedDeck);
     };
@@ -515,10 +515,13 @@ function buildEpcUI(graphStyle) {
 
     /*  Reset the deck to an empty deck  */
     function onDeckClear() {
-        var deck, market;
+        var deck, market, options;
 
         market = currentDeck.marketlist.slice();
-        deck = makeEternalDeck(cardLibrary, [], market);
+
+        options = gatherOptions();
+        options.title = "Untitled";
+        deck = makeEternalDeck(cardLibrary, [], market, options);
         onDeckChange(deck);
     }
 
@@ -528,7 +531,7 @@ function buildEpcUI(graphStyle) {
         var deck, cards;
 
         cards = currentDeck.cardlist.slice();
-        deck = makeEternalDeck(cardLibrary, cards, []);
+        deck = makeEternalDeck(cardLibrary, cards, [], gatherOptions());
         onDeckChange(deck);
     }
 
@@ -757,7 +760,7 @@ function buildEpcUI(graphStyle) {
     }
 
     /*
-        Check browser local storage for a decklist saved from a 
+        Check browser local storage for a decklist saved from a
         previous visit to the page.  If one is found, load that
         decklist as the active deck.
     */
