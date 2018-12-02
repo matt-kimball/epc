@@ -760,7 +760,7 @@ function makeDrawCombinationIterator(
     in `inCardlist` is expected to have three fields: id, name, and
     count.  id is the card identifier.  (i.e. 'Set1 #32')
 */
-function makeEternalDeck(cardlibrary, inCardlist, market) {
+function makeEternalDeck(cardlibrary, inCardlist, market, options = {}) {
     var deck, cardlist, marketlist;
 
     /*
@@ -807,7 +807,8 @@ function makeEternalDeck(cardlibrary, inCardlist, market) {
         cardNames: {},  // indexed by card.id
         marketNames: {},  // indexed by card.id
         cardCount: {},  // indexed by card.id
-        marketCount: {}  // indexed by card.id
+        marketCount: {},  // indexed by card.id,
+        title: options.title || "Untitled"
     };
 
     /*  Add a card with a count to the deck  */
@@ -1293,7 +1294,7 @@ function makeEternalDeckFromString(library, deckstr) {
 
 /*  Generate a deck from a URL-embedded code  */
 // eslint-disable-next-line no-unused-vars
-function makeEternalDeckFromCode(library, code) {
+function makeEternalDeckFromCode(library, code, options) {
     var deck,
         cardcounts,
         marketcounts,
@@ -1361,7 +1362,7 @@ function makeEternalDeckFromCode(library, code) {
         }
     }
 
-    deck = makeEternalDeck(library, cardcounts, marketcounts);
+    deck = makeEternalDeck(library, cardcounts, marketcounts, options);
     if (makeError) {
         deck.makeError = makeError;
     }

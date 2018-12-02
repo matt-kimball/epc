@@ -212,6 +212,17 @@ function buildEpcUI(graphStyle) {
         }
     }
 
+    let deckTitleNode;
+    function addDeckTitle({ title }) {
+        // potential xss attack vector here. Be careful
+        deckTitleNode = deckTitleNode || document.getElementById("deck-title");
+        while(deckTitleNode.firstChild){
+            deckTitleNode.removeChild(deckTitleNode.firstChild);
+        }
+        const titleTextNode = document.createTextNode(title);
+        deckTitleNode.appendChild(titleTextNode);
+    }
+
     /*
         Set the influence count for a type in the influence panel
         Add the 'zero' class if the value is zeroed.
@@ -347,6 +358,7 @@ function buildEpcUI(graphStyle) {
         generateInfluencePanel(deck);
         generatePowerTypeCounts(deck);
         buildDeckRows(deck);
+        addDeckTitle(deck);
     }
 
     /*
@@ -706,7 +718,9 @@ function buildEpcUI(graphStyle) {
             return false;
         }
 
-        currentDeck = makeEternalDeckFromCode(cardLibrary, params.get("d"));
+        const title = params.get('t');
+
+        currentDeck = makeEternalDeckFromCode(cardLibrary, params.get("d"), { title });
         if (currentDeck.makeError) {
             showError("Deck code error", currentDeck.makeError);
 
