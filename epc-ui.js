@@ -209,6 +209,8 @@ function buildEpcUI(graphStyle) {
             } else {
                 $("#add-market-card-button").prop("disabled", false);
             }
+        } else {
+            $("#add-market-card-button").prop("disabled", false);
         }
     }
 
