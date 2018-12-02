@@ -35,8 +35,6 @@ DISTFILES="\
     undepleted.svg \
     waystone.svg"
 
-./generate.sh
-
 mkdir -p dist
 cp $DISTFILES dist
 
