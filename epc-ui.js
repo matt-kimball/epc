@@ -215,7 +215,8 @@ function buildEpcUI(graphStyle) {
     }
 
     var deckTitleNode;
-    function addDeckTitle({ title }) {
+    function addDeckTitle(options) {
+        var title = options.title;
         // potential xss attack vector here. Be careful
         deckTitleNode = deckTitleNode || document.getElementById("deck-title");
         while(deckTitleNode.firstChild){
@@ -228,7 +229,7 @@ function buildEpcUI(graphStyle) {
     function gatherOptions() {
         deckTitleNode = deckTitleNode || document.getElementById("deck-title");
         var title = deckTitleNode.innerText;
-        return { title };
+        return { title: title };
     }
 
     /*
@@ -750,7 +751,7 @@ function buildEpcUI(graphStyle) {
 
         var title = params.get("t");
 
-        currentDeck = makeEternalDeckFromCode(cardLibrary, params.get("d"), { title });
+        currentDeck = makeEternalDeckFromCode(cardLibrary, params.get("d"), { title: title });
         if (currentDeck.makeError) {
             showError("Deck code error", currentDeck.makeError);
 

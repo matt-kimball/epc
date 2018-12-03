@@ -760,8 +760,9 @@ function makeDrawCombinationIterator(
     in `inCardlist` is expected to have three fields: id, name, and
     count.  id is the card identifier.  (i.e. 'Set1 #32')
 */
-function makeEternalDeck(cardlibrary, inCardlist, market, options = {}) {
+function makeEternalDeck(cardlibrary, inCardlist, market, options) {
     var deck, cardlist, marketlist;
+    options = options || {};
 
     /*
         Given a list of cardcount objects, merge cardcounts which
@@ -1230,8 +1231,9 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options = {}) {
     constructed using those cardcounts.
 */
 // eslint-disable-next-line no-unused-vars
-function makeEternalDeckFromString(library, deckstr, options = {}) {
+function makeEternalDeckFromString(library, deckstr, options) {
     var deck, cardcounts, makeError, regex, marketRegex;
+    options = options || {};
 
     cardcounts = [];
 
