@@ -223,6 +223,7 @@ body {
   overflow: hidden;
   white-space: nowrap;
   font-family: 'Open Sans Condensed Bold', sans-serif;
+  max-height: 74px;
 }
 
 #calculator-body-footer {

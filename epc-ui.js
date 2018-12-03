@@ -212,20 +212,20 @@ function buildEpcUI(graphStyle) {
         }
     }
 
-    let deckTitleNode;
+    var deckTitleNode;
     function addDeckTitle({ title }) {
         // potential xss attack vector here. Be careful
         deckTitleNode = deckTitleNode || document.getElementById("deck-title");
         while(deckTitleNode.firstChild){
             deckTitleNode.removeChild(deckTitleNode.firstChild);
         }
-        const titleTextNode = document.createTextNode(title);
+        var titleTextNode = document.createTextNode(title);
         deckTitleNode.appendChild(titleTextNode);
     }
 
     function gatherOptions() {
         deckTitleNode = deckTitleNode || document.getElementById("deck-title");
-        const title = deckTitleNode.innerText;
+        var title = deckTitleNode.innerText;
         return { title };
     }
 
@@ -746,7 +746,7 @@ function buildEpcUI(graphStyle) {
             return false;
         }
 
-        const title = params.get("t");
+        var title = params.get("t");
 
         currentDeck = makeEternalDeckFromCode(cardLibrary, params.get("d"), { title });
         if (currentDeck.makeError) {
