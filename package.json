@@ -23,14 +23,16 @@
     "url": "https://github.com/alexmiddeleer/epc/issues"
   },
   "homepage": "https://github.com/alexmiddeleer/epc#readme",
+  "dependencies": {
+    "event-stream": "3.3.4",
+    "uglifyjs": "^2.4.11"
+  },
   "devDependencies": {
     "eslint": "^5.7.0",
     "eslint-plugin-jest": "^21.24.1",
-    "event-stream": "3.3.4",
     "jest": "^23.6.0",
     "min-jquery": "^1.7.0",
     "puppeteer": "^1.8.0",
-    "uglifyjs": "^2.4.11",
     "expect-puppeteer": "^3.5.1",
     "jest-puppeteer": "^3.5.2"
   }
