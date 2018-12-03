@@ -24,10 +24,10 @@
   },
   "homepage": "https://github.com/alexmiddeleer/epc#readme",
   "dependencies": {
+    "event-stream": "3.3.4",
     "uglifyjs": "^2.4.11"
   },
   "devDependencies": {
-    "event-stream": "3.3.4",
     "eslint": "^5.7.0",
     "eslint-plugin-jest": "^21.24.1",
     "jest": "^23.6.0",
