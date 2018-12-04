@@ -698,7 +698,19 @@ function buildEpcUI(graphStyle) {
     }
 
     function bindOther() {
+        var KEYCODE_ENTER = 13;
+        document.getElementById("deck-title").addEventListener("keydown", function(e) {
+            if (e.keyCode === KEYCODE_ENTER) {
+                e.preventDefault();
+            }
+        });
         document.getElementById("deck-title").addEventListener("input", function(e) {
+            // This would only happen after a copy/paste, text drag-drop, etc, because
+            // we prevent the enter key from being typed. Doing this replace all of the time breaks
+            // fluid typing, unfortunately, so both measures are necessary (as far as I know)
+            if (e.target.innerText.indexOf("\n") > -1) {
+                e.target.innerText = e.target.innerText.replace("\n", " ");
+            }
             currentDeck.title = e.target.innerText;
             saveDeck();
         });
