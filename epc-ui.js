@@ -511,7 +511,7 @@ function buildEpcUI(graphStyle) {
         link = link + "?d=" + code;
 
         var options = gatherOptions();
-        link = options.title ? link + "&t=" + encodeURI(options.title) : link;
+        link = options.title ? link + "&t=" + encodeURIComponent(options.title) : link;
 
         copyToClipboard(link);
     }
@@ -704,6 +704,7 @@ function buildEpcUI(graphStyle) {
         document.getElementById("deck-title").addEventListener("keydown", function(e) {
             if (e.keyCode === KEYCODE_ENTER) {
                 e.preventDefault();
+                e.target.blur();
             }
         });
         document.getElementById("deck-title").addEventListener("input", function(e) {
