@@ -702,6 +702,7 @@ function buildEpcUI(graphStyle) {
         document.getElementById("deck-title").addEventListener("keydown", function(e) {
             if (e.keyCode === KEYCODE_ENTER) {
                 e.preventDefault();
+                e.target.blur();
             }
         });
         document.getElementById("deck-title").addEventListener("input", function(e) {
