@@ -509,7 +509,7 @@ function buildEpcUI(graphStyle) {
         link = link + "?d=" + code;
 
         var options = gatherOptions();
-        link = options.title ? link + "&t=" + encodeURI(options.title) : link;
+        link = options.title ? link + "&t=" + encodeURIComponent(options.title) : link;
 
         copyToClipboard(link);
     }
