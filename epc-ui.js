@@ -450,12 +450,42 @@ function buildEpcUI(graphStyle) {
         scrollLeft = document.body.scrollLeft;
         scrollTop = document.body.scrollTop;
 
-        input = $("<textarea>").appendTo($("body")).val(content).select();
-        document.execCommand("copy");
-        input.remove();
+        input = $("<textarea contenteditable=\"true\">");
+        input.appendTo($("body")).val(content);
 
+        var isiOSDevice = navigator.userAgent.match(/ipad|iphone/i);
+
+        if (isiOSDevice) {
+            iosCopyToClipboard(input[0]);
+        } else {
+            input.select();
+            document.execCommand("copy");
+        }
+
+        input.remove();
         document.body.scrollLeft = scrollLeft;
         document.body.scrollTop = scrollTop;
+    }
+
+    function iosCopyToClipboard(el) {
+        var oldContentEditable = el.contentEditable,
+            oldReadOnly = el.readOnly,
+            range = document.createRange();
+
+        el.contentEditable = true;
+        el.readOnly = false;
+        range.selectNodeContents(el);
+
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(range);
+
+        el.setSelectionRange(0, 999999);
+
+        el.contentEditable = oldContentEditable;
+        el.readOnly = oldReadOnly;
+
+        document.execCommand("copy");
     }
 
     /*  Copy the current decklist to the clipboard  */
