@@ -111,3 +111,23 @@ describe("Misc", () => {
         expect( isDisabled ).toBeTruthy();
     });
 });
+
+describe("Deck title", () => {
+    it("should start out untitled", async () => {
+        await page.goto("http://localhost:8081");
+        await page.waitForSelector("#deck-title");
+        await expect(page).toMatchElement("#deck-title", { text: "Untitled" });
+    });
+    it("should save deck title in localstorage", async () => {
+        await page.goto("http://localhost:8081");
+        await expect(page).toFill("#deck-title", "combrei");
+        await page.goto("http://localhost:8081");
+        await expect(page).toMatchElement("#deck-title", { text: "combrei" });
+    });
+    it("should load alessi if t = alessi and there is a deck", async () => {
+        await page.goto("http://localhost:8081?t=alessi&d=CAABD_BBCsBBBuKBE5HBBnD");
+        await page.waitForSelector("#deck-title");
+        await expect(page).toMatchElement("#deck-title", { text: "alessi" });
+    });
+
+});
