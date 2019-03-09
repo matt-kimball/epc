@@ -5,10 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watchAll --notify",
-    "build:epc": "bash generate.sh ",
-    "build": "bash generate.sh && bash dist.sh",
-    "lint": "eslint epc-deck.js epc-graph.js epc-polyfill.js epc-table.js epc-test.js epc-ui.js"
+    "test:watch": "jest --watchAll --notify"
   },
   "repository": {
     "type": "git",
@@ -30,7 +27,6 @@
     "jest": "^23.6.0",
     "min-jquery": "^1.7.0",
     "puppeteer": "^1.8.0",
-    "uglifyjs": "^2.4.11",
     "expect-puppeteer": "^3.5.1",
     "jest-puppeteer": "^3.5.2"
   }
