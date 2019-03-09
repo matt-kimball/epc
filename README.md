@@ -42,6 +42,7 @@ Build support:
 * `npm run build:semantic` - Build a `semantic.min.css` and `semantic.min.js`. 
    You will not need to run this often/ever (it generates the minified dependency).
 * `npm run lint` - Lint the epc scripts
+* `npm run fixlint` - fix the automatically fixable lint errors
 * `semantic.json` - Configuration for Semantic-UI 
 * `semantic-site.variables` - Build variables for Semantic-UI
 
