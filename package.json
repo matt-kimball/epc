@@ -8,8 +8,7 @@
     "test:watch": "jest --watchAll --notify",
     "build:epc": "bash generate.sh ",
     "build": "bash generate.sh && bash dist.sh",
-    "lint": "eslint epc-deck.js epc-graph.js epc-polyfill.js epc-table.js epc-test.js epc-ui.js",
-    "fixlint": "eslint --fix epc-deck.js epc-graph.js epc-polyfill.js epc-table.js epc-test.js epc-ui.js"
+    "lint": "eslint epc-deck.js epc-graph.js epc-polyfill.js epc-table.js epc-test.js epc-ui.js"
   },
   "repository": {
     "type": "git",
