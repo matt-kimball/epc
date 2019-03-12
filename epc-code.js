@@ -22,7 +22,7 @@
 */
 
 
-'use strict';
+"use strict";
 
 if (typeof $ === "undefined") {
     var $ = require("min-jquery");
@@ -77,7 +77,7 @@ function encodeValues(
 ) {
     var code, error;
 
-    code = '';
+    code = "";
     $.each(values, function (index, i) {
         var r;
 
@@ -109,9 +109,9 @@ function encodeValues(
             } else if (r < 62) {
                 code = code + String.fromCharCode(48 + r - 52);
             } else if (r === 62) {
-                code = code + '-';
+                code = code + "-";
             } else if (r === 63) {
-                code = code + '_';
+                code = code + "_";
             }
         }
     });
@@ -136,9 +136,9 @@ function decodeValues(code) {
     for (ix = 0; ix < code.length; ix += 1) {
         c = code[ix];
 
-        if (c === '-') {
+        if (c === "-") {
             r = 62;
-        } else if (c === '_') {
+        } else if (c === "_") {
             r = 63;
         } else {
             charCode = c.charCodeAt(0);
