@@ -35,13 +35,20 @@ DISTFILES="\
     undepleted.svg \
     waystone.svg"
 
+echo "Running generate.sh..."
 ./generate.sh
+echo "Done"
 
+echo "Moving files to /dist"
 mkdir -p dist
 cp $DISTFILES dist
+echo "Done"
 
+echo "Adding DIST:INCLUDES and removing DIST:REMOVES from /dist/index.html" 
 cat index.html | \
     perl -0777 -pe 's/<!-- DIST:REMOVE .* \/DIST:REMOVE -->//gs' | \
     perl -pe 's/<!-- DIST:INCLUDE//' | \
     perl -pe 's/\/DIST:INCLUDE -->//' \
     >dist/index.html
+echo "Done" 
+echo "Build Successful" 
