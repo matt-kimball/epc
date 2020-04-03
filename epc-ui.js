@@ -101,6 +101,10 @@ function buildEpcUI(graphStyle) {
         return "card-name multi";
     }
 
+    function convertNameToImage(name) {
+        return name.replace(/ /g, '_') + '.png';
+    }
+
     /*
         Build a row corresponding to an individual card in the decklist
         editing panel.
@@ -174,7 +178,11 @@ function buildEpcUI(graphStyle) {
             cardid = cardcount.id;
             card = cardLibrary.cards[cardid];
 
-            row = $("<div>").addClass("card-count-edit");
+            row = $('<div>')
+              .addClass('card-count-edit')
+              .attr('data-position', 'right center')
+              .attr('data-variation', 'transparent')
+              .attr('data-html', '<img width="220" height="350" src="/images/cards/' + encodeURIComponent(convertNameToImage(cardcount.name)) + '">');
             if (card && card.flags.power) {
                 row.appendTo(powerRows);
             } else {
@@ -190,10 +198,16 @@ function buildEpcUI(graphStyle) {
             cardid = cardcount.id;
             card = cardLibrary.cards[cardid];
 
-            row = $("<div>").addClass("card-count-edit");
+            row = $('<div>')
+              .addClass('card-count-edit')
+              .attr('data-position', 'right center')
+              .attr('data-variation', 'transparent')
+              .attr('data-html', '<img width="220" height="350" src="/images/cards/' + encodeURIComponent(convertNameToImage(cardcount.name)) + '">');
             row.appendTo(marketRows);
             buildDeckMarketRow(row, deck, card, cardcount);
         });
+
+        $('.card-count-edit').popup({ on: "hover", lastResort: 'right center', boundary: '.card-count-edit' });
 
         if (powerRows.children().length) {
             $("#deck-edit-power-title").css("display", "block");
@@ -546,6 +560,36 @@ function buildEpcUI(graphStyle) {
         copyToClipboard(link);
     }
 
+    /*  Generate a link to EWC deck builder for the current deck  */
+    function onGenerateEwcLink() {
+        var main, market, win, idRegex = /^Set([0-9]+) #([0-9]+)/, link = 'https://eternalwarcry.com/deck-builder';
+
+        var processCard = function (cardcount) {
+            var match = cardcount.id.match(idRegex);
+
+            if (!match) {
+                return null;
+            }
+
+            return match[1] + '-' + match[2] + ':' + cardcount.count;
+        };
+
+        main = $.map(currentDeck.cardlist, processCard).join(';');
+
+        link += "?main=" + main;
+
+        if (currentDeck.marketlist && currentDeck.marketlist.length) {
+            market = $.map(currentDeck.marketlist, processCard).join(';');
+
+            link += "&market=" + market;
+        }
+
+        win = window.open(link);
+        win.focus();
+    }
+
+
+
     /*  Reset the deck to an empty deck  */
     function onDeckClear() {
         var deck, market, options;
@@ -647,8 +691,8 @@ function buildEpcUI(graphStyle) {
     /*  Bind all buttons to their behavior handlers  */
     function bindButtons() {
         $(window).bind("load", onLoad);
-        $(".help-icon").popup({
-            position: "top right",
+        $(".help").popup({
+            position: "top center",
             offset: 6
         });
 
@@ -670,6 +714,11 @@ function buildEpcUI(graphStyle) {
         $("#link-button").popup({ on: "click" });
         $("#link-button").bind("click", function () {
             onGenerateLink();
+        });
+
+        $("#ewc-button").popup({ on: "hover" });
+        $("#ewc-button").bind("click", function () {
+            onGenerateEwcLink();
         });
 
         $("#about-heading").bind("click", function () {
