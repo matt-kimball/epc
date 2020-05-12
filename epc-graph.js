@@ -167,7 +167,15 @@ function makeGraphPopupTracker() {
         container,
         pos
     ) {
-        var anchor, popup, dots, firstDot;
+        var anchor, popup, dots, firstDot, modal;
+
+        /*
+            If the import modal is visible, don't continue
+        */
+        modal = $("#import-modal");
+        if (modal.is(":visible")) {
+            return;
+        }
 
         dots = findCloseDots(pos);
         if (!dots.length) {
