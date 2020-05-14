@@ -102,7 +102,7 @@ function buildEpcUI(graphStyle) {
     }
 
     function convertNameToImage(name) {
-        return name.replace(/ /g, '_') + '.png';
+        return name.replace(/(^\s*|\s*$)/g, '').replace(/ /g, '_') + '.png';
     }
 
     /*
