@@ -22,7 +22,7 @@
 
 */
 
-'use strict';
+"use strict";
 var MARKET_MARKER = 2;
 var MARKET_URL_DIVIDER_TOKEN = [MARKET_MARKER,0,0];
 if (typeof $ === "undefined") {
@@ -130,8 +130,8 @@ function makeInfluence(
     for (i = 0; i < influenceString.length; i += 1) {
         chr = influenceString[i];
 
-        if (chr.charCodeAt(0) >= '0'.charCodeAt(0)
-                && chr.charCodeAt(0) <= '9'.charCodeAt(0)) {
+        if (chr.charCodeAt(0) >= "0".charCodeAt(0)
+                && chr.charCodeAt(0) <= "9".charCodeAt(0)) {
 
             digit = Number(chr);
             if (influence.power > 0) {
@@ -139,21 +139,21 @@ function makeInfluence(
             } else {
                 influence.power = digit;
             }
-        } else if (chr === 'F') {
+        } else if (chr === "F") {
             influence.fire += 1;
-        } else if (chr === 'J') {
+        } else if (chr === "J") {
             influence.justice += 1;
-        } else if (chr === 'P') {
+        } else if (chr === "P") {
             influence.primal += 1;
-        } else if (chr === 'S') {
+        } else if (chr === "S") {
             influence.shadow += 1;
-        } else if (chr === 'T') {
+        } else if (chr === "T") {
             influence.time += 1;
-        } else if (chr === 'X') {
+        } else if (chr === "X") {
             influence.wild += 1;
         } else {
             influence.makeError =
-                'Invalid influence: "' + influenceString + '"';
+                "Invalid influence: \"" + influenceString + "\"";
         }
     }
 
@@ -193,12 +193,12 @@ function makeInfluence(
             str = "";
         }
 
-        str = str + 'F'.repeat(influence.fire);
-        str = str + 'T'.repeat(influence.time);
-        str = str + 'J'.repeat(influence.justice);
-        str = str + 'P'.repeat(influence.primal);
-        str = str + 'S'.repeat(influence.shadow);
-        str = str + 'X'.repeat(influence.wild);
+        str = str + "F".repeat(influence.fire);
+        str = str + "T".repeat(influence.time);
+        str = str + "J".repeat(influence.justice);
+        str = str + "P".repeat(influence.primal);
+        str = str + "S".repeat(influence.shadow);
+        str = str + "X".repeat(influence.wild);
 
         return str;
     };
@@ -488,7 +488,7 @@ function makeEternalCardInfo(
 
         i.e. "2FP,FF,PP"
     */
-    $.each(influenceRequired.split(','), function (index, str) {
+    $.each(influenceRequired.split(","), function (index, str) {
         var influence = makeInfluence(str);
 
         if (influence) {
@@ -566,7 +566,7 @@ function makeEternalCardLibrary(cards) {
         match = line.match(re);
 
         if (!match) {
-            library.makeError = 'Invalid card info: "' + line + '"';
+            library.makeError = "Invalid card info: \"" + line + "\"";
             return;
         }
 
@@ -587,7 +587,7 @@ function makeEternalCardLibrary(cards) {
         );
 
         if (card.makeError) {
-            library.makeError = card.makeError + ' in "' + line + '"';
+            library.makeError = card.makeError + " in \"" + line + "\"";
         }
 
         library.cards[id] = card;

@@ -21,7 +21,7 @@
 
 */
 
-'use strict';
+"use strict";
 
 
 /*
@@ -368,8 +368,8 @@ function generateOddsTable(tableCostDiv, tableOddsDiv, cardLibrary, deck) {
 
         /*  Add the heading cells  */
         for (drawCount = minDraws;
-                drawCount <= maxDraws;
-                drawCount += 1) {
+            drawCount <= maxDraws;
+            drawCount += 1) {
 
             text = String(drawCount - minDraws + 1);
 

@@ -53,7 +53,7 @@ The build requires a few tools:
 
 ## Lint
 
-To find style mistakes and inconsistencies, we use eslint. For convenience, you can use `lint.sh` to lint all files automatically. You will need `eslint-plugin-jest` to lint the tests.
+To find style mistakes and inconsistencies, we use eslint. For convenience, you can use `lint.sh` to lint all files automatically. You will need `eslint-plugin-jest` to lint the tests. Run `lint.sh fix` to have eslint fix anything that is autofixable.
 
 ```
 npm install -g eslint eslint-plugin-jest
