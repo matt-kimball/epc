@@ -102,7 +102,7 @@ function binomial(
     influence provided by cards and influence requirements effects
     in the card text.  This object tracks the power requirement, as
     well as the faction influence required.  A "wild" influence
-    value is used to represent influence which can be of any 
+    value is used to represent influence which can be of any
     type.  (i.e. Diplomatic Seal)
 */
 function makeInfluence(
@@ -615,7 +615,7 @@ function makeEternalCardLibrary(cards) {
     are considered equivalent, because they both provide "1FP".)
 
     This whole thing seems complicated, and it is, but not unnecessarily
-    so.  In an earlier implementation, I simply constructed a list of 
+    so.  In an earlier implementation, I simply constructed a list of
     all possible card combinations, rather than using an iterator,
     and didn't group equivalent cards, but rather considered each card
     individually.  This computed the correct probability result, but the
@@ -696,7 +696,7 @@ function makeDrawCombinationIterator(
     }
 
     /*
-        Return the total count of cards represented by the 
+        Return the total count of cards represented by the
         current iterator value.
     */
     function currentCount() {
@@ -771,15 +771,15 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options) {
     */
     function mergeCardlist(inCardlist) {
         var ret, cardcountId;
-    
+
         ret = [];
         cardcountId = {};
-    
+
         $.each(inCardlist, function (index, cardcount) {
             var dupCardcount;
-    
+
             dupCardcount = cardcountId[cardcount.id];
-    
+
             if (dupCardcount) {
                 dupCardcount.count += cardcount.count;
             } else {
@@ -788,12 +788,12 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options) {
                     name: cardcount.name,
                     count: cardcount.count
                 };
-    
+
                 ret.push(dupCardcount);
                 cardcountId[cardcount.id] = dupCardcount;
             }
         });
-    
+
         return ret;
     }
 
@@ -999,7 +999,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options) {
         Compute the odds for drawing a particular combination of
         cards.
 
-        `cardGroupCount` and `combination` are parallel lists 
+        `cardGroupCount` and `combination` are parallel lists
         with numbers of cards.  For example:
 
             cardGroupCount = [2, 4]
@@ -1154,7 +1154,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options) {
                 If we are exporting to the clipboard, leave out
                 zero card count entries, because that is unusual
                 and may confuse other tools which manipulate decklists.
-                (We want to leave the zero card count cards in if 
+                (We want to leave the zero card count cards in if
                 we are saving to local storage, though, to keep them
                 in the list.)
             */
@@ -1166,7 +1166,7 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options) {
                 cardcount.name + " (" +
                 cardcount.id + ")";
             decklist += cardline + "\n";
-        };        
+        };
         $.each(deck.cardlist, appendCardlistToDecklist);
         if (deck.marketlist) {
             decklist += "\n--------------MARKET---------------\n\n";
@@ -1232,13 +1232,14 @@ function makeEternalDeck(cardlibrary, inCardlist, market, options) {
 */
 // eslint-disable-next-line no-unused-vars
 function makeEternalDeckFromString(library, deckstr, options) {
-    var deck, cardcounts, makeError, regex, marketRegex;
+    var deck, cardcounts, makeError, regex, marketRegex, formatRegex;
     options = options || {};
 
     cardcounts = [];
 
     regex = /^([0-9]+) (.+) \((Set[0-9]+ #[0-9]+)\)$/;
     marketRegex = /^-+MARKET-+$/;
+    formatRegex = /^FORMAT:.+?$/;
 
     /*  For each line in the decklist input, decode the card and count  */
     var market = [];
@@ -1248,6 +1249,10 @@ function makeEternalDeckFromString(library, deckstr, options) {
 
         line = line.trim();
         if (line.length <= 0) {
+            return;
+        }
+
+        if (line.match(formatRegex)) {
             return;
         }
 
@@ -1378,4 +1383,4 @@ module.exports = {
     makeEternalDeckFromCode: makeEternalDeckFromCode,
     makeEternalCardLibrary: makeEternalCardLibrary,
     makeEternalDeckFromString: makeEternalDeckFromString
-}; 
+};
